@@ -698,7 +698,7 @@
       <label>Payment Schedule</label>
       <select id="a-freq" onchange="amortUpdate()">
         <option value="monthly" selected>Monthly (12×/year)</option>
-        <option value="biweekly">Biweekly (26×/year — saves ~6 yrs)</option>
+        <option value="biweekly">Biweekly (26×/year — 13 payments instead of 12)</option>
       </select>
     </div>
     <div class="amort-field" style="grid-column: 1 / -1;">
@@ -1060,10 +1060,13 @@ function amortUpdate() {
   if (isBiweekly) {
     bwBanner.style.display = 'flex';
     const intSaved  = baselineTotalInt - totalInt;
-    const moSaved   = (years*12) - Math.ceil(periods/2.17); // approx months
-    const yrsSaved  = (baselineTotalInt - totalInt) > 0 ? ((years * 26 - periods) / 26).toFixed(1) : '0';
+    // Convert biweekly periods to equivalent months, compare to full term months
+    const biweeklyMonths = periods * 14 / 30.4375; // 14 days per period, 30.4375 avg days/month
+    const fullTermMonths = years * 12;
+    const monthsSaved = Math.max(0, fullTermMonths - biweeklyMonths);
+    const yrsSaved = (monthsSaved / 12).toFixed(1);
     document.getElementById('bw-int-saved').textContent  = fmt(Math.max(0, intSaved));
-    document.getElementById('bw-yrs-saved').textContent  = parseFloat(yrsSaved) > 0 ? yrsSaved + ' yrs' : '< 1 yr';
+    document.getElementById('bw-yrs-saved').textContent  = parseFloat(yrsSaved) > 0.05 ? yrsSaved + ' yrs' : '< 1 mo';
   } else {
     bwBanner.style.display = 'none';
   }
