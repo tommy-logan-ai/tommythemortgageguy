@@ -1,33 +1,14 @@
 {
   "version": 2,
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.tommythemortgageguy.com" }],
-      "destination": "https://tommythemortgageguy.com/$1",
-      "permanent": true
-    }
-  ],
   "routes": [
-    {
-      "src": "/tools",
-      "dest": "/tools.html"
-    },
-    {
-      "src": "/tools.html",
-      "dest": "/tools.html"
-    },
-    {
-      "src": "/pre-approval",
-      "dest": "/pre-approval.html"
-    },
-    {
-      "src": "/pre-approval.html",
-      "dest": "/pre-approval.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/tools", "dest": "/tools.html" },
+    { "src": "/tools.html", "dest": "/tools.html" },
+    { "src": "/pre-approval", "dest": "/pre-approval.html" },
+    { "src": "/pre-approval.html", "dest": "/pre-approval.html" },
+    { "src": "/deals-falling-apart", "dest": "/deals-falling-apart.html" },
+    { "src": "/michigan-first-time-buyers", "dest": "/michigan-first-time-buyers.html" },
+    { "src": "/winning-multiple-offers", "dest": "/winning-multiple-offers.html" },
+    { "src": "/mortgage-rates-2026", "dest": "/mortgage-rates-2026.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
