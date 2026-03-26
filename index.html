@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tommy Lower — Michigan Mortgage Strategist</title>
+  <meta name="description" content="Rochester-based. Michigan-focused. Tommy Lower helps homebuyers and real estate agents win in any market. Rocket Mortgage | NMLS #31194" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #152238;
+      --blue: #1a4a8a;
+      --blue-light: #2563b0;
+      --gold: #c8922a;
+      --gold-light: #e8aa40;
+      --off-white: #f7f4ef;
+      --warm-gray: #e8e4dc;
+      --text: #1a1a1a;
+      --text-muted: #5a5a5a;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10, 22, 40, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200, 146, 42, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--white);
+      letter-spacing: 0.01em;
+    }
+    .nav-logo span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    .nav-cta {
+      background: var(--gold);
+      color: var(--navy) !important;
+      padding: 0.6rem 1.4rem !important;
+      border-radius: 3px;
+      font-weight: 600 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--gold-light) !important; color: var(--navy) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--navy);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 70% 50%, rgba(26, 74, 138, 0.35) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(200, 146, 42, 0.12) 0%, transparent 60%);
+    }
+
+    .hero-text {
+      padding: 8rem 4rem 6rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.7);
+      max-width: 460px;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    .hero-location {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+    .hero-location strong {
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 0.9rem 2rem;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--white);
+      padding: 0.9rem 2rem;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .hero-right {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(200, 146, 42, 0.25);
+      border-radius: 8px;
+      padding: 2.5rem;
+      width: 360px;
+      backdrop-filter: blur(20px);
+    }
+
+    .hero-card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(200, 146, 42, 0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .stat-text strong {
+      display: block;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    .stat-text span {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+    }
+
+    /* ── TRUST BAR ── */
+    .trust-bar {
+      background: var(--off-white);
+      border-top: 1px solid var(--warm-gray);
+      padding: 1.5rem 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .trust-icon {
+      font-size: 1.1rem;
+    }
+
+    /* ── DUAL AUDIENCE ── */
+    .dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .dual-panel {
+      padding: 6rem 5rem;
+      position: relative;
+    }
+    .dual-panel.buyers { background: var(--white); }
+    .dual-panel.agents { background: var(--navy); }
+
+    .panel-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .buyers .panel-eyebrow { color: var(--blue-light); }
+    .agents .panel-eyebrow { color: var(--gold); }
+
+    .dual-panel h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .buyers h2 { color: var(--navy); }
+    .agents h2 { color: var(--white); }
+
+    .dual-panel p {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+    .buyers p { color: var(--text-muted); }
+    .agents p { color: rgba(255,255,255,0.65); font-weight: 300; }
+
+    .panel-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .panel-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .buyers .panel-list li { color: var(--text); }
+    .agents .panel-list li { color: rgba(255,255,255,0.8); }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .buyers .check { background: rgba(26, 74, 138, 0.12); color: var(--blue); }
+    .agents .check { background: rgba(200, 146, 42, 0.2); color: var(--gold); }
+
+    .btn-panel-buyers {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--navy);
+      color: var(--white);
+      padding: 0.85rem 1.75rem;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .btn-panel-buyers:hover { background: var(--blue); }
+
+    .btn-panel-agents {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 0.85rem 1.75rem;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .btn-panel-agents:hover { background: var(--gold-light); }
+
+    /* ── INSIGHT SECTION ── */
+    .insights {
+      padding: 6rem 5rem;
+      background: var(--off-white);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+
+    .see-all {
+      color: var(--blue-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid var(--blue-light);
+      transition: opacity 0.2s;
+      white-space: nowrap;
+      margin-bottom: 0.5rem;
+    }
+    .see-all:hover { opacity: 0.7; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 6px;
+      padding: 2rem;
+      border: 1px solid var(--warm-gray);
+      transition: all 0.25s;
+      cursor: default;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+      border-color: rgba(26, 74, 138, 0.2);
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+    .tag-buyer { background: rgba(26, 74, 138, 0.1); color: var(--blue); }
+    .tag-agent { background: rgba(200, 146, 42, 0.15); color: #8a6010; }
+    .tag-market { background: rgba(10, 22, 40, 0.08); color: var(--navy-mid); }
+
+    .card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--navy);
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* ── ABOUT STRIP ── */
+    .about-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--navy);
+      min-height: 480px;
+    }
+
+    .about-text {
+      padding: 6rem 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .about-text .section-label { color: var(--gold); margin-bottom: 0.75rem; }
+
+    .about-text h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text p {
+      color: rgba(255,255,255,0.65);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    .about-text .community-note {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .about-text .community-note strong { color: rgba(255,255,255,0.65); font-weight: 500; }
+
+    .about-visual {
+      background:
+        linear-gradient(135deg, rgba(10, 22, 40, 0.6) 0%, rgba(26, 74, 138, 0.4) 100%),
+        #152238;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      border: 1px solid rgba(200, 146, 42, 0.15);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .about-visual::after {
+      content: '';
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      border: 1px solid rgba(200, 146, 42, 0.1);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .creds {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cred-item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(200, 146, 42, 0.2);
+      border-radius: 6px;
+      padding: 1rem 1.5rem;
+      text-align: center;
+    }
+
+    .cred-item strong {
+      display: block;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .cred-item span {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 7rem 5rem;
+      background: var(--white);
+      text-align: center;
+    }
+
+    .cta-section .section-label { margin-bottom: 1rem; }
+
+    .cta-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: var(--navy);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-section p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 3rem;
+    }
+
+    .cta-options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .cta-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 1.5rem 2.5rem;
+      border: 1px solid var(--warm-gray);
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.25s;
+      min-width: 180px;
+    }
+    .cta-option:hover {
+      border-color: var(--blue-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    }
+
+    .cta-option .cta-icon { font-size: 1.6rem; }
+    .cta-option .cta-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .cta-option .cta-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .cta-option.primary-cta {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+    .cta-option.primary-cta:hover { background: var(--blue); border-color: var(--blue); }
+    .cta-option.primary-cta .cta-label { color: rgba(255,255,255,0.6); }
+    .cta-option.primary-cta .cta-value { color: var(--white); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 2.5rem 5rem;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .footer-brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--white);
+    }
+    .footer-brand span { color: var(--gold); }
+
+    .footer-nav {
+      display: flex;
+      gap: 3rem;
+    }
+    .footer-nav-col h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .footer-nav-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-nav-col a {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-nav-col a:hover { color: rgba(255,255,255,0.85); }
+
+    .footer-disclaimer {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.7;
+    }
+    .footer-disclaimer p + p { margin-top: 0.5rem; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+
+      .hero { grid-template-columns: 1fr; }
+      .hero-text { padding: 8rem 2rem 3rem; }
+      .hero-right { height: auto; padding: 3rem 2rem 5rem; }
+      .hero-card { width: 100%; }
+
+      .trust-bar { padding: 1.5rem 2rem; flex-wrap: wrap; gap: 1rem; }
+
+      .dual { grid-template-columns: 1fr; }
+      .dual-panel { padding: 4rem 2rem; }
+
+      .insights { padding: 4rem 2rem; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+
+      .about-strip { grid-template-columns: 1fr; }
+      .about-text { padding: 4rem 2rem; }
+      .about-visual { padding: 4rem 2rem; min-height: 300px; }
+
+      .cta-section { padding: 5rem 2rem; }
+      .footer-top { flex-direction: column; gap: 2rem; }
+      .footer-nav { flex-direction: column; gap: 1.5rem; }
+      footer { padding: 2.5rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Tommy<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#buyers">For Buyers</a></li>
+    <li><a href="#agents">For Agents</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="tel:+12486390987" class="nav-cta">Call Tommy</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Michigan Mortgage Strategist</div>
+    <h1>Local knowledge.<br><em>Real strategy.</em><br>Better outcomes.</h1>
+    <p class="hero-sub">
+      Most lenders hand you a rate and step back. I sit at your table — helping you buy smarter, compete harder, and close with confidence.
+    </p>
+    <p class="hero-location">
+      <strong>Rochester-based.</strong> Trusted across Oakland &amp; Macomb County.
+    </p>
+    <div class="hero-actions">
+      <a href="tel:+12486390987" class="btn-primary">📞 Call Tommy</a>
+      <a href="#agents" class="btn-secondary">For Agents →</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hero-card-label">What you get when you work with me</div>
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-text">
+            <strong>Same-day pre-approvals</strong>
+            <span>So you never lose a deal waiting on paperwork</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">📊</div>
+          <div class="stat-text">
+            <strong>Offer strategy support</strong>
+            <span>I help structure financing to win in competitive markets</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">📱</div>
+          <div class="stat-text">
+            <strong>Direct access — always</strong>
+            <span>Call or text me directly. No call centers, no gatekeepers.</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-text">
+            <strong>Deal-saving mindset</strong>
+            <span>When something comes up, I find the path forward</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="trust-icon">🏠</span> Equal Housing Lender</div>
+  <div class="trust-item"><span class="trust-icon">🔒</span> NMLS #31194</div>
+  <div class="trust-item"><span class="trust-icon">🚀</span> Powered by Rocket Mortgage</div>
+  <div class="trust-item"><span class="trust-icon">📍</span> Licensed in Michigan</div>
+</div>
+
+<!-- DUAL AUDIENCE -->
+<section class="dual">
+  <div class="dual-panel buyers" id="buyers">
+    <div class="panel-eyebrow">For Homebuyers</div>
+    <h2>Buy with clarity. Win with strategy.</h2>
+    <p>Buying a home shouldn't feel like navigating a maze alone. I explain what's actually happening with rates, show you exactly what you can afford in real dollars, and help you put together offers that compete.</p>
+    <ul class="panel-list">
+      <li><div class="check">✓</div><span>Understand your numbers before you fall in love with a house</span></li>
+      <li><div class="check">✓</div><span>First-time buyer programs including MSHDA down payment assistance</span></li>
+      <li><div class="check">✓</div><span>Fast pre-approval so you're ready when the right home appears</span></li>
+      <li><div class="check">✓</div><span>Plain-language guidance — no jargon, no pressure</span></li>
+    </ul>
+    <a href="tel:+12486390987" class="btn-panel-buyers">Let's Talk →</a>
+  </div>
+
+  <div class="dual-panel agents" id="agents">
+    <div class="panel-eyebrow">For Real Estate Agents</div>
+    <h2>I make your deals stronger. Your life easier.</h2>
+    <p>When you send a client to me, you're not just handing them a lender — you're giving them a strategic partner. I communicate proactively, move fast, and protect your deals the same way you do.</p>
+    <ul class="panel-list">
+      <li><div class="check">✓</div><span>Pre-approvals same day — often within hours</span></li>
+      <li><div class="check">✓</div><span>I call you before problems become surprises</span></li>
+      <li><div class="check">✓</div><span>Offer strategy and escalation clause support</span></li>
+      <li><div class="check">✓</div><span>Closings that actually close on time</span></li>
+    </ul>
+    <a href="tel:+12486390987" class="btn-panel-agents">Work With Tommy →</a>
+  </div>
+</section>
+
+<!-- INSIGHTS -->
+<section class="insights" id="insights">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Market Intelligence</div>
+      <h2>What I'm seeing right now</h2>
+    </div>
+    <a href="#" class="see-all">All Insights →</a>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-tag tag-market">Market Update</span>
+      <h3>Why deals are falling apart right now — and how to prevent it</h3>
+      <p>Three things I'm seeing kill contracts in Oakland County right now, and the simple pre-approval moves that protect you before they happen.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-buyer">First-Time Buyers</span>
+      <h3>If you're buying in Michigan this year, read this first</h3>
+      <p>MSHDA programs are changing. Here's what's available, who qualifies, and how down payment assistance actually works in a competitive offer situation.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-agent">For Agents</span>
+      <h3>How we're winning offers in multiple-offer situations right now</h3>
+      <p>Financing structure is a competitive weapon most buyers aren't using. Here's what I'm doing with buyers to make their offers stand out on price AND terms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-strip" id="about">
+  <div class="about-text">
+    <div class="section-label">About Tommy</div>
+    <h2>Michigan through and through.</h2>
+    <p>I've been in mortgage for over 20 years. I've seen every market — hot, frozen, uncertain, and everything in between. What stays constant is how I work: direct, fast, and fully accountable to my clients and the agents who trust me with theirs.</p>
+    <p>I'm not a call center. I'm the person who picks up the phone, knows your file, and finds the answer when things get complicated.</p>
+    <p class="community-note">
+      <strong>Proud supporter of Rochester High School Athletics.</strong> Rochester-based, Michigan-focused — this is home, not just a market.
+    </p>
+  </div>
+
+  <div class="about-visual">
+    <div class="creds">
+      <div class="cred-item">
+        <strong>20+</strong>
+        <span>Years in Michigan Mortgage</span>
+      </div>
+      <div class="cred-item">
+        <strong>NMLS #31194</strong>
+        <span>Licensed Loan Officer</span>
+      </div>
+      <div class="cred-item">
+        <strong>Rocket Mortgage</strong>
+        <span>Backed by the Nation's #1 Lender</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-label">Ready to Move?</div>
+  <h2>Let's talk before you need me — not after.</h2>
+  <p>The best time to connect is before you're already in a deal. A 15-minute conversation now saves weeks of stress later.</p>
+  <div class="cta-options">
+    <a href="tel:+12486390987" class="cta-option primary-cta">
+      <span class="cta-icon">📞</span>
+      <span class="cta-label">Call Direct</span>
+      <span class="cta-value">(248) 639-0987</span>
+    </a>
+    <a href="sms:+12486390987" class="cta-option">
+      <span class="cta-icon">💬</span>
+      <span class="cta-label">Text Tommy</span>
+      <span class="cta-value">(248) 639-0987</span>
+    </a>
+    <a href="https://www.rocketmortgage.com" target="_blank" rel="noopener" class="cta-option">
+      <span class="cta-icon">🚀</span>
+      <span class="cta-label">Apply Online</span>
+      <span class="cta-value">Rocket Mortgage</span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">Tommy<span>.</span></div>
+    <div class="footer-nav">
+      <div class="footer-nav-col">
+        <h4>Work With Me</h4>
+        <ul>
+          <li><a href="#buyers">For Buyers</a></li>
+          <li><a href="#agents">For Agents</a></li>
+          <li><a href="tel:+12486390987">Call Tommy</a></li>
+        </ul>
+      </div>
+      <div class="footer-nav-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#insights">Market Insights</a></li>
+          <li><a href="#">Mortgage Strategy</a></li>
+          <li><a href="#">Tools &amp; Calculators</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-disclaimer">
+    <p>Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.</p>
+    <p>This website is operated by Tommy Lower as an independent loan officer. Content reflects personal views and market observations and is not an offer to lend or a commitment to a specific rate or program. All loans subject to credit approval and program guidelines.</p>
+  </div>
+</footer>
+
+</body>
+</html>
