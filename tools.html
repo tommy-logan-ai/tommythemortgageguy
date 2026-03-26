@@ -433,6 +433,104 @@
       .amort-controls { grid-template-columns: 1fr; }
       .amort-summary { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ── BIWEEKLY BANNER ── */
+    .biweekly-banner {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: linear-gradient(135deg, #0f3460 0%, #1a4a8a 100%);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(37,99,176,0.4);
+    }
+    .bw-icon { font-size: 2rem; flex-shrink: 0; }
+    .bw-text { flex: 1; }
+    .bw-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #60a5fa; margin-bottom: 0.25rem; }
+    .bw-text p { font-size: 0.88rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+    .bw-stats { display: flex; gap: 1.5rem; flex-shrink: 0; }
+    .bw-stat { text-align: center; }
+    .bw-stat span { display: block; font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--white); }
+    .bw-stat small { font-size: 0.68rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── RECAST SECTION ── */
+    .recast-section {
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--warm-gray);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    }
+    .recast-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+    .recast-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+    .recast-inputs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--warm-gray);
+    }
+    .recast-compare {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-bottom: 1.25rem;
+    }
+    .recast-vs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      padding-top: 3.5rem;
+    }
+    .recast-card {
+      background: var(--off-white);
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 2px solid var(--warm-gray);
+      position: relative;
+    }
+    .recast-card.option-b { border-color: rgba(200,146,42,0.35); background: #fffdf7; }
+    .rc-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      background: var(--navy);
+      color: var(--white);
+      margin-bottom: 0.75rem;
+    }
+    .rc-badge.gold { background: var(--gold); color: var(--navy); }
+    .recast-card h4 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--navy); margin-bottom: 0.4rem; }
+    .rc-sub { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem; }
+    .rc-stats { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+    .rc-stat { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem; background: var(--white); border-radius: 5px; border: 1px solid var(--warm-gray); }
+    .rc-stat.highlight-red { background: var(--red-light); border-color: rgba(192,57,43,0.15); }
+    .rc-stat.highlight-green { background: var(--green-light); border-color: rgba(26,122,74,0.15); }
+    .rc-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+    .rc-val { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--navy); }
+    .rc-val.green { color: var(--green); }
+    .rc-note { font-size: 0.8rem; font-weight: 600; color: var(--green); }
+    .recast-disclaimer { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; padding: 0.75rem 1rem; background: var(--off-white); border-radius: 5px; border-left: 3px solid var(--gold); }
+
+    @media (max-width: 800px) {
+      .recast-inputs { grid-template-columns: 1fr 1fr; }
+      .recast-compare { grid-template-columns: 1fr; }
+      .recast-vs { padding-top: 0; }
+      .bw-stats { display: none; }
+    }
+    @media (max-width: 500px) {
+      .recast-inputs { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -597,42 +695,156 @@
       </select>
     </div>
     <div class="amort-field">
-      <label>Extra Monthly Payment</label>
-      <input type="number" id="a-extra" value="0" min="0" step="50" oninput="amortUpdate()" placeholder="0">
+      <label>Payment Schedule</label>
+      <select id="a-freq" onchange="amortUpdate()">
+        <option value="monthly" selected>Monthly (12×/year)</option>
+        <option value="biweekly">Biweekly (26×/year — saves ~6 yrs)</option>
+      </select>
+    </div>
+    <div class="amort-field" style="grid-column: 1 / -1;">
+      <label>
+        Extra Payment Per Period
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:0.78rem;margin-left:0.5rem">— applied to principal every single payment, reducing balance faster</span>
+      </label>
+      <input type="number" id="a-extra" value="0" min="0" step="50" oninput="amortUpdate()" placeholder="e.g. 200 means an extra $200 toward principal each payment">
     </div>
   </div>
 
   <!-- Summary Cards -->
   <div class="amort-summary">
     <div class="summary-card">
-      <div class="s-label">Monthly Payment</div>
-      <div class="s-value" id="a-monthly">$1,997</div>
+      <div class="s-label">Payment Amount</div>
+      <div class="s-value" id="a-monthly">$1,816</div>
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem" id="a-freq-note">Monthly</div>
     </div>
     <div class="summary-card red-card">
       <div class="s-label">Total Interest Paid</div>
-      <div class="s-value" id="a-total-int">$438,965</div>
+      <div class="s-value" id="a-total-int">$373,787</div>
     </div>
     <div class="summary-card">
       <div class="s-label">Total Cost of Loan</div>
-      <div class="s-value" id="a-total-cost">$718,965</div>
+      <div class="s-value" id="a-total-cost">$653,787</div>
     </div>
     <div class="summary-card green-card">
       <div class="s-label">Payoff Date</div>
-      <div class="s-value" id="a-payoff">Mar 2055</div>
+      <div class="s-value" id="a-payoff">Mar 2056</div>
+    </div>
+  </div>
+
+  <!-- Biweekly savings banner (hidden when monthly) -->
+  <div class="biweekly-banner" id="biweekly-banner" style="display:none">
+    <div class="bw-icon">⚡</div>
+    <div class="bw-text">
+      <div class="bw-label">Biweekly Advantage</div>
+      <p id="bw-savings-text">Paying every 2 weeks = 26 half-payments = 13 full payments per year instead of 12. That one extra payment per year adds up to big savings.</p>
+    </div>
+    <div class="bw-stats">
+      <div class="bw-stat"><span id="bw-int-saved">—</span><small>Interest Saved</small></div>
+      <div class="bw-stat"><span id="bw-yrs-saved">—</span><small>Years Saved</small></div>
     </div>
   </div>
 
   <!-- Tipping Point Banner -->
-  <div class="tipping-banner">
+  <div class="tipping-banner" id="tipping-banner">
     <div class="tipping-icon">⚖️</div>
     <div class="tipping-text">
       <div class="t-label">The Tipping Point</div>
-      <p id="tipping-text">On a 30-year loan, most of your payment goes to <strong>interest for the first 18–19 years</strong>. The highlighted row in the table below shows exactly when your principal payment finally overtakes interest — the moment you start building equity faster.</p>
+      <p id="tipping-text">On a 30-year loan, most of your payment goes to <strong>interest for the first 18–19 years</strong>. The highlighted row shows when your principal payment finally overtakes interest — the moment you start building equity faster.</p>
+    </div>
+  </div>
+
+  <!-- ─── RECAST CALCULATOR ─── -->
+  <div class="recast-section">
+    <div class="recast-header">
+      <div>
+        <div class="recast-label">Lump Sum / Mortgage Recast Calculator</div>
+        <p class="recast-desc">Got a bonus, inheritance, or proceeds from a home sale? See exactly what a one-time lump sum payment does — two ways: apply it to principal (pay off faster, same payment) or <em>recast</em> (lower your monthly payment, same payoff date).</p>
+      </div>
+    </div>
+    <div class="recast-inputs">
+      <div class="amort-field">
+        <label>Current Balance Remaining</label>
+        <input type="text" id="r-balance" value="280,000" oninput="recastUpdate()" placeholder="e.g. 250,000">
+      </div>
+      <div class="amort-field">
+        <label>Months Remaining on Loan</label>
+        <input type="number" id="r-months" value="360" min="12" max="360" oninput="recastUpdate()" placeholder="e.g. 300">
+      </div>
+      <div class="amort-field">
+        <label>Lump Sum Payment</label>
+        <input type="text" id="r-lump" value="20,000" oninput="recastUpdate()" placeholder="e.g. 20,000">
+      </div>
+      <div class="amort-field">
+        <label>Interest Rate (%)</label>
+        <input type="number" id="r-rate" value="6.75" step="0.125" min="1" max="20" oninput="recastUpdate()">
+      </div>
+    </div>
+
+    <!-- Recast results: side by side comparison -->
+    <div class="recast-compare">
+      <!-- Option A: Principal only (no recast) -->
+      <div class="recast-card option-a">
+        <div class="rc-badge">Option A</div>
+        <h4>Apply to Principal Only</h4>
+        <p class="rc-sub">Your monthly payment stays the same. You just pay it off sooner and save on interest.</p>
+        <div class="rc-stats">
+          <div class="rc-stat">
+            <span class="rc-label">Monthly Payment</span>
+            <span class="rc-val" id="ra-payment">—</span>
+          </div>
+          <div class="rc-stat">
+            <span class="rc-label">New Payoff</span>
+            <span class="rc-val green" id="ra-payoff">—</span>
+          </div>
+          <div class="rc-stat">
+            <span class="rc-label">Months Saved</span>
+            <span class="rc-val green" id="ra-months-saved">—</span>
+          </div>
+          <div class="rc-stat highlight-red">
+            <span class="rc-label">Total Interest Saved</span>
+            <span class="rc-val" id="ra-int-saved">—</span>
+          </div>
+        </div>
+        <div class="rc-note">✓ Best if you want to be debt-free sooner</div>
+      </div>
+
+      <!-- Divider -->
+      <div class="recast-vs">VS</div>
+
+      <!-- Option B: Recast -->
+      <div class="recast-card option-b">
+        <div class="rc-badge gold">Option B — Recast</div>
+        <h4>Recast (Re-Amortize)</h4>
+        <p class="rc-sub">Lender recalculates your payment on the new lower balance. Same payoff date — lower monthly bill.</p>
+        <div class="rc-stats">
+          <div class="rc-stat highlight-green">
+            <span class="rc-label">New Monthly Payment</span>
+            <span class="rc-val" id="rb-payment">—</span>
+          </div>
+          <div class="rc-stat">
+            <span class="rc-label">Monthly Savings</span>
+            <span class="rc-val green" id="rb-mo-saved">—</span>
+          </div>
+          <div class="rc-stat">
+            <span class="rc-label">Payoff Date</span>
+            <span class="rc-val" id="rb-payoff">—</span>
+          </div>
+          <div class="rc-stat highlight-red">
+            <span class="rc-label">Total Interest Saved</span>
+            <span class="rc-val" id="rb-int-saved">—</span>
+          </div>
+        </div>
+        <div class="rc-note">✓ Best if you need lower monthly cash flow</div>
+      </div>
+    </div>
+
+    <div class="recast-disclaimer">
+      ⚠️ Recast eligibility: Conventional loans only (not FHA/VA/USDA). Lenders typically require a minimum $5,000–$10,000 lump sum and charge a fee of $150–$500. Call Tommy to discuss whether recasting makes sense for your situation.
     </div>
   </div>
 
   <!-- Table -->
-  <div class="table-wrap">
+  <div class="table-wrap" style="margin-top:2rem">
     <div class="table-toolbar">
       <h3>Full Payment Schedule</h3>
       <div class="view-toggle">
@@ -659,14 +871,15 @@
   <div style="margin-top:1.5rem">
     <div class="cta-strip">
       <div>
-        <p><strong>Want to see how an extra $200/month changes everything?</strong></p>
-        <p>Try the Extra Monthly Payment field above — or call me and I'll walk you through it.</p>
+        <p><strong>Want to talk through any of these scenarios?</strong></p>
+        <p>Biweekly, extra payments, lump sums, recasting — I'll run the real numbers for your specific loan.</p>
       </div>
       <a href="tel:+15864154507">Call Tommy · (586) 415-4507</a>
     </div>
   </div>
 
 </div>
+
 
 <div class="page-footer">
   <p>Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.<br>
@@ -684,12 +897,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   event.target.classList.add('active');
-  if (tab === 'amortization') amortUpdate();
+  if (tab === 'amortization') { amortUpdate(); recastUpdate(); }
 }
 
 // ═══════════════ UTILITIES ═══════════════
 function fmt(n)  { return '$' + Math.round(n).toLocaleString(); }
 function fmtD(n) { return '$' + n.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0}); }
+function parseAmt(s) { return parseFloat(String(s).replace(/,/g,'')) || 0; }
 
 function calcPI(principal, annualRate, years) {
   if (annualRate === 0) return principal / (years * 12);
@@ -703,7 +917,7 @@ function tippingPoint(principal, annualRate, years) {
   let bal = principal;
   const pmt = calcPI(principal, annualRate, years);
   for (let m = 1; m <= years*12; m++) {
-    const intPart = bal * r;
+    const intPart  = bal * r;
     const prinPart = pmt - intPart;
     if (prinPart >= intPart) return m;
     bal -= prinPart;
@@ -711,7 +925,7 @@ function tippingPoint(principal, annualRate, years) {
   return years * 12;
 }
 
-// ═══════════════ CALCULATOR ═══════════════
+// ═══════════════ PAYMENT CALCULATOR ═══════════════
 function setTerm(y) {
   termYears = y;
   document.querySelectorAll('.term-btn').forEach(b => b.classList.remove('active'));
@@ -736,25 +950,21 @@ function calcUpdate() {
   const n        = termYears * 12;
   const totalInt = (pi * n) - loan;
 
-  // First payment breakdown
   const r = rate / 100 / 12;
   const firstInt  = loan * r;
   const firstPrin = pi - firstInt;
   const iPct = Math.round(firstInt / pi * 100);
   const pPct = 100 - iPct;
 
-  // Tipping point
   const tipMonth = tippingPoint(loan, rate, termYears);
   const tipYear  = Math.ceil(tipMonth / 12);
 
-  // Update labels
   document.getElementById('hp-val').textContent   = '$' + hp.toLocaleString();
   document.getElementById('dp-val').textContent   = '$' + Math.round(dp).toLocaleString() + ' (' + dpPct + '%)';
   document.getElementById('rate-val').textContent = rate + '%';
   document.getElementById('tax-val').textContent  = '$' + Math.round(tax).toLocaleString();
   document.getElementById('ins-val').textContent  = '$' + ins.toLocaleString();
 
-  // Update results
   document.getElementById('total-payment').textContent = Math.round(total).toLocaleString();
   document.getElementById('pi-payment').textContent    = fmt(pi);
   document.getElementById('loan-amount').textContent   = fmt(loan);
@@ -762,12 +972,10 @@ function calcUpdate() {
   document.getElementById('pmi-payment').textContent   = pmi > 0 ? fmt(pmi) + '/mo' : '$0';
   document.getElementById('total-interest').textContent = fmt(totalInt);
 
-  // Bar
   document.getElementById('bar-principal').style.width = pPct + '%';
   document.getElementById('pi-pct-p').textContent = pPct + '%';
   document.getElementById('pi-pct-i').textContent = iPct + '%';
 
-  // Insight
   document.getElementById('insight-ratio').textContent     = iPct + '%';
   document.getElementById('insight-year').textContent      = 'year ' + tipYear;
   document.getElementById('insight-total-cost').textContent = fmt(loan + totalInt);
@@ -782,84 +990,112 @@ function setView(v) {
 }
 
 function amortUpdate() {
-  const loanRaw = document.getElementById('a-loan').value.replace(/,/g,'');
-  const loan    = parseFloat(loanRaw) || 280000;
-  const rate    = parseFloat(document.getElementById('a-rate').value) || 6.75;
-  const years   = parseInt(document.getElementById('a-term').value) || 30;
-  const extra   = parseFloat(document.getElementById('a-extra').value) || 0;
+  const loan  = parseAmt(document.getElementById('a-loan').value) || 280000;
+  const rate  = parseFloat(document.getElementById('a-rate').value) || 6.75;
+  const years = parseInt(document.getElementById('a-term').value) || 30;
+  const extra = parseFloat(document.getElementById('a-extra').value) || 0;
+  const freq  = document.getElementById('a-freq').value;
 
-  const r   = rate / 100 / 12;
-  const n   = years * 12;
-  const pmt = calcPI(loan, rate, years);
-  const totalPmt = pmt + extra;
+  const isBiweekly = freq === 'biweekly';
+  const monthlyPmt = calcPI(loan, rate, years);
 
-  // Generate schedule
+  // ── MONTHLY BASELINE for biweekly comparison ──
+  let baselineTotalInt = 0;
+  {
+    const r = rate/100/12;
+    const n = years*12;
+    baselineTotalInt = (monthlyPmt * n) - loan;
+  }
+
+  // ── SCHEDULE GENERATION ──
+  // For biweekly: payment = monthlyPmt/2, interest accrues on 14-day cycle
+  // annual rate / 26 biweekly periods
+  const periodsPerYear = isBiweekly ? 26 : 12;
+  const periodRate     = rate / 100 / periodsPerYear;
+  const periodPmt      = isBiweekly ? monthlyPmt / 2 : monthlyPmt;
+  const totalPmt       = periodPmt + extra;
+
   let bal = loan;
   let totalInt = 0;
-  let months = 0;
-  const rows = [];
-  let tipMonth = null;
+  let periods  = 0;
+  const rows   = [];
+  let tipPeriod = null;
 
-  while (bal > 0.01 && months < n) {
-    months++;
-    const intPart  = bal * r;
+  const maxPeriods = years * periodsPerYear * 2; // safety cap
+  while (bal > 0.01 && periods < maxPeriods) {
+    periods++;
+    const intPart  = bal * periodRate;
     let   prinPart = totalPmt - intPart;
+    if (prinPart <= 0) { prinPart = 0; } // shouldn't happen on valid input
     if (prinPart > bal) prinPart = bal;
     bal -= prinPart;
     if (bal < 0) bal = 0;
     totalInt += intPart;
 
-    if (!tipMonth && prinPart >= intPart) tipMonth = months;
+    if (!tipPeriod && prinPart >= intPart) tipPeriod = periods;
 
-    rows.push({
-      month: months,
-      payment: prinPart + intPart,
-      principal: prinPart,
-      interest: intPart,
-      balance: bal,
-      cumInt: totalInt
-    });
+    rows.push({ period: periods, payment: prinPart+intPart, principal: prinPart, interest: intPart, balance: bal });
   }
 
-  // Payoff date
+  // ── PAYOFF DATE ──
   const now = new Date();
-  const payoffDate = new Date(now.getFullYear(), now.getMonth() + months);
-  const payoffStr  = payoffDate.toLocaleDateString('en-US', { month:'short', year:'numeric' });
+  let payoffDate;
+  if (isBiweekly) {
+    const daysToPayoff = periods * 14;
+    payoffDate = new Date(now.getTime() + daysToPayoff * 86400000);
+  } else {
+    payoffDate = new Date(now.getFullYear(), now.getMonth() + periods);
+  }
+  const payoffStr = payoffDate.toLocaleDateString('en-US', { month:'short', year:'numeric' });
 
-  // Summary
-  document.getElementById('a-monthly').textContent    = fmt(pmt);
+  // ── UPDATE SUMMARY ──
+  document.getElementById('a-monthly').textContent    = fmt(periodPmt + extra) + (extra > 0 ? '*' : '');
+  document.getElementById('a-freq-note').textContent  = isBiweekly ? 'Every 2 weeks (26×/year)' : 'Monthly (12×/year)';
   document.getElementById('a-total-int').textContent  = fmt(totalInt);
   document.getElementById('a-total-cost').textContent = fmt(loan + totalInt);
   document.getElementById('a-payoff').textContent     = payoffStr;
 
-  // Tipping point banner
-  if (tipMonth) {
-    const tipYr = Math.ceil(tipMonth / 12);
-    document.getElementById('tipping-text').innerHTML =
-      `Your <strong>tipping point is month ${tipMonth} — year ${tipYr}</strong>. That's when your principal payment finally overtakes interest. Before that, most of your payment is going to the bank, not your equity. The <span style="background:rgba(200,146,42,0.15);padding:0 4px;border-radius:2px;font-weight:600">highlighted row</span> marks this moment in the table below.`;
+  // ── BIWEEKLY BANNER ──
+  const bwBanner = document.getElementById('biweekly-banner');
+  if (isBiweekly) {
+    bwBanner.style.display = 'flex';
+    const intSaved  = baselineTotalInt - totalInt;
+    const moSaved   = (years*12) - Math.ceil(periods/2.17); // approx months
+    const yrsSaved  = (baselineTotalInt - totalInt) > 0 ? ((years * 26 - periods) / 26).toFixed(1) : '0';
+    document.getElementById('bw-int-saved').textContent  = fmt(Math.max(0, intSaved));
+    document.getElementById('bw-yrs-saved').textContent  = parseFloat(yrsSaved) > 0 ? yrsSaved + ' yrs' : '< 1 yr';
+  } else {
+    bwBanner.style.display = 'none';
   }
 
-  // Build table
+  // ── TIPPING POINT BANNER ──
+  if (tipPeriod) {
+    const tipLabel = isBiweekly
+      ? `payment #${tipPeriod} (~${(tipPeriod/26).toFixed(1)} years in)`
+      : `month ${tipPeriod} — year ${Math.ceil(tipPeriod/12)}`;
+    document.getElementById('tipping-text').innerHTML =
+      `Your <strong>tipping point is ${tipLabel}</strong> — when your principal payment finally overtakes interest. Before that, most of your payment goes to the bank, not your equity. The <span style="background:rgba(200,146,42,0.15);padding:0 4px;border-radius:2px;font-weight:600">highlighted row</span> marks this moment below.`;
+  }
+
+  // ── BUILD TABLE ──
   const tbody = document.getElementById('amort-body');
   tbody.innerHTML = '';
 
   if (tableView === 'yearly') {
-    // Aggregate by year
-    const years_data = [];
-    for (let y = 0; y < Math.ceil(rows.length/12); y++) {
-      const slice = rows.slice(y*12, y*12+12);
+    // Group into years (12 months or 26 biweekly periods)
+    const periodsInYear = isBiweekly ? 26 : 12;
+    const numYears = Math.ceil(rows.length / periodsInYear);
+    for (let y = 0; y < numYears; y++) {
+      const slice = rows.slice(y * periodsInYear, (y+1) * periodsInYear);
       if (!slice.length) continue;
       const yr = {
-        year: y+1,
+        year:      y + 1,
         principal: slice.reduce((s,r) => s+r.principal, 0),
         interest:  slice.reduce((s,r) => s+r.interest,  0),
         payment:   slice.reduce((s,r) => s+r.payment,   0),
         balance:   slice[slice.length-1].balance
       };
-      years_data.push(yr);
-    }
-    years_data.forEach(yr => {
-      const tipYr = tipMonth ? Math.ceil(tipMonth/12) : null;
+      const tipYr = tipPeriod ? Math.ceil(tipPeriod / periodsInYear) : null;
       const isTip = tipYr === yr.year;
       const tr = document.createElement('tr');
       if (isTip) tr.className = 'tipping-row';
@@ -870,12 +1106,14 @@ function amortUpdate() {
         <td class="interest-amt">${fmt(yr.interest)}</td>
         <td class="balance-amt">${yr.balance < 1 ? '—' : fmt(yr.balance)}</td>`;
       tbody.appendChild(tr);
-    });
+    }
   } else {
-    // Monthly view — group by year headers
+    // Monthly view with year headers
     let currentYear = 0;
+    const periodsInYear = isBiweekly ? 26 : 12;
+
     rows.forEach(row => {
-      const yr = Math.ceil(row.month / 12);
+      const yr = Math.ceil(row.period / periodsInYear);
       if (yr !== currentYear) {
         currentYear = yr;
         const yearRow = document.createElement('tr');
@@ -883,12 +1121,21 @@ function amortUpdate() {
         yearRow.innerHTML = `<td colspan="5">Year ${yr}</td>`;
         tbody.appendChild(yearRow);
       }
-      const isTip = row.month === tipMonth;
+      const isTip = row.period === tipPeriod;
       const tr = document.createElement('tr');
       if (isTip) tr.className = 'tipping-row';
-      const mo = new Date(now.getFullYear(), now.getMonth() + row.month - 1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+      let label;
+      if (isBiweekly) {
+        const d = new Date(now.getTime() + (row.period - 1) * 14 * 86400000);
+        label = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+      } else {
+        label = new Date(now.getFullYear(), now.getMonth() + row.period - 1)
+                  .toLocaleDateString('en-US', {month:'short', year:'numeric'});
+      }
+
       tr.innerHTML = `
-        <td>${mo}${isTip ? ' ⚖️' : ''}</td>
+        <td>${label}${isTip ? ' ⚖️' : ''}</td>
         <td>${fmt(row.payment)}</td>
         <td class="principal-amt">${fmt(row.principal)}</td>
         <td class="interest-amt">${fmt(row.interest)}</td>
@@ -898,16 +1145,85 @@ function amortUpdate() {
   }
 }
 
-// ═══════════════ FORMAT LOAN INPUT ═══════════════
-document.getElementById('a-loan').addEventListener('blur', function() {
-  const val = parseFloat(this.value.replace(/,/g,''));
-  if (!isNaN(val)) this.value = Math.round(val).toLocaleString();
+// ═══════════════ RECAST CALCULATOR ═══════════════
+function recastUpdate() {
+  const bal    = parseAmt(document.getElementById('r-balance').value) || 280000;
+  const months = parseInt(document.getElementById('r-months').value) || 360;
+  const lump   = parseAmt(document.getElementById('r-lump').value) || 20000;
+  const rate   = parseFloat(document.getElementById('r-rate').value) || 6.75;
+
+  const r = rate / 100 / 12;
+
+  // Current payment on original balance
+  const currentPmt = (r === 0) ? bal/months : bal * (r * Math.pow(1+r,months)) / (Math.pow(1+r,months)-1);
+
+  // ── OPTION A: Principal only (no recast) ──
+  // Same payment, applied to new balance
+  const newBalA    = Math.max(0, bal - lump);
+  let   periodsA   = 0, totalIntA = 0;
+  let   bA         = newBalA;
+  while (bA > 0.01 && periodsA < months * 2) {
+    periodsA++;
+    const iPart  = bA * r;
+    let   pPart  = currentPmt - iPart;
+    if (pPart > bA) pPart = bA;
+    bA -= pPart;
+    totalIntA += iPart;
+  }
+  // Baseline total interest (no lump sum)
+  let   basePeriodsB = 0, baseTotalInt = 0, bBase = bal;
+  while (bBase > 0.01 && basePeriodsB < months) {
+    basePeriodsB++;
+    const iP = bBase * r;
+    let   pP = currentPmt - iP;
+    if (pP > bBase) pP = bBase;
+    bBase -= pP;
+    baseTotalInt += iP;
+  }
+
+  const intSavedA    = baseTotalInt - totalIntA;
+  const monthsSavedA = months - periodsA;
+  const payoffDateA  = new Date(now.getFullYear(), now.getMonth() + periodsA);
+  const payoffStrA   = payoffDateA.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+
+  // ── OPTION B: Recast ──
+  // New balance = bal - lump, same months remaining, recalculate payment
+  const newBalB  = Math.max(0, bal - lump);
+  const newPmtB  = (r === 0) ? newBalB/months : newBalB * (r * Math.pow(1+r,months)) / (Math.pow(1+r,months)-1);
+  const totalIntB    = (newPmtB * months) - newBalB;
+  const intSavedB    = baseTotalInt - totalIntB;
+  const moSavedB     = currentPmt - newPmtB;
+  const payoffDateB  = new Date(now.getFullYear(), now.getMonth() + months);
+  const payoffStrB   = payoffDateB.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+
+  // ── UPDATE DOM ──
+  document.getElementById('ra-payment').textContent      = fmt(currentPmt);
+  document.getElementById('ra-payoff').textContent       = payoffStrA;
+  document.getElementById('ra-months-saved').textContent = monthsSavedA > 0 ? monthsSavedA + ' months' : '< 1 month';
+  document.getElementById('ra-int-saved').textContent    = fmt(Math.max(0, intSavedA));
+
+  document.getElementById('rb-payment').textContent      = fmt(newPmtB);
+  document.getElementById('rb-mo-saved').textContent     = fmt(moSavedB) + '/mo';
+  document.getElementById('rb-payoff').textContent       = payoffStrB;
+  document.getElementById('rb-int-saved').textContent    = fmt(Math.max(0, intSavedB));
+}
+
+// ═══════════════ FORMAT INPUTS ═══════════════
+['a-loan', 'r-balance', 'r-lump'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('blur', function() {
+    const val = parseFloat(this.value.replace(/,/g,''));
+    if (!isNaN(val)) this.value = Math.round(val).toLocaleString();
+  });
 });
 
 // ═══════════════ INIT ═══════════════
+const now = new Date();
 calcUpdate();
 amortUpdate();
+recastUpdate();
 </script>
+
 
 </body>
 </html>
