@@ -10,6 +10,14 @@
       "dest": "/tools.html"
     },
     {
+      "src": "/pre-approval",
+      "dest": "/pre-approval.html"
+    },
+    {
+      "src": "/pre-approval.html",
+      "dest": "/pre-approval.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
