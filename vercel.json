@@ -1,5 +1,13 @@
 {
   "version": 2,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.tommythemortgageguy.com" }],
+      "destination": "https://tommythemortgageguy.com/$1",
+      "permanent": true
+    }
+  ],
   "routes": [
     {
       "src": "/tools",
