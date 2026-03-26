@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Tools — Tommy Lower</title>
+  <meta name="description" content="Free Michigan mortgage calculator and amortization table. See your exact monthly payment, total interest, and full payment breakdown. Tommy Lower | NMLS #31194" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #152238;
+      --blue: #1a4a8a;
+      --blue-light: #2563b0;
+      --gold: #c8922a;
+      --gold-light: #e8aa40;
+      --off-white: #f7f4ef;
+      --warm-gray: #e8e4dc;
+      --text: #1a1a1a;
+      --text-muted: #5a5a5a;
+      --white: #ffffff;
+      --green: #1a7a4a;
+      --green-light: #e8f5ee;
+      --red-light: #fef2f2;
+      --red: #c0392b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--off-white); }
+
+    /* ── NAV ── */
+    nav {
+      background: rgba(10,22,40,0.97);
+      padding: 1.1rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(200,146,42,0.2);
+    }
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--white); text-decoration: none; }
+    .nav-logo span { color: var(--gold); }
+    .nav-back { font-size: 0.8rem; color: rgba(255,255,255,0.55); text-decoration: none; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: var(--navy);
+      padding: 4rem 3rem 3rem;
+      text-align: center;
+    }
+    .page-header .eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem;
+    }
+    .page-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white); line-height: 1.15; margin-bottom: 0.75rem;
+    }
+    .page-header p { color: rgba(255,255,255,0.55); font-size: 1rem; font-weight: 300; max-width: 560px; margin: 0 auto; }
+
+    /* ── TOOL TABS ── */
+    .tool-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      background: var(--navy-mid);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .tab-btn {
+      padding: 1rem 2.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(200,146,42,0.06); }
+    .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.75); }
+
+    /* ── MAIN LAYOUT ── */
+    .tool-panel { display: none; padding: 3rem; max-width: 1100px; margin: 0 auto; }
+    .tool-panel.active { display: block; }
+
+    /* ── CALCULATOR TOOL ── */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Input Card */
+    .input-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 2rem;
+      border: 1px solid var(--warm-gray);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    }
+    .input-card h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      color: var(--navy);
+      margin-bottom: 1.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--warm-gray);
+    }
+
+    .field { margin-bottom: 1.5rem; }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+    .field label .val {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .field input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background: var(--warm-gray);
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 0.35rem;
+    }
+    .field input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(200,146,42,0.4);
+    }
+    .field input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      border: 3px solid var(--white);
+    }
+
+    .range-ends { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); }
+
+    .term-buttons { display: flex; gap: 0.5rem; }
+    .term-btn {
+      flex: 1; padding: 0.6rem 0; font-size: 0.85rem; font-weight: 600;
+      border: 1.5px solid var(--warm-gray); border-radius: 5px;
+      background: var(--white); color: var(--text-muted);
+      cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+    }
+    .term-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .term-btn:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
+
+    /* Results Card */
+    .results-card {
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--warm-gray);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .results-header {
+      background: var(--navy);
+      padding: 1.75rem 2rem;
+      text-align: center;
+    }
+    .results-header .results-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 0.4rem;
+    }
+    .monthly-payment {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.8rem;
+      color: var(--white);
+      line-height: 1;
+    }
+    .monthly-payment sup { font-size: 1.6rem; vertical-align: top; margin-top: 0.5rem; }
+    .payment-note { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 0.4rem; }
+
+    .results-body { padding: 1.75rem 2rem; }
+
+    .breakdown-bar { margin-bottom: 1.5rem; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .bar-track { height: 10px; background: var(--warm-gray); border-radius: 10px; overflow: hidden; }
+    .bar-fill-principal { height: 100%; background: var(--blue); border-radius: 10px; transition: width 0.4s ease; }
+    .bar-fill-interest  { height: 100%; background: var(--gold);  border-radius: 10px; transition: width 0.4s ease; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-box {
+      background: var(--off-white);
+      border-radius: 7px;
+      padding: 1rem;
+      border: 1px solid var(--warm-gray);
+    }
+    .stat-box .stat-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .stat-box .stat-value { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); }
+    .stat-box.highlight { background: var(--red-light); border-color: rgba(192,57,43,0.2); }
+    .stat-box.highlight .stat-value { color: var(--red); }
+
+    /* Insight box */
+    .insight-box {
+      background: var(--green-light);
+      border: 1px solid rgba(26,122,74,0.2);
+      border-radius: 7px;
+      padding: 1rem 1.1rem;
+      font-size: 0.85rem;
+      color: var(--green);
+      font-weight: 500;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .insight-box strong { color: var(--green); }
+
+    .cta-strip {
+      background: var(--navy);
+      border-radius: 7px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .cta-strip p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+    .cta-strip p strong { color: var(--white); display: block; }
+    .cta-strip a {
+      background: var(--gold);
+      color: var(--navy);
+      padding: 0.65rem 1.25rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .cta-strip a:hover { background: var(--gold-light); }
+
+    /* ── AMORTIZATION TABLE TOOL ── */
+    .amort-controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      background: var(--white);
+      border-radius: 10px;
+      padding: 1.75rem;
+      border: 1px solid var(--warm-gray);
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    }
+    .amort-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .amort-field input, .amort-field select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid var(--warm-gray);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .amort-field input:focus, .amort-field select:focus { border-color: var(--blue-light); }
+
+    /* Summary stats row */
+    .amort-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .summary-card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 1.25rem;
+      border: 1px solid var(--warm-gray);
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .summary-card .s-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .summary-card .s-value { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--navy); }
+    .summary-card.red-card { background: var(--red-light); border-color: rgba(192,57,43,0.15); }
+    .summary-card.red-card .s-value { color: var(--red); }
+    .summary-card.green-card { background: var(--green-light); border-color: rgba(26,122,74,0.15); }
+    .summary-card.green-card .s-value { color: var(--green); }
+
+    /* Tipping point banner */
+    .tipping-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      border: 1px solid rgba(200,146,42,0.25);
+    }
+    .tipping-icon { font-size: 2rem; flex-shrink: 0; }
+    .tipping-text .t-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.25rem; }
+    .tipping-text p { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+    .tipping-text strong { color: var(--white); }
+
+    /* Table */
+    .table-wrap {
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--warm-gray);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    }
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--warm-gray);
+      background: var(--off-white);
+    }
+    .table-toolbar h3 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--navy); }
+    .view-toggle { display: flex; gap: 0.4rem; }
+    .view-btn {
+      padding: 0.4rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1.5px solid var(--warm-gray);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .view-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+    .amort-table-scroll { max-height: 520px; overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 0.85rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--off-white);
+      border-bottom: 1px solid var(--warm-gray);
+      text-align: right;
+      position: sticky;
+      top: 0;
+    }
+    thead th:first-child { text-align: left; }
+    tbody tr { border-bottom: 1px solid rgba(232,228,220,0.7); transition: background 0.1s; }
+    tbody tr:hover { background: rgba(247,244,239,0.8); }
+    tbody tr.tipping-row { background: rgba(200,146,42,0.08); }
+    tbody tr.tipping-row td { font-weight: 600; }
+    tbody td {
+      padding: 0.75rem 1rem;
+      font-size: 0.87rem;
+      text-align: right;
+      color: var(--text);
+    }
+    tbody td:first-child { text-align: left; font-weight: 600; color: var(--navy); }
+    td.principal-amt { color: var(--blue); font-weight: 600; }
+    td.interest-amt  { color: #8a6010; }
+    td.balance-amt   { color: var(--text-muted); }
+
+    .year-header td {
+      background: var(--navy);
+      color: rgba(255,255,255,0.6);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      text-align: left !important;
+    }
+
+    /* Footer */
+    .page-footer {
+      background: var(--navy);
+      padding: 2rem 3rem;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    .page-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.3); line-height: 1.7; max-width: 700px; margin: 0 auto; }
+
+    /* Mobile */
+    @media (max-width: 800px) {
+      nav { padding: 1rem 1.25rem; }
+      .page-header { padding: 2.5rem 1.5rem 2rem; }
+      .tool-panel { padding: 1.5rem; }
+      .calc-grid { grid-template-columns: 1fr; }
+      .amort-controls { grid-template-columns: 1fr 1fr; }
+      .amort-summary { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .tab-btn { padding: 0.85rem 1.25rem; font-size: 0.75rem; }
+    }
+    @media (max-width: 500px) {
+      .amort-controls { grid-template-columns: 1fr; }
+      .amort-summary { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Tommy<span>.</span></a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Free Michigan Mortgage Tools</div>
+  <h1>Know your numbers<br><em style="font-style:italic;color:var(--gold)">before</em> you fall in love with a house.</h1>
+  <p>Run the real numbers on any home. See your exact payment, how much goes to interest, and what you're actually paying over time.</p>
+</div>
+
+<div class="tool-tabs">
+  <button class="tab-btn active" onclick="switchTab('calculator')">Payment Calculator</button>
+  <button class="tab-btn" onclick="switchTab('amortization')">Amortization Table</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PAYMENT CALCULATOR                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tool-panel active" id="tab-calculator">
+  <div class="calc-grid">
+
+    <!-- Inputs -->
+    <div class="input-card">
+      <h2>Your Loan Details</h2>
+
+      <div class="field">
+        <label>Home Price <span class="val" id="hp-val">$350,000</span></label>
+        <input type="range" id="home-price" min="100000" max="1000000" step="5000" value="350000"
+               oninput="calcUpdate()">
+        <div class="range-ends"><span>$100K</span><span>$1M</span></div>
+      </div>
+
+      <div class="field">
+        <label>Down Payment <span class="val" id="dp-val">$70,000 (20%)</span></label>
+        <input type="range" id="down-pct" min="3" max="40" step="1" value="20"
+               oninput="calcUpdate()">
+        <div class="range-ends"><span>3%</span><span>40%</span></div>
+      </div>
+
+      <div class="field">
+        <label>Interest Rate <span class="val" id="rate-val">6.75%</span></label>
+        <input type="range" id="interest-rate" min="3" max="12" step="0.125" value="6.75"
+               oninput="calcUpdate()">
+        <div class="range-ends"><span>3%</span><span>12%</span></div>
+      </div>
+
+      <div class="field">
+        <label>Loan Term</label>
+        <div class="term-buttons">
+          <button class="term-btn" onclick="setTerm(10)">10 yr</button>
+          <button class="term-btn" onclick="setTerm(15)">15 yr</button>
+          <button class="term-btn" onclick="setTerm(20)">20 yr</button>
+          <button class="term-btn active" onclick="setTerm(30)">30 yr</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Property Tax (annual) <span class="val" id="tax-val">$4,375</span></label>
+        <input type="range" id="prop-tax" min="0" max="15000" step="250" value="4375"
+               oninput="calcUpdate()">
+        <div class="range-ends"><span>$0</span><span>$15K/yr</span></div>
+      </div>
+
+      <div class="field">
+        <label>Homeowner's Insurance <span class="val" id="ins-val">$1,200</span></label>
+        <input type="range" id="insurance" min="500" max="5000" step="100" value="1200"
+               oninput="calcUpdate()">
+        <div class="range-ends"><span>$500/yr</span><span>$5K/yr</span></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-card">
+      <div class="results-header">
+        <div class="results-label">Estimated Monthly Payment</div>
+        <div class="monthly-payment"><sup>$</sup><span id="total-payment">2,418</span></div>
+        <div class="payment-note">Principal & Interest + Taxes + Insurance</div>
+      </div>
+      <div class="results-body">
+
+        <!-- P&I Bar -->
+        <div class="breakdown-bar">
+          <div class="bar-label">
+            <span style="color:var(--blue)">● Principal <span id="pi-pct-p">37%</span></span>
+            <span style="color:var(--gold)">● Interest <span id="pi-pct-i">63%</span></span>
+          </div>
+          <div style="display:flex;gap:3px;height:10px;border-radius:10px;overflow:hidden">
+            <div id="bar-principal" style="background:var(--blue);transition:width 0.4s;width:37%"></div>
+            <div id="bar-interest"  style="background:var(--gold);transition:width 0.4s;flex:1"></div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem">Payment 1 breakdown — interest heavy at first, this shifts over time</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">P&I Only</div>
+            <div class="stat-value" id="pi-payment">$1,997</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Loan Amount</div>
+            <div class="stat-value" id="loan-amount">$280,000</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Taxes + Ins</div>
+            <div class="stat-value" id="ti-payment">$446</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">PMI (if any)</div>
+            <div class="stat-value" id="pmi-payment">$0</div>
+          </div>
+          <div class="stat-box highlight" style="grid-column: 1 / -1;">
+            <div class="stat-label">Total Interest Over Life of Loan</div>
+            <div class="stat-value" id="total-interest">$438,965</div>
+          </div>
+        </div>
+
+        <div class="insight-box" id="insight-box">
+          On a 30-year loan at 6.75%, you're paying <strong id="insight-ratio">63%</strong> interest on your first payment. You won't hit 50/50 until around <strong id="insight-year">year 19</strong>. Over the life of the loan, you'll pay <strong id="insight-total-cost">$718,965</strong> for a $280,000 home.
+        </div>
+
+        <div class="cta-strip">
+          <div>
+            <p><strong>Ready to lock in your real numbers?</strong></p>
+            <p>These are estimates. I'll show you exactly what you qualify for.</p>
+          </div>
+          <a href="tel:+15864154507">Call Tommy</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- AMORTIZATION TABLE                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tool-panel" id="tab-amortization">
+
+  <!-- Controls -->
+  <div class="amort-controls">
+    <div class="amort-field">
+      <label>Loan Amount</label>
+      <input type="text" id="a-loan" value="280,000" oninput="amortUpdate()" placeholder="280,000">
+    </div>
+    <div class="amort-field">
+      <label>Interest Rate (%)</label>
+      <input type="number" id="a-rate" value="6.75" step="0.125" min="1" max="20" oninput="amortUpdate()">
+    </div>
+    <div class="amort-field">
+      <label>Loan Term</label>
+      <select id="a-term" onchange="amortUpdate()">
+        <option value="10">10 Years</option>
+        <option value="15">15 Years</option>
+        <option value="20">20 Years</option>
+        <option value="30" selected>30 Years</option>
+      </select>
+    </div>
+    <div class="amort-field">
+      <label>Extra Monthly Payment</label>
+      <input type="number" id="a-extra" value="0" min="0" step="50" oninput="amortUpdate()" placeholder="0">
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="amort-summary">
+    <div class="summary-card">
+      <div class="s-label">Monthly Payment</div>
+      <div class="s-value" id="a-monthly">$1,997</div>
+    </div>
+    <div class="summary-card red-card">
+      <div class="s-label">Total Interest Paid</div>
+      <div class="s-value" id="a-total-int">$438,965</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Total Cost of Loan</div>
+      <div class="s-value" id="a-total-cost">$718,965</div>
+    </div>
+    <div class="summary-card green-card">
+      <div class="s-label">Payoff Date</div>
+      <div class="s-value" id="a-payoff">Mar 2055</div>
+    </div>
+  </div>
+
+  <!-- Tipping Point Banner -->
+  <div class="tipping-banner">
+    <div class="tipping-icon">⚖️</div>
+    <div class="tipping-text">
+      <div class="t-label">The Tipping Point</div>
+      <p id="tipping-text">On a 30-year loan, most of your payment goes to <strong>interest for the first 18–19 years</strong>. The highlighted row in the table below shows exactly when your principal payment finally overtakes interest — the moment you start building equity faster.</p>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <h3>Full Payment Schedule</h3>
+      <div class="view-toggle">
+        <button class="view-btn active" onclick="setView('monthly')">Monthly</button>
+        <button class="view-btn" onclick="setView('yearly')">Yearly</button>
+      </div>
+    </div>
+    <div class="amort-table-scroll">
+      <table id="amort-table">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Payment</th>
+            <th>Principal</th>
+            <th>Interest</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="amort-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <div class="cta-strip">
+      <div>
+        <p><strong>Want to see how an extra $200/month changes everything?</strong></p>
+        <p>Try the Extra Monthly Payment field above — or call me and I'll walk you through it.</p>
+      </div>
+      <a href="tel:+15864154507">Call Tommy · (586) 415-4507</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  <p>Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.<br>
+  Calculator results are estimates for educational purposes only and do not represent a loan commitment or offer to lend. Actual rates, payments, and terms depend on creditworthiness, property type, and program eligibility. All loans subject to credit approval.</p>
+</div>
+
+<script>
+// ═══════════════ STATE ═══════════════
+let termYears = 30;
+let tableView = 'monthly';
+
+// ═══════════════ TAB SWITCH ═══════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'amortization') amortUpdate();
+}
+
+// ═══════════════ UTILITIES ═══════════════
+function fmt(n)  { return '$' + Math.round(n).toLocaleString(); }
+function fmtD(n) { return '$' + n.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0}); }
+
+function calcPI(principal, annualRate, years) {
+  if (annualRate === 0) return principal / (years * 12);
+  const r = annualRate / 100 / 12;
+  const n = years * 12;
+  return principal * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n) - 1);
+}
+
+function tippingPoint(principal, annualRate, years) {
+  const r = annualRate / 100 / 12;
+  let bal = principal;
+  const pmt = calcPI(principal, annualRate, years);
+  for (let m = 1; m <= years*12; m++) {
+    const intPart = bal * r;
+    const prinPart = pmt - intPart;
+    if (prinPart >= intPart) return m;
+    bal -= prinPart;
+  }
+  return years * 12;
+}
+
+// ═══════════════ CALCULATOR ═══════════════
+function setTerm(y) {
+  termYears = y;
+  document.querySelectorAll('.term-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calcUpdate();
+}
+
+function calcUpdate() {
+  const hp    = +document.getElementById('home-price').value;
+  const dpPct = +document.getElementById('down-pct').value;
+  const rate  = +document.getElementById('interest-rate').value;
+  const tax   = +document.getElementById('prop-tax').value;
+  const ins   = +document.getElementById('insurance').value;
+
+  const dp       = hp * dpPct / 100;
+  const loan     = hp - dp;
+  const pi       = calcPI(loan, rate, termYears);
+  const taxMo    = tax / 12;
+  const insMo    = ins / 12;
+  const pmi      = dpPct < 20 ? loan * 0.0085 / 12 : 0;
+  const total    = pi + taxMo + insMo + pmi;
+  const n        = termYears * 12;
+  const totalInt = (pi * n) - loan;
+
+  // First payment breakdown
+  const r = rate / 100 / 12;
+  const firstInt  = loan * r;
+  const firstPrin = pi - firstInt;
+  const iPct = Math.round(firstInt / pi * 100);
+  const pPct = 100 - iPct;
+
+  // Tipping point
+  const tipMonth = tippingPoint(loan, rate, termYears);
+  const tipYear  = Math.ceil(tipMonth / 12);
+
+  // Update labels
+  document.getElementById('hp-val').textContent   = '$' + hp.toLocaleString();
+  document.getElementById('dp-val').textContent   = '$' + Math.round(dp).toLocaleString() + ' (' + dpPct + '%)';
+  document.getElementById('rate-val').textContent = rate + '%';
+  document.getElementById('tax-val').textContent  = '$' + Math.round(tax).toLocaleString();
+  document.getElementById('ins-val').textContent  = '$' + ins.toLocaleString();
+
+  // Update results
+  document.getElementById('total-payment').textContent = Math.round(total).toLocaleString();
+  document.getElementById('pi-payment').textContent    = fmt(pi);
+  document.getElementById('loan-amount').textContent   = fmt(loan);
+  document.getElementById('ti-payment').textContent    = fmt(taxMo + insMo);
+  document.getElementById('pmi-payment').textContent   = pmi > 0 ? fmt(pmi) + '/mo' : '$0';
+  document.getElementById('total-interest').textContent = fmt(totalInt);
+
+  // Bar
+  document.getElementById('bar-principal').style.width = pPct + '%';
+  document.getElementById('pi-pct-p').textContent = pPct + '%';
+  document.getElementById('pi-pct-i').textContent = iPct + '%';
+
+  // Insight
+  document.getElementById('insight-ratio').textContent     = iPct + '%';
+  document.getElementById('insight-year').textContent      = 'year ' + tipYear;
+  document.getElementById('insight-total-cost').textContent = fmt(loan + totalInt);
+}
+
+// ═══════════════ AMORTIZATION TABLE ═══════════════
+function setView(v) {
+  tableView = v;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  amortUpdate();
+}
+
+function amortUpdate() {
+  const loanRaw = document.getElementById('a-loan').value.replace(/,/g,'');
+  const loan    = parseFloat(loanRaw) || 280000;
+  const rate    = parseFloat(document.getElementById('a-rate').value) || 6.75;
+  const years   = parseInt(document.getElementById('a-term').value) || 30;
+  const extra   = parseFloat(document.getElementById('a-extra').value) || 0;
+
+  const r   = rate / 100 / 12;
+  const n   = years * 12;
+  const pmt = calcPI(loan, rate, years);
+  const totalPmt = pmt + extra;
+
+  // Generate schedule
+  let bal = loan;
+  let totalInt = 0;
+  let months = 0;
+  const rows = [];
+  let tipMonth = null;
+
+  while (bal > 0.01 && months < n) {
+    months++;
+    const intPart  = bal * r;
+    let   prinPart = totalPmt - intPart;
+    if (prinPart > bal) prinPart = bal;
+    bal -= prinPart;
+    if (bal < 0) bal = 0;
+    totalInt += intPart;
+
+    if (!tipMonth && prinPart >= intPart) tipMonth = months;
+
+    rows.push({
+      month: months,
+      payment: prinPart + intPart,
+      principal: prinPart,
+      interest: intPart,
+      balance: bal,
+      cumInt: totalInt
+    });
+  }
+
+  // Payoff date
+  const now = new Date();
+  const payoffDate = new Date(now.getFullYear(), now.getMonth() + months);
+  const payoffStr  = payoffDate.toLocaleDateString('en-US', { month:'short', year:'numeric' });
+
+  // Summary
+  document.getElementById('a-monthly').textContent    = fmt(pmt);
+  document.getElementById('a-total-int').textContent  = fmt(totalInt);
+  document.getElementById('a-total-cost').textContent = fmt(loan + totalInt);
+  document.getElementById('a-payoff').textContent     = payoffStr;
+
+  // Tipping point banner
+  if (tipMonth) {
+    const tipYr = Math.ceil(tipMonth / 12);
+    document.getElementById('tipping-text').innerHTML =
+      `Your <strong>tipping point is month ${tipMonth} — year ${tipYr}</strong>. That's when your principal payment finally overtakes interest. Before that, most of your payment is going to the bank, not your equity. The <span style="background:rgba(200,146,42,0.15);padding:0 4px;border-radius:2px;font-weight:600">highlighted row</span> marks this moment in the table below.`;
+  }
+
+  // Build table
+  const tbody = document.getElementById('amort-body');
+  tbody.innerHTML = '';
+
+  if (tableView === 'yearly') {
+    // Aggregate by year
+    const years_data = [];
+    for (let y = 0; y < Math.ceil(rows.length/12); y++) {
+      const slice = rows.slice(y*12, y*12+12);
+      if (!slice.length) continue;
+      const yr = {
+        year: y+1,
+        principal: slice.reduce((s,r) => s+r.principal, 0),
+        interest:  slice.reduce((s,r) => s+r.interest,  0),
+        payment:   slice.reduce((s,r) => s+r.payment,   0),
+        balance:   slice[slice.length-1].balance
+      };
+      years_data.push(yr);
+    }
+    years_data.forEach(yr => {
+      const tipYr = tipMonth ? Math.ceil(tipMonth/12) : null;
+      const isTip = tipYr === yr.year;
+      const tr = document.createElement('tr');
+      if (isTip) tr.className = 'tipping-row';
+      tr.innerHTML = `
+        <td>Year ${yr.year}${isTip ? ' ⚖️' : ''}</td>
+        <td>${fmt(yr.payment)}</td>
+        <td class="principal-amt">${fmt(yr.principal)}</td>
+        <td class="interest-amt">${fmt(yr.interest)}</td>
+        <td class="balance-amt">${yr.balance < 1 ? '—' : fmt(yr.balance)}</td>`;
+      tbody.appendChild(tr);
+    });
+  } else {
+    // Monthly view — group by year headers
+    let currentYear = 0;
+    rows.forEach(row => {
+      const yr = Math.ceil(row.month / 12);
+      if (yr !== currentYear) {
+        currentYear = yr;
+        const yearRow = document.createElement('tr');
+        yearRow.className = 'year-header';
+        yearRow.innerHTML = `<td colspan="5">Year ${yr}</td>`;
+        tbody.appendChild(yearRow);
+      }
+      const isTip = row.month === tipMonth;
+      const tr = document.createElement('tr');
+      if (isTip) tr.className = 'tipping-row';
+      const mo = new Date(now.getFullYear(), now.getMonth() + row.month - 1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+      tr.innerHTML = `
+        <td>${mo}${isTip ? ' ⚖️' : ''}</td>
+        <td>${fmt(row.payment)}</td>
+        <td class="principal-amt">${fmt(row.principal)}</td>
+        <td class="interest-amt">${fmt(row.interest)}</td>
+        <td class="balance-amt">${row.balance < 1 ? 'Paid Off' : fmt(row.balance)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+// ═══════════════ FORMAT LOAN INPUT ═══════════════
+document.getElementById('a-loan').addEventListener('blur', function() {
+  const val = parseFloat(this.value.replace(/,/g,''));
+  if (!isNaN(val)) this.value = Math.round(val).toLocaleString();
+});
+
+// ═══════════════ INIT ═══════════════
+calcUpdate();
+amortUpdate();
+</script>
+
+</body>
+</html>
