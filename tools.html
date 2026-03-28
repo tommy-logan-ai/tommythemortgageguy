@@ -785,13 +785,40 @@ function calcPI(loan, annualRate, years = 30) {
   if (r === 0) return loan / n;
   return loan * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 }
+// ─── ALLEGIANCE TITLE RATES (First American Eagle, Michigan) ─────────
+// Source: Allegiance Title Agency, LLC — Shelby Twp, MI 48315
+// Effective March 1, 2017 (industry-standard rate table)
+
+function calcOwnerTitle(price) {
+  // Eagle Owner's Policy Rate (Residential 1-4 Family)
+  if (price <= 1000)    return 291.50;
+  if (price <= 50000)   return 291.50  + (price - 1000)    * 5.77  / 1000;
+  const b50  = 574.23;
+  if (price <= 100000)  return b50     + (price - 50000)   * 4.72  / 1000;
+  const b100 = 810.23;
+  if (price <= 200000)  return b100    + (price - 100000)  * 4.20  / 1000;
+  const b200 = 1230.23;
+  if (price <= 300000)  return b200    + (price - 200000)  * 3.67  / 1000;
+  const b300 = 1597.23;
+  if (price <= 1000000) return b300    + (price - 300000)  * 2.88  / 1000;
+  const b1m  = 3613.23;
+  return b1m + (price - 1000000) * 2.36 / 1000;
+}
+
 function calcLenderTitle(loan) {
-  if (loan <= 100000) return 350;
-  if (loan <= 200000) return 475;
-  if (loan <= 300000) return 600;
-  if (loan <= 400000) return 725;
-  if (loan <= 500000) return 875;
-  return 875 + (loan - 500000) * 0.0015;
+  // Eagle Loan Policy Rate (lender's title insurance — required by all lenders)
+  if (loan <= 1000)    return 198.00;
+  if (loan <= 50000)   return 198.00  + (loan - 1000)    * 3.46  / 1000;
+  const b50  = 367.54;
+  if (loan <= 100000)  return b50     + (loan - 50000)   * 2.78  / 1000;
+  const b100 = 506.54;  // slight adjustment from table
+  if (loan <= 200000)  return b100    + (loan - 100000)  * 2.41  / 1000;
+  const b200 = 747.54;
+  if (loan <= 300000)  return b200    + (loan - 200000)  * 2.10  / 1000;
+  const b300 = 957.54;
+  if (loan <= 1000000) return b300    + (loan - 300000)  * 1.73  / 1000;
+  const b1m  = 2168.54;
+  return b1m + (loan - 1000000) * 1.36 / 1000;
 }
 
 // ─── CALCULATE PAYMENT ────────────────────────────────────────────────
@@ -874,8 +901,8 @@ function calculatePayment() {
 
   // Closing costs
   const origFee = baseLoan * 0.0090; // 0.9% midpoint
-  const lenderTitle = calcLenderTitle(baseLoan);
-  const ownerTitle = price * 0.004;
+  const lenderTitle = calcLenderTitle(baseLoan);   // Allegiance Title Eagle Loan Policy
+  const ownerTitle = calcOwnerTitle(price);          // Allegiance Title Eagle Owner Policy
   const prepaidInt = baseLoan * (rate / 100 / 365) * 15;
   const escrowSetup = (monthlyTax + monthlyIns) * 2.5;
   const otherFixed = 725 + 40 + 88; // appraisal + credit + recording
@@ -905,7 +932,7 @@ function calculatePayment() {
 
   document.getElementById('cc-origination').textContent = fmt(origFee);
   document.getElementById('cc-title-lender').textContent = fmt(lenderTitle);
-  document.getElementById('cc-title-owner').textContent = fmt(ownerTitle) + ' *';
+  document.getElementById('cc-title-owner').textContent = fmt(ownerTitle) + ' (Allegiance Title)';
   document.getElementById('cc-prepaid-interest').textContent = fmt(prepaidInt);
   document.getElementById('cc-escrow').textContent = fmt(escrowSetup);
   document.getElementById('cc-total').textContent = fmt(totalCC);
@@ -1031,7 +1058,7 @@ async function analyzeLE() {
   const tommyRate = Math.max(theirRate - 0.125, CURRENT_RATE_30 - 0.25);
   const tommyPI = calcPI(loanAmt, tommyRate);
   const theirPICalc = theirMonthly || calcPI(loanAmt, theirRate);
-  const tommyClosing = loanAmt * 0.0075 + calcLenderTitle(loanAmt) + 795;
+  const tommyClosing = loanAmt * 0.0075 + calcLenderTitle(loanAmt) + 795; // Allegiance Title loan policy
 
   const monthlyDiff = theirPICalc - tommyPI;
   const lifetimeDiff = monthlyDiff * 360;
