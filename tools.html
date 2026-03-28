@@ -712,13 +712,25 @@ async function selectSuggestion(place) {
   document.getElementById('chip-county').textContent = county ? county + ' County' : 'Michigan';
   document.getElementById('chip-zip').textContent = zip ? 'ZIP: ' + zip : '';
   document.getElementById('chip-tax').className = 'pf-chip loading';
-  document.getElementById('chip-tax').textContent = '🔍 Looking up property taxes...';
+  document.getElementById('chip-tax').textContent = '🔍 Looking up actual taxes...';
 
-  // Close dropdown when clicking outside
-  setTimeout(() => {
-    document.getElementById('address-input').blur();
-  }, 100);
+  // ── IMMEDIATELY fill tax field with county estimate so it's never blank ──
+  const price = parseFloat(document.getElementById('purchase-price').value) || 0;
+  if (price > 0 && county) {
+    const fallbackRate = COUNTY_TAX_RATES[county] || COUNTY_TAX_RATES.default;
+    const quickEstimate = Math.round(price * fallbackRate);
+    document.getElementById('property-tax').value = quickEstimate;
+    document.getElementById('tax-source-hint').textContent = '~ Estimating from ' + county + ' County rate — updating...';
+  } else if (county) {
+    // No price yet — set a note so user knows it'll auto-fill
+    document.getElementById('property-tax').placeholder = 'Will fill after you enter price';
+    document.getElementById('tax-source-hint').textContent = '~ Enter purchase price to estimate taxes';
+  }
 
+  // Close dropdown
+  setTimeout(() => { document.getElementById('address-input').blur(); }, 100);
+
+  // ── NOW fetch real taxes from Zillow/public records (replaces estimate) ──
   await lookupPropertyTaxes(formatted, county, zip, addr.house_number + ' ' + (addr.road || ''));
 }
 
@@ -791,17 +803,17 @@ Only return JSON.`
 
     if (taxData && taxData.annualTax && taxData.annualTax > 100) {
       foundTaxAmount = taxData.annualTax;
+      // Always overwrite — real data beats estimate
       document.getElementById('property-tax').value = Math.round(taxData.annualTax);
 
       const confidence = taxData.confidence === 'high' ? '✅' : '~';
       const sourceText = `${confidence} ${taxData.note || 'Found in ' + (taxData.source || 'public records')}`;
       document.getElementById('tax-source-hint').textContent = sourceText;
 
-      // Update chip
       document.getElementById('chip-tax').className = 'pf-chip';
-      document.getElementById('chip-tax').textContent = '$' + Math.round(taxData.annualTax).toLocaleString() + '/yr taxes';
+      document.getElementById('chip-tax').textContent = '$' + Math.round(taxData.annualTax).toLocaleString() + '/yr taxes ✅';
     } else {
-      // Fallback to county rate
+      // Real lookup failed — keep/refresh county estimate
       useFallbackTax(county);
     }
   } catch(e) {
@@ -835,9 +847,9 @@ function onPriceChange() {
   if (price > 0 && pct >= 0) {
     document.getElementById('down-dollar-hint').textContent = '$' + Math.round(price * pct / 100).toLocaleString() + ' down';
   }
-  // If no tax found yet and we have a county, estimate
+  // Always re-estimate tax when price changes, if we have a county and no real data yet
   const taxField = document.getElementById('property-tax');
-  if (!foundTaxAmount && foundCounty && price > 0 && !taxField.value) {
+  if (!foundTaxAmount && foundCounty && price > 0) {
     useFallbackTax(foundCounty);
   }
 }
