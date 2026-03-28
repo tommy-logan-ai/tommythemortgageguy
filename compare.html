@@ -245,7 +245,7 @@ tbody td:not(:first-child) { text-align:center; }
         </div>
         <div class="le-tile" id="tile-online" onclick="selectOne('online')">
           <div class="tile-icon">💻</div>
-          <div class="tile-name">Quicken Digital</div>
+          <div class="tile-name">National Direct Lender</div>
           <div class="tile-rate">6.500%</div>
           <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,101 · Fees: $7,420</div>
           <div class="tile-rep"><div class="stars">★★★★☆</div><div>4.4/5 · 39K+ reviews</div></div>
@@ -304,7 +304,7 @@ tbody td:not(:first-child) { text-align:center; }
         <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
       </div>
     </div>
-    <p class="fine">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan. Estimates only — not an offer to lend.</p>
+    <p class="fine">Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | Equal Housing Lender | Licensed in Michigan. Estimates only — not an offer to lend.</p>
   </div>
 
   <!-- RESULTS: ALL THREE -->
@@ -353,7 +353,7 @@ tbody td:not(:first-child) { text-align:center; }
         <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
       </div>
     </div>
-    <p class="fine">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan. All comparisons are estimates for illustrative purposes. Not an offer to lend.</p>
+    <p class="fine">Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | Equal Housing Lender | Licensed in Michigan. All comparisons are estimates for illustrative purposes. Not an offer to lend.</p>
   </div>
 
 </main>
@@ -380,23 +380,23 @@ const LE = {
       watchout:'Must be a member to borrow. Rate here is 0.375% above current market. Fewer loan program options.' }
   },
   online: {
-    key:'online', icon:'💻', name:'Quicken Digital Mortgage', short:'Quicken Digital',
+    key:'online', icon:'💻', name:'National Direct Lender', short:'National Direct Lender',
     rate:6.500, apr:6.714, loan:332500, pi:2101.01, closing:7420, ctc:24920,
     rep:{ stars:'★★★★½', rating:'4.6/5', reviews:'39,000+ reviews', type:'Large Online Lender (National)',
       jdpower:'#1 — J.D. Power 2025 Mortgage Servicer Satisfaction', bbb:'A+', trustpilot:'4.6/5 (39K+)',
       awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB Accredited'],
-      summary:'Rocket Mortgage platform — largest US lender by volume. 23 J.D. Power top rankings, more than any other lender. 82% of 39K+ Trustpilot reviews are 5-star. Fastest digital closing in the industry.',
+      summary:'Tommy's lender platform — largest US lender by volume. 23 J.D. Power top rankings, more than any other lender. 82% of 39K+ Trustpilot reviews are 5-star. Fastest digital closing in the industry.',
       watchout:'Fully online — no local branch contact. Rate transparency before applying is limited.' }
   }
 };
 const TOMMY_RATE = 6.38;
 const TOMMY = {
-  icon:'⭐', name:'Tommy Lower · Rocket Mortgage', short:'Tommy',
+  icon:'⭐', name:'Tommy Lower · Tommy's lender', short:'Tommy',
   rep:{ stars:'★★★★★', rating:'5/5', reviews:'Personal referrals — Oakland/Macomb',
-    type:'Local Independent LO · Rocket Mortgage',
-    jdpower:'Rocket Mortgage: #1 J.D. Power 2025', bbb:'A+ (Rocket)', trustpilot:'4.6/5 (39K+ — Rocket)',
+    type:'Local Independent LO · Tommy's lender',
+    jdpower:'Tommy's lender: #1 J.D. Power 2025', bbb:'A+ (Tommy's lender)', trustpilot:'4.6/5 (39K+ — Tommy's lender)',
     awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB','NMLS #31194 Licensed Michigan LO'],
-    summary:'Best of both worlds: Rocket\'s #1-rated technology and pricing, plus Tommy\'s local Rochester expertise, personal phone line, and same-day pre-approvals. Your rate is the same or better than going directly to Rocket.',
+    summary:'Best of both worlds: Tommy's lender\'s #1-rated technology and pricing, plus Tommy\'s local Rochester expertise, personal phone line, and same-day pre-approvals. Your rate is the same or better than going directly to Tommy's lender.',
     watchout:'' }
 };
 
@@ -520,7 +520,7 @@ function buildSingleResults(le) {
     ['30-yr Interest Cost', fmt(le.pi*360-le.loan), fmt(tPI*360-le.loan)+'*', (le.pi-tPI)*360, false],
     ['Cash to Close', fmt(le.ctc), fmt(le.ctc - feeDiff)+'*', feeDiff, false],
   ];
-  let html = '<thead><tr><th>Line Item</th><th>' + le.name + '</th><th>Tommy · Rocket</th><th>Δ</th></tr></thead><tbody>';
+  let html = '<thead><tr><th>Line Item</th><th>' + le.name + '</th><th>Tommy Lower — Licensed Michigan LO</th><th>Δ</th></tr></thead><tbody>';
   rows.forEach(r => {
     const diff = r[3], isRate = r[4];
     const good = diff > 0.001;
@@ -541,7 +541,7 @@ function buildSingleResults(le) {
 
   // Rep grid (their lender + Tommy)
   const grid = document.getElementById('single-rep-grid');
-  grid.innerHTML = repCard(le.name, le.rep, false) + repCard('Tommy · Rocket Mortgage', TOMMY.rep, true);
+  grid.innerHTML = repCard(le.name, le.rep, false) + repCard('Tommy · Tommy's lender', TOMMY.rep, true);
 
   // Chat section
   buildChat('single-chat-section', le, null, savings);
@@ -561,14 +561,14 @@ async function generateSingleNarrative(le) {
         model:'claude-sonnet-4-20250514',
         max_tokens:700,
         messages:[{ role:'user', content:
-          `You are Tommy Lower (NMLS #31194), a Rochester MI mortgage loan officer with Rocket Mortgage. A Michigan home buyer uploaded a Loan Estimate from ${le.name}.
+          `You are Tommy Lower (NMLS #31194), a Rochester MI mortgage loan officer with Tommy's lender. A Michigan home buyer uploaded a Loan Estimate from ${le.name}.
 
 Key numbers: Rate ${le.rate}% | APR ${le.apr}% | APR spread ${aprSpread}% | Closing costs $${le.closing.toLocaleString()} | Monthly P&I $${Math.round(le.pi).toLocaleString()}
 Current Freddie Mac 30-yr market average: 6.38% (week ending 3/26/2026)
 Lender reputation: ${le.rep.summary}
 Concerns: ${le.rep.watchout}
 Tommy's competing estimate: ${tRate.toFixed(3)}% | $${Math.round(tPI).toLocaleString()}/mo | estimated 30-yr savings: $${savings.toLocaleString()}
-Tommy's platform (Rocket Mortgage): #1 J.D. Power mortgage satisfaction 23 times, 4.6/5 stars on 39K+ reviews
+Tommy's platform (Tommy's lender): #1 J.D. Power mortgage satisfaction 23 times, 4.6/5 stars on 39K+ reviews
 
 Write exactly 3 paragraphs in Tommy's voice — warm, direct, like a trusted friend who's an expert. NO bullet points.
 
@@ -602,7 +602,7 @@ function fallbackSingle(le, tRate, savings) {
   document.getElementById('sn-body').innerHTML =
     `<p>This rate of ${le.rate}% is ${rateAbove}% above the current Freddie Mac market average of 6.38%. The APR spread of ${spread}% ${parseFloat(spread)>0.25?'is wider than normal — that gap usually means discount points or fees are baked in, which means you\'re paying more than the rate suggests.':'is within a normal range for closing costs.'}</p>` +
     `<p>${le.rep.summary}${le.rep.watchout ? ' Worth noting: ' + le.rep.watchout : ''}</p>` +
-    `<p>On Rocket Mortgage, I can typically offer a competing rate with lower fees, backed by 23 J.D. Power top rankings and 4.6/5 stars on 39,000+ reviews. You get the best pricing of the nation's largest lender plus a local Rochester expert who picks up the phone.</p>`;
+    `<p>On Tommy's lender, I can typically offer a competing rate with lower fees, backed by 23 J.D. Power top rankings and 4.6/5 stars on 39,000+ reviews. You get the best pricing of the nation's largest lender plus a local Rochester expert who picks up the phone.</p>`;
   document.getElementById('sn-verdict').textContent =
     `Text me this ${le.name} LE — I'll have a competing Loan Estimate back to you same-day.${savings>0?' Based on these numbers, that could mean '+fmt(savings)+' in savings over 30 years.':''}`;
 }
@@ -652,7 +652,7 @@ function buildAllResults() {
   let html = '<thead><tr>';
   html += '<th>Line Item</th>';
   les.forEach(le => { html += '<th>' + le.icon + ' ' + le.short + '</th>'; });
-  html += '<th class="winner-col">⭐ Tommy · Rocket<span class="winner-badge">Best Available</span></th>';
+  html += '<th class="winner-col">⭐ Tommy Lower — Licensed Michigan LO<span class="winner-badge">Best Available</span></th>';
   html += '</tr></thead><tbody>';
 
   // Rates section
@@ -775,21 +775,21 @@ async function generateAllNarrative() {
         model:'claude-sonnet-4-20250514',
         max_tokens:900,
         messages:[{ role:'user', content:
-          `You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer with Rocket Mortgage. A buyer just compared three Loan Estimates side by side.
+          `You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer with Tommy's lender. A buyer just compared three Loan Estimates side by side.
 
 The three offers (all for same $332,500 loan, conventional 30-year, March 2026):
 1. First National Bank: 6.625% rate, 6.891% APR (spread: 0.266%), $7,980 closing, $2,130/mo PI. ~20 reviews, no industry awards, B+ BBB. Estimated savings vs Tommy: $${savings[0].toLocaleString()}.
 2. Oakland Community CU: 6.750% rate, 6.892% APR (spread: 0.142%), $7,490 closing, $2,157/mo PI. ~180 reviews, NCUA 5-star, A BBB. Estimated savings vs Tommy: $${savings[1].toLocaleString()}.
-3. Quicken Digital: 6.500% rate, 6.714% APR (spread: 0.214%), $7,420 closing, $2,101/mo PI. 39K+ reviews, J.D. Power #1, A+ BBB. Estimated savings vs Tommy: $${savings[2].toLocaleString()}.
+3. National Direct Lender: 6.500% rate, 6.714% APR (spread: 0.214%), $7,420 closing, $2,101/mo PI. 39K+ reviews, J.D. Power #1, A+ BBB. Estimated savings vs Tommy: $${savings[2].toLocaleString()}.
 
 Current Freddie Mac market average: 6.38% (week ending 3/26/2026).
-Tommy's best competing rate: 6.255% (Rocket Mortgage) with ~$2,808 closing costs.
+Tommy's best competing rate: 6.255% (Tommy's lender) with ~$2,808 closing costs.
 
 Write 4 short paragraphs in Tommy's voice. Plain English, no bullet points, like a trusted expert friend:
 Para 1: Big picture — how do these three offers compare to the current market? Which stands out and why?
 Para 2: Dig into the APR spreads — First National's 0.266% spread is the widest (means fees baked in). Credit union has low spread but highest rate. Online lender is closest to market.
 Para 3: Reputation differences — be honest. 20 reviews vs. 39,000. No J.D. Power ranking vs. 23 wins. What does this mean in practice for the buyer?
-Para 4: What Tommy brings to the table — Rocket's pricing and awards, local expertise, personal service. At minimum, getting a competing quote takes 10 minutes.
+Para 4: What Tommy brings to the table — Tommy's lender's pricing and awards, local expertise, personal service. At minimum, getting a competing quote takes 10 minutes.
 
 Then write "VERDICT:" on a new line with one recommendation sentence that names specific dollar savings and starts with "Call me" or "Text me."
 
@@ -814,9 +814,9 @@ Under 270 words. No markdown.`
 function fallbackAll() {
   document.getElementById('tn-title').textContent = 'My take on all three offers:';
   document.getElementById('tn-body').innerHTML =
-    '<p>Looking at these three side by side, First National\'s rate of 6.625% is the furthest from the current Freddie Mac average of 6.38%, and their APR spread of 0.266% is the widest — meaning there are likely fees baked into that rate. The Credit Union is actually the highest rate here at 6.750%, though their spread is tighter. Quicken Digital comes in closest to market at 6.500%.</p>' +
-    '<p>On reputation, the difference is stark. First National has about 20 reviews and no industry rankings. Quicken Digital\'s platform (Rocket Mortgage) has 39,000+ Trustpilot reviews at 4.6/5 stars and 23 J.D. Power top rankings — more than any other lender in history. These aren\'t small differences.</p>' +
-    '<p>Here\'s what I\'d tell you as a friend: with Rocket Mortgage I can typically offer you a competitive rate with lower fees than what you\'re seeing here. I\'m a local Rochester loan officer — I pick up the phone, I know Oakland County, and I close deals on time. Getting a competing quote from me takes about 10 minutes.</p>' +
+    '<p>Looking at these three side by side, First National\'s rate of 6.625% is the furthest from the current Freddie Mac average of 6.38%, and their APR spread of 0.266% is the widest — meaning there are likely fees baked into that rate. The Credit Union is actually the highest rate here at 6.750%, though their spread is tighter. National Direct Lender comes in closest to market at 6.500%.</p>' +
+    '<p>On reputation, the difference is stark. First National has about 20 reviews and no industry rankings. National Direct Lender\'s platform (Tommy's lender) has 39,000+ Trustpilot reviews at 4.6/5 stars and 23 J.D. Power top rankings — more than any other lender in history. These aren\'t small differences.</p>' +
+    '<p>Here\'s what I\'d tell you as a friend: with Tommy's lender I can typically offer you a competitive rate with lower fees than what you\'re seeing here. I\'m a local Rochester loan officer — I pick up the phone, I know Oakland County, and I close deals on time. Getting a competing quote from me takes about 10 minutes.</p>' +
     '<p>The math on 30-year savings is significant. Even a 0.25% rate difference on $332K is about $17,000 over the life of the loan. That\'s worth one phone call.</p>';
   document.getElementById('tn-verdict').textContent = 'Call or text me — I\'ll review all three of these and come back with a competing Loan Estimate that beats them, usually same-day.';
   document.getElementById('tn-verdict-wrap').style.display = 'block';
@@ -873,9 +873,9 @@ const CHAT_RESPONSES = {
     ],
     responses: {
       a: `That's fair — I get it. Local relationships matter, and First National has been around a long time. But here's what I'd want you to know: their rate of 6.625% is 0.245% above current market, and they have fewer than 20 reviews online. Once your loan closes, there's a real chance it gets sold to a servicer anyway — so you'd lose that "local" feeling regardless. \n\nMy honest advice? At minimum, let me put together a competing Loan Estimate for you. If First National really is the best fit, you'll have the numbers to confirm that. If not, you'll save yourself thousands over 30 years.`,
-      b: `Then let's talk numbers. First National's rate of 6.625% would cost you $2,130/mo in P&I. On Rocket Mortgage, I can typically offer 6.38% or below — that's roughly $75-100/mo less, which is $27,000-$36,000 over 30 years. \n\nPlus their closing costs of $7,980 are on the higher end. My fees typically come in lower. If lowest payment is the goal, getting a competing quote from me takes 10 minutes and costs you nothing.`,
-      c: `Here's what I bring: Rocket Mortgage's technology and pricing — the largest lender in the US, #1 in J.D. Power satisfaction 23 consecutive times — combined with a local Rochester loan officer who knows Oakland County, picks up the phone, and closes deals on time. You get the best of both worlds. \n\nCall or text me and I'll put together an official competing Loan Estimate. Usually have it back to you same-day. No obligation.`,
-      d: `That's the smart move — don't rush it. Here's what I'd suggest: before you decide, let me put together a competing Loan Estimate on Rocket Mortgage. It's free, takes about 10 minutes, and gives you a real number to compare against. At minimum you'll have more information. At best, you'll save $20,000+ over the life of the loan.`
+      b: `Then let's talk numbers. First National's rate of 6.625% would cost you $2,130/mo in P&I. On Tommy's lender, I can typically offer 6.38% or below — that's roughly $75-100/mo less, which is $27,000-$36,000 over 30 years. \n\nPlus their closing costs of $7,980 are on the higher end. My fees typically come in lower. If lowest payment is the goal, getting a competing quote from me takes 10 minutes and costs you nothing.`,
+      c: `Here's what I bring: Tommy's lender's technology and pricing — the largest lender in the US, #1 in J.D. Power satisfaction 23 consecutive times — combined with a local Rochester loan officer who knows Oakland County, picks up the phone, and closes deals on time. You get the best of both worlds. \n\nCall or text me and I'll put together an official competing Loan Estimate. Usually have it back to you same-day. No obligation.`,
+      d: `That's the smart move — don't rush it. Here's what I'd suggest: before you decide, let me put together a competing Loan Estimate on Tommy's lender. It's free, takes about 10 minutes, and gives you a real number to compare against. At minimum you'll have more information. At best, you'll save $20,000+ over the life of the loan.`
     }
   },
   creditunion: {
@@ -888,39 +888,39 @@ const CHAT_RESPONSES = {
     ],
     responses: {
       a: `Credit unions are great — I respect that instinct. Oakland CU has solid reviews and a personal feel. But here's the honest math: their rate of 6.750% is the highest of the three lenders you looked at, and it's 0.37% above current market. On a $332,500 loan, that's about $82/mo more than necessary — which adds up to nearly $30,000 over 30 years. \n\nIf supporting local matters, worth knowing that I'm also local — I'm based in Rochester and work Oakland and Macomb County every day. Let me put together a competing number for you.`,
-      b: `You're right to push on that. 6.750% is the highest rate of the three lenders you saw, and it's well above what's available in the market right now. On Rocket Mortgage, I can typically offer something in the 6.25-6.38% range depending on your credit profile. \n\nThat spread — even 0.35% — means roughly $23,000 more in interest over 30 years. Text me this LE and I'll come back with a competing number same-day.`,
-      c: `Happy to explain. I use Rocket Mortgage's platform — the #1 rated lender in America for customer satisfaction, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews. But unlike going directly to Rocket, you get me — a local Rochester loan officer who handles your deal personally from application to closing. Same pricing, better service, local expertise. \n\nCall me at (586) 415-4507 and I'll put together your official Loan Estimate same-day.`,
+      b: `You're right to push on that. 6.750% is the highest rate of the three lenders you saw, and it's well above what's available in the market right now. On Tommy's lender, I can typically offer something in the 6.25-6.38% range depending on your credit profile. \n\nThat spread — even 0.35% — means roughly $23,000 more in interest over 30 years. Text me this LE and I'll come back with a competing number same-day.`,
+      c: `Happy to explain. I use Tommy's lender's platform — the #1 rated lender in America for customer satisfaction, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews. But unlike going directly to Tommy's lender, you get me — a local Rochester loan officer who handles your deal personally from application to closing. Same pricing, better service, local expertise. \n\nCall me at (586) 415-4507 and I'll put together your official Loan Estimate same-day.`,
       d: `I'll be straight with you: 6.750% on a conventional 30-year in this market is on the high side. Current Freddie Mac average is 6.38%, and I can typically get you within 0.1-0.2% of that depending on your credit. \n\nWhat I'd do: get a competing quote from me before committing. It's free, takes 10 minutes, and you'll know exactly where you stand. If the Credit Union still wins, great — but at least you confirmed it.`
     }
   },
   online: {
     q: 'What\'s your gut telling you?',
     options: [
-      { text: '💻 Quicken Digital looks strong — might go with them', key: 'a' },
+      { text: '💻 National Direct Lender looks strong — might go with them', key: 'a' },
       { text: '🤔 I want to compare more before deciding', key: 'b' },
-      { text: '⭐ How exactly does Tommy differ from Quicken?', key: 'c' },
+      { text: '⭐ How exactly does Tommy differ from National Lender?', key: 'c' },
       { text: '📞 Let\'s talk — I want Tommy\'s actual number', key: 'd' }
     ],
     responses: {
-      a: `That's a reasonable call — Quicken Digital's platform (which runs on Rocket Mortgage) has strong numbers and excellent reviews. The rate of 6.500% is the closest to market of the three you looked at. \n\nHere's the honest difference between going with them directly and going with me: I use the same Rocket Mortgage platform, which means same technology and same pricing infrastructure. But with me, you get a local Rochester loan officer — someone who knows Oakland County, calls your agent directly, and is personally invested in your deal closing. You don't get that from an 800 number. \n\nLet me put together a competing quote — I'll typically match or beat that 6.500%, and you get the local service on top.`,
+      a: `That's a reasonable call — National Direct Lender's platform (which runs on Tommy's lender) has strong numbers and excellent reviews. The rate of 6.500% is the closest to market of the three you looked at. \n\nHere's the honest difference between going with them directly and going with me: I use the same Tommy's lender platform, which means same technology and same pricing infrastructure. But with me, you get a local Rochester loan officer — someone who knows Oakland County, calls your agent directly, and is personally invested in your deal closing. You don't get that from an 800 number. \n\nLet me put together a competing quote — I'll typically match or beat that 6.500%, and you get the local service on top.`,
       b: `Smart. Before you decide, get an official quote from me — it's free and takes about 10 minutes. I can typically meet or beat what you're seeing here, and you'll have a full official Loan Estimate to compare apples to apples. \n\nFun fact: the three LEs you just looked at are all estimates. An official Loan Estimate from me gives you a legally binding number to shop with. That's the real comparison.`,
-      c: `Great question. The core difference: Quicken Digital is a call center. I'm a local Rochester loan officer who works Oakland and Macomb County every day. When your agent has a question, they call me directly. When something comes up during the transaction, I handle it personally. Same Rocket Mortgage platform, same competitive pricing — but with a real human being who knows your market. \n\nCall me and I'll put a competing Loan Estimate together same-day.`,
+      c: `Great question. The core difference: National Direct Lender is a call center. I'm a local Rochester loan officer who works Oakland and Macomb County every day. When your agent has a question, they call me directly. When something comes up during the transaction, I handle it personally. Same Tommy's lender platform, same competitive pricing — but with a real human being who knows your market. \n\nCall me and I'll put a competing Loan Estimate together same-day.`,
       d: `That's exactly what I like to hear. Call me at (586) 415-4507 or text me this LE and I'll have a competing number back to you same-day. No cost, no commitment — just a real number so you can make the best decision. That's all I ask.`
     }
   },
   all: {
     q: 'After seeing all three side by side, which direction are you leaning?',
     options: [
-      { text: '📉 Quicken Digital looks best on numbers', key: 'a' },
+      { text: '📉 National Direct Lender looks best on numbers', key: 'a' },
       { text: '🤝 Still interested in the Credit Union', key: 'b' },
       { text: '🏦 First National feels like a fit for me', key: 'c' },
       { text: '⭐ Tell me why I should go with Tommy instead', key: 'd' }
     ],
     responses: {
-      a: `Good eye. Quicken Digital has the best numbers of the three — lowest rate, competitive fees, strong reviews. If you're going to go with one of these three, that's the logical choice. \n\nBut before you commit, hear me out: I use the exact same Rocket Mortgage platform that powers Quicken Digital, which means I can access the same or better pricing. The difference is you get me — a local Rochester loan officer — instead of a call center. Same deal, personal service. Text me this LE and I'll come back same-day with a competing number. At worst you confirm Quicken is the right call. At best, you save more money with better service.`,
+      a: `Good eye. National Direct Lender has the best numbers of the three — lowest rate, competitive fees, strong reviews. If you're going to go with one of these three, that's the logical choice. \n\nBut before you commit, hear me out: I use the exact same Tommy's lender platform that powers National Direct Lender, which means I can access the same or better pricing. The difference is you get me — a local Rochester loan officer — instead of a call center. Same deal, personal service. Text me this LE and I'll come back same-day with a competing number. At worst you confirm National Lender is the right call. At best, you save more money with better service.`,
       b: `I get it — local credit unions have a real appeal, especially in Oakland County. But let's be honest about the math: their 6.750% rate is the highest of the three and 0.37% above market. Over 30 years on a $332K loan, that gap is roughly $30,000 in extra interest. That's a real number. \n\nIf the local/personal angle is what matters, I'd ask you to consider this: I'm also local. I'm based in Rochester, I work Oakland and Macomb County every day, and I pick up my phone. Call me and let's compare numbers directly.`,
       c: `I'll respect that — community banking has its place, and some people value the relationship over everything else. Just want you to go in with clear eyes: First National has fewer than 20 reviews online, no industry rankings, and their 6.625% rate has the widest APR spread of the three (meaning fees may be baked into the rate). \n\nMy honest ask: let me put together a competing Loan Estimate before you sign anything. It costs you nothing and takes 10 minutes. If First National is still the right fit after that, you'll have the confidence to know it.`,
-      d: `Here's the straight answer: you get Rocket Mortgage's pricing and technology — the #1 lender in America by volume, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews — combined with a local Rochester loan officer who handles your deal personally. No 800 number. No call center. Me. \n\nI typically match or beat what you see here, close on time, and communicate proactively with your agent. That's the pitch. Call me at (586) 415-4507 and I'll prove it with a same-day Loan Estimate.`
+      d: `Here's the straight answer: you get Tommy's lender's pricing and technology — the #1 lender in America by volume, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews — combined with a local Rochester loan officer who handles your deal personally. No 800 number. No call center. Me. \n\nI typically match or beat what you see here, close on time, and communicate proactively with your agent. That's the pitch. Call me at (586) 415-4507 and I'll prove it with a same-day Loan Estimate.`
     }
   }
 };
@@ -1042,7 +1042,7 @@ function generatePDF(mode) {
       doc.rect(0, 0, W, 28, 'F');
       setFont(9, 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text('Tommy Lower · NMLS #31194 · Rocket Mortgage · Equal Housing Lender · (586) 415-4507', margin, 18);
+      doc.text('Tommy Lower · NMLS #31194 · Tommy's lender · Equal Housing Lender · (586) 415-4507', margin, 18);
       doc.setTextColor(200, 146, 42);
       doc.text('tommythemortgageguy.com', W - margin, 18, { align: 'right' });
       if (y === margin) y = 48;
@@ -1115,7 +1115,7 @@ function generatePDF(mode) {
 
     setFont(9);
     doc.setTextColor(100, 100, 100);
-    doc.text('Tommy Lower · Rocket Mortgage, LLC · NMLS #3030 · Equal Housing Lender', W/2, H - 80, { align: 'center' });
+    doc.text('Tommy Lower · Licensed Mortgage Lender · NMLS #3030 · Equal Housing Lender', W/2, H - 80, { align: 'center' });
     doc.text('(586) 415-4507 · tommythemortgageguy.com', W/2, H - 60, { align: 'center' });
     doc.text('Licensed to originate mortgage loans in Michigan', W/2, H - 40, { align: 'center' });
 
@@ -1196,7 +1196,7 @@ function generatePDF(mode) {
 
       doc.autoTable({
         startY: y,
-        head: [['', les3[0].name, les3[1].name, les3[2].name, 'Tommy · Rocket']],
+        head: [['', les3[0].name, les3[1].name, les3[2].name, 'Tommy Lower — Licensed Michigan LO']],
         body: tableBody,
         margin: { left: margin, right: margin },
         styles: { fontSize: 8.5, cellPadding: 6 },
@@ -1224,7 +1224,7 @@ function generatePDF(mode) {
 
       doc.autoTable({
         startY: y,
-        head: [['Line Item', le.name, 'Tommy · Rocket Mortgage']],
+        head: [['Line Item', le.name, 'Tommy · Tommy's lender']],
         body: tableBody,
         margin: { left: margin, right: margin },
         styles: { fontSize: 9.5, cellPadding: 7 },
@@ -1250,7 +1250,7 @@ function generatePDF(mode) {
       ? ['bigbank','creditunion','online'].map(k => LE[k])
       : [LE[selectedKey]];
 
-    [...les4rep, { name: 'Tommy · Rocket Mortgage', rep: TOMMY.rep }].forEach(le => {
+    [...les4rep, { name: 'Tommy · Tommy's lender', rep: TOMMY.rep }].forEach(le => {
       sectionBar((le.icon||'⭐') + ' ' + le.name);
       const rep = le.rep;
       keyValue('Overall Rating', rep.rating + ' · ' + rep.reviews);
@@ -1408,7 +1408,7 @@ function generatePDF(mode) {
     y += 24;
 
     const disclaimers = [
-      'Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | NMLS #3030 | Equal Housing Lender | Licensed in Michigan.',
+      'Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | NMLS #3030 | Equal Housing Lender | Licensed in Michigan.',
       '',
       'This comparison report was generated for informational and illustrative purposes only and does not constitute a commitment to lend, an offer of credit, or a guarantee of specific rates, terms, or fees. All calculations, estimates, and comparisons are based on data entered by the user and publicly available market information as of the date generated.',
       '',
@@ -1416,7 +1416,7 @@ function generatePDF(mode) {
       '',
       'Lender reputation data (reviews, ratings, awards) is sourced from publicly available third-party platforms including Trustpilot, J.D. Power, and the Better Business Bureau as of early 2026. All loans subject to credit approval and program guidelines.',
       '',
-      'To receive an official Loan Estimate from Tommy Lower and Rocket Mortgage, contact Tommy directly. A Loan Estimate will be provided within 3 business days of a completed application as required by federal law (TRID regulations).',
+      'To receive an official Loan Estimate from Tommy Lower and Tommy's lender, contact Tommy directly. A Loan Estimate will be provided within 3 business days of a completed application as required by federal law (TRID regulations).',
       '',
       'Contact Tommy Lower: (586) 415-4507 | tommythemortgageguy.com',
     ];
@@ -1456,5 +1456,459 @@ function goBack() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGAN CHAT WIDGET — Tommy's AI Assistant
+     Triggers when user has been engaged 90+ seconds OR
+     has completed a comparison (results visible)
+═══════════════════════════════════════════════════════════ -->
+<style>
+/* ── LOGAN WIDGET ── */
+#logan-wrap {
+  position:fixed; bottom:24px; right:24px; z-index:9000;
+  display:none; flex-direction:column; align-items:flex-end; gap:10px;
+}
+#logan-wrap.visible { display:flex; }
+
+/* Bubble launcher */
+#logan-bubble {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,#0a1628,#1a4a8a);
+  border:3px solid #c8922a;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; box-shadow:0 4px 20px rgba(10,22,40,.35);
+  transition:transform .2s; position:relative; flex-shrink:0;
+}
+#logan-bubble:hover { transform:scale(1.08); }
+#logan-notif {
+  position:absolute; top:-4px; right:-4px;
+  width:16px; height:16px; background:#dc2626; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.55rem; font-weight:700; color:white; border:2px solid white;
+  animation:notif-pulse 1.5s infinite;
+}
+@keyframes notif-pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+
+/* Chat window */
+#logan-chat {
+  width:320px; background:white; border-radius:18px;
+  box-shadow:0 8px 40px rgba(10,22,40,.22);
+  overflow:hidden; display:none; flex-direction:column;
+  border:1px solid #e8e4dc;
+  transform:translateY(8px) scale(.97);
+  transition:transform .25s, opacity .25s;
+  opacity:0;
+}
+#logan-chat.open { display:flex; transform:translateY(0) scale(1); opacity:1; }
+
+#logan-header {
+  background:linear-gradient(135deg,#0a1628,#152238);
+  padding:14px 16px; display:flex; align-items:center; gap:12px;
+}
+#logan-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,#c8922a,#e8aa40);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; flex-shrink:0;
+}
+#logan-header-text { flex:1; }
+#logan-name { font-size:.88rem; font-weight:700; color:white; }
+#logan-status { font-size:.68rem; color:#c8922a; margin-top:1px; }
+.logan-close {
+  color:rgba(255,255,255,.5); font-size:1.1rem; cursor:pointer;
+  background:none; border:none; line-height:1; padding:2px;
+}
+.logan-close:hover { color:white; }
+
+#logan-messages {
+  padding:14px 14px 0; flex:1; overflow-y:auto;
+  max-height:320px; min-height:80px;
+  scroll-behavior:smooth;
+}
+
+.lmsg { margin-bottom:10px; display:flex; gap:8px; align-items:flex-end; }
+.lmsg.logan { }
+.lmsg.user { flex-direction:row-reverse; }
+
+.lmsg-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background:linear-gradient(135deg,#c8922a,#e8aa40);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; flex-shrink:0;
+}
+.lmsg-bubble {
+  max-width:220px; padding:9px 12px; border-radius:14px;
+  font-size:.82rem; line-height:1.55;
+}
+.lmsg.logan .lmsg-bubble {
+  background:#f7f4ef; color:#1a1a1a;
+  border-bottom-left-radius:4px;
+}
+.lmsg.user .lmsg-bubble {
+  background:#0a1628; color:white;
+  border-bottom-right-radius:4px;
+}
+.lmsg-typing .lmsg-bubble {
+  display:flex; gap:3px; align-items:center; padding:11px 14px;
+}
+.lmsg-typing .dot {
+  width:6px; height:6px; background:#8a8a8a; border-radius:50%;
+  animation:tdot .9s infinite;
+}
+.lmsg-typing .dot:nth-child(2) { animation-delay:.18s; }
+.lmsg-typing .dot:nth-child(3) { animation-delay:.36s; }
+@keyframes tdot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+#logan-options {
+  padding:10px 14px 14px;
+  display:flex; flex-direction:column; gap:7px;
+}
+.loption {
+  border:1.5px solid #e8e4dc; border-radius:10px;
+  padding:9px 13px; font-size:.8rem; cursor:pointer;
+  background:white; transition:all .18s; font-family:'DM Sans',sans-serif;
+  text-align:left; color:#1a1a1a; line-height:1.4;
+}
+.loption:hover { border-color:#2563b0; background:#f5f8ff; }
+.loption.selected { border-color:#c8922a; background:#fff8e1; font-weight:600; }
+
+#logan-input-row {
+  padding:10px 14px; border-top:1px solid #f0ede8;
+  display:flex; gap:8px; display:none;
+}
+#logan-input-row.visible { display:flex; }
+#logan-input {
+  flex:1; border:1.5px solid #d4d0c8; border-radius:8px;
+  padding:8px 11px; font-family:'DM Sans',sans-serif; font-size:.82rem;
+  outline:none;
+}
+#logan-input:focus { border-color:#2563b0; }
+#logan-send {
+  background:#0a1628; color:white; border:none; border-radius:8px;
+  padding:8px 14px; cursor:pointer; font-size:.8rem; font-weight:600;
+  font-family:'DM Sans',sans-serif;
+}
+#logan-send:hover { background:#2563b0; }
+
+#logan-footer {
+  padding:8px 14px; background:#fafaf8;
+  border-top:1px solid #f0ede8; text-align:center;
+}
+#logan-footer a { 
+  color:#c8922a; font-size:.72rem; font-weight:600; 
+  text-decoration:none; margin:0 8px;
+}
+#logan-footer a:hover { text-decoration:underline; }
+</style>
+
+<!-- LOGAN WIDGET HTML -->
+<div id="logan-wrap">
+  <div id="logan-chat">
+    <div id="logan-header">
+      <div id="logan-avatar">🤖</div>
+      <div id="logan-header-text">
+        <div id="logan-name">Logan</div>
+        <div id="logan-status">● Tommy's AI Assistant — Online</div>
+      </div>
+      <button class="logan-close" onclick="loganClose()">✕</button>
+    </div>
+    <div id="logan-messages"></div>
+    <div id="logan-options"></div>
+    <div id="logan-input-row" id="logan-input-row">
+      <input type="text" id="logan-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')loganSend()">
+      <button id="logan-send" onclick="loganSend()">Send</button>
+    </div>
+    <div id="logan-footer">
+      <a href="tel:+15864154507">📞 (586) 415-4507</a>
+      <a href="sms:+15864154507">💬 Text Tommy</a>
+    </div>
+  </div>
+  <div id="logan-bubble" onclick="loganToggle()">
+    🤖
+    <div id="logan-notif">1</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// LOGAN — Tommy's AI Chat Assistant
+// ═══════════════════════════════════════════════════════════
+let loganOpen = false;
+let loganGreeted = false;
+let loganStage = 'intro';
+let loganUserName = '';
+let loganLEsChosen = [];
+let loganEngaged = false;
+let loganTimer = null;
+
+// Trigger conditions:
+// 1. User has been on the results view for 45+ seconds
+// 2. User clicks on a chat option (immediate trigger)
+// 3. User has scrolled to the CTA block
+
+function loganInit() {
+  // Show bubble after 45 seconds of activity
+  loganTimer = setTimeout(() => {
+    if (!loganGreeted) triggerLogan();
+  }, 45000);
+
+  // Also trigger if user reaches CTA
+  const ctaObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !loganGreeted) {
+        clearTimeout(loganTimer);
+        setTimeout(() => triggerLogan(), 2000);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  // Observe both CTA blocks
+  setTimeout(() => {
+    ['single-cta', 'all-cta-h'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) ctaObserver.observe(el);
+    });
+  }, 1000);
+}
+
+function triggerLogan() {
+  if (loganGreeted) return;
+  loganGreeted = true;
+  document.getElementById('logan-wrap').classList.add('visible');
+  // Auto-open after a beat
+  setTimeout(() => {
+    loganOpen = true;
+    document.getElementById('logan-chat').classList.add('open');
+    document.getElementById('logan-notif').style.display = 'none';
+    loganStartConversation();
+  }, 800);
+}
+
+function loganToggle() {
+  if (!loganGreeted) {
+    loganGreeted = true;
+    document.getElementById('logan-notif').style.display = 'none';
+  }
+  loganOpen = !loganOpen;
+  const chat = document.getElementById('logan-chat');
+  if (loganOpen) {
+    chat.classList.add('open');
+    if (!loganGreeted || document.getElementById('logan-messages').children.length === 0) {
+      loganStartConversation();
+    }
+  } else {
+    chat.classList.remove('open');
+  }
+}
+
+function loganClose() {
+  loganOpen = false;
+  document.getElementById('logan-chat').classList.remove('open');
+}
+
+function loganAddMsg(text, sender, delay) {
+  delay = delay || 0;
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const msgs = document.getElementById('logan-messages');
+      
+      // Add typing indicator first for Logan messages
+      if (sender === 'logan') {
+        const typing = document.createElement('div');
+        typing.className = 'lmsg logan lmsg-typing';
+        typing.id = 'logan-typing';
+        typing.innerHTML = '<div class="lmsg-avatar">🤖</div><div class="lmsg-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+        msgs.appendChild(typing);
+        msgs.scrollTop = msgs.scrollHeight;
+        
+        setTimeout(() => {
+          const t = document.getElementById('logan-typing');
+          if (t) t.remove();
+          const msg = document.createElement('div');
+          msg.className = 'lmsg logan';
+          msg.innerHTML = '<div class="lmsg-avatar">🤖</div><div class="lmsg-bubble">' + text + '</div>';
+          msgs.appendChild(msg);
+          msgs.scrollTop = msgs.scrollHeight;
+          resolve();
+        }, 800 + text.length * 12);
+      } else {
+        const msg = document.createElement('div');
+        msg.className = 'lmsg user';
+        msg.innerHTML = '<div class="lmsg-bubble">' + text + '</div>';
+        msgs.appendChild(msg);
+        msgs.scrollTop = msgs.scrollHeight;
+        resolve();
+      }
+    }, delay);
+  });
+}
+
+function loganSetOptions(options) {
+  const opts = document.getElementById('logan-options');
+  opts.innerHTML = options.map((o, i) =>
+    '<button class="loption" onclick="loganPickOption(this, ' + i + ')">' + o.text + '</button>'
+  ).join('');
+  opts._options = options;
+}
+
+async function loganPickOption(btn, idx) {
+  const opts = document.getElementById('logan-options');
+  const option = opts._options[idx];
+  
+  // Mark selected
+  btn.classList.add('selected');
+  document.querySelectorAll('.loption').forEach(b => { if(b!==btn) b.disabled=true; });
+  
+  // Echo user choice
+  await loganAddMsg(option.text, 'user');
+  
+  // Clear options
+  setTimeout(() => { opts.innerHTML = ''; }, 200);
+  
+  // Run handler
+  if (option.handler) await option.handler();
+}
+
+async function loganStartConversation() {
+  loganStage = 'intro';
+  await loganAddMsg("Hi there! I'm Logan, Tommy's AI assistant. 👋", 'logan');
+  await loganAddMsg("I noticed you've been reviewing Loan Estimates. Tommy works for the nation's largest mortgage company — he'd love to take a quick look at the quotes you've been comparing to see if he can match or beat them.", 'logan', 300);
+  await loganAddMsg("Would you be open to letting Tommy review your LEs? It's free, no obligation, and he typically gets back to you same-day.", 'logan', 400);
+  
+  loganSetOptions([
+    { text: "Yes — let Tommy take a look!", handler: loganYes },
+    { text: "What information would Tommy need?", handler: loganWhatInfo },
+    { text: "How does this work exactly?", handler: loganHowWorks },
+    { text: "Not right now, thanks", handler: loganNotNow },
+  ]);
+}
+
+async function loganYes() {
+  await loganAddMsg("That's great — Tommy will be thrilled to help! 🎉", 'logan');
+  await loganAddMsg("The easiest thing to do is text or call him directly. Just mention you were using the LE Comparison Tool and send over the Loan Estimates you received.", 'logan', 300);
+  await loganAddMsg("What's the best way to reach you?", 'logan', 400);
+  loganSetOptions([
+    { text: "📞 I'll call him now", handler: () => { window.location.href='tel:+15864154507'; } },
+    { text: "💬 I'll text him the LEs", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I was using your LE Comparison Tool and wanted to get your best competing number.'; } },
+    { text: "📧 What's his email?", handler: loganEmail },
+    { text: "⬇️ Can I download the comparison first?", handler: loganDownload },
+  ]);
+}
+
+async function loganWhatInfo() {
+  await loganAddMsg("Great question! Tommy just needs:", 'logan');
+  await loganAddMsg("• The Loan Estimate(s) you received — you can text or email them as PDFs or just photos<br>• The property address you're buying<br>• Your timeline (how soon are you looking to close?)<br><br>That's it. No credit pull needed at this stage.", 'logan', 300);
+  await loganAddMsg("Ready to send them over?", 'logan', 500);
+  loganSetOptions([
+    { text: "📱 Text Tommy the LEs now", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I want to share my Loan Estimates for comparison.'; } },
+    { text: "📞 I'd rather just call", handler: () => { window.location.href='tel:+15864154507'; } },
+    { text: "Tell me more about Tommy first", handler: loganAboutTommy },
+  ]);
+}
+
+async function loganHowWorks() {
+  await loganAddMsg("Simple process — here's exactly what happens:", 'logan');
+  await loganAddMsg("1️⃣ You text or call Tommy with your LE(s)<br>2️⃣ He reviews the rate, fees, and APR spread — usually within a few hours<br>3️⃣ He sends you back an official competing Loan Estimate<br>4️⃣ You compare side by side and make the best decision for your family", 'logan', 300);
+  await loganAddMsg("There's zero obligation. Tommy's goal is just to make sure you're getting the best deal available — whether that ends up being him or someone else.", 'logan', 500);
+  loganSetOptions([
+    { text: "That sounds fair — let's do it", handler: loganYes },
+    { text: "How quickly does he typically respond?", handler: loganSpeed },
+    { text: "Not right now", handler: loganNotNow },
+  ]);
+}
+
+async function loganSpeed() {
+  await loganAddMsg("Tommy aims to respond same-day — usually within 2-3 hours during business hours.", 'logan');
+  await loganAddMsg("He's based in Rochester, MI and works Oakland and Macomb County every day. If you text him now, you could have a competing number back before end of day. 👍", 'logan', 300);
+  loganSetOptions([
+    { text: "📱 Text Tommy now", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I was comparing Loan Estimates and wanted to get your best number.'; } },
+    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
+    { text: "Maybe later", handler: loganLater },
+  ]);
+}
+
+async function loganAboutTommy() {
+  await loganAddMsg("Tommy Lower is a licensed Michigan mortgage loan officer (NMLS #31194) based in Rochester, MI.", 'logan');
+  await loganAddMsg("He works with the nation's largest mortgage company — which means he has access to the most competitive rates and fastest closings available. But he's not a call center. He's a local expert who knows Oakland and Macomb County, picks up his phone, and handles your deal personally.", 'logan', 400);
+  await loganAddMsg("Over 20+ years, his clients keep coming back — and referring their friends. Same-day pre-approvals. Closings that close on time.", 'logan', 400);
+  loganSetOptions([
+    { text: "I'm in — text Tommy my LEs", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I want to share my Loan Estimates.'; } },
+    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
+    { text: "Just browsing for now", handler: loganLater },
+  ]);
+}
+
+async function loganEmail() {
+  await loganAddMsg("Tommy prefers text or phone — it's the fastest way to get you a competing number. His cell is (586) 415-4507.", 'logan');
+  await loganAddMsg("If you'd rather email, you can reach him through the contact form at tommythemortgageguy.com — but texting your LEs directly will get you the fastest response.", 'logan', 300);
+  loganSetOptions([
+    { text: "💬 Text Tommy at (586) 415-4507", handler: () => { window.location.href='sms:+15864154507'; } },
+    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
+  ]);
+}
+
+async function loganDownload() {
+  await loganAddMsg("Absolutely — use the 'Download Full Report PDF' button above to get the complete comparison with all the numbers, lender analysis, and your conversation log.", 'logan');
+  await loganAddMsg("Once you have it downloaded, you can text or email it straight to Tommy and he'll review everything. The PDF makes it super easy for him to see exactly what you've been quoted.", 'logan', 300);
+  loganSetOptions([
+    { text: "Got it — I'll text Tommy the PDF", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, sending over my LE comparison PDF.'; } },
+    { text: "📞 Call Tommy directly", handler: () => { window.location.href='tel:+15864154507'; } },
+  ]);
+}
+
+async function loganNotNow() {
+  await loganAddMsg("No problem at all — totally understand! The comparison report stays here as long as you need it.", 'logan');
+  await loganAddMsg("If you change your mind, Tommy's always available at (586) 415-4507. Even just a 10-minute call could be worth thousands of dollars over the life of your loan. 😊", 'logan', 300);
+  loganSetOptions([
+    { text: "Actually — let me reach out now", handler: loganYes },
+    { text: "Thanks, I'll keep it in mind", handler: async () => {
+      await loganAddMsg("Of course! Good luck with your home search — you're clearly doing your homework and that's going to serve you well. 🏡", 'logan');
+      loganSetOptions([]);
+      setTimeout(loganClose, 3000);
+    }},
+  ]);
+}
+
+async function loganLater() {
+  await loganAddMsg("Totally fair. When you're ready, Tommy is at (586) 415-4507 — text or call anytime.", 'logan');
+  await loganAddMsg("Good luck with your search! 🏡", 'logan', 200);
+  loganSetOptions([]);
+  setTimeout(loganClose, 4000);
+}
+
+function loganSend() {
+  const input = document.getElementById('logan-input');
+  const text = input.value.trim();
+  if (!text) return;
+  loganAddMsg(text, 'user');
+  input.value = '';
+  // Simple fallback response
+  setTimeout(async () => {
+    await loganAddMsg("Great question! For the most accurate answer, Tommy's the best person to talk to directly. You can call or text him at (586) 415-4507 — he typically responds within a few hours.", 'logan');
+  }, 1000);
+}
+
+// Start Logan when page loads
+document.addEventListener('DOMContentLoaded', loganInit);
+
+// Also trigger when results become visible
+const _origBuildResults = buildResults;
+function buildResults(le) {
+  _origBuildResults(le);
+  clearTimeout(loganTimer);
+  loganTimer = setTimeout(() => {
+    if (!loganGreeted) triggerLogan();
+  }, 45000);
+}
+const _origBuildAll = buildAllResults;
+function buildAllResults() {
+  _origBuildAll();
+  clearTimeout(loganTimer);
+  loganTimer = setTimeout(() => {
+    if (!loganGreeted) triggerLogan();
+  }, 40000);
+}
+</script>
+
 </body>
 </html>
