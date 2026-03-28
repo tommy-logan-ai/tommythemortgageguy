@@ -195,6 +195,30 @@ tbody td:not(:first-child) { text-align:center; }
 .section-divider { display:flex; align-items:center; gap:14px; margin:28px 0 24px; }
 .section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:var(--warm-gray); }
 .section-divider-text { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); white-space:nowrap; }
+
+/* ── UPLOAD QUEUE ── */
+.upload-area { border:2.5px dashed #c8c4bc; border-radius:16px; padding:32px 24px;
+  text-align:center; cursor:pointer; transition:all .2s; background:#fafaf8; margin-bottom:18px; }
+.upload-area:hover, .upload-area.drag-over { border-color:var(--blue-light); background:#f0f5ff; }
+.queue-slot { border:2px dashed #d4d0c8; border-radius:14px; padding:18px 14px;
+  text-align:center; min-height:120px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; transition:all .2s; position:relative; cursor:pointer; }
+.queue-slot.empty { background:#fafaf8; }
+.queue-slot.empty:hover { border-color:var(--blue-light); background:#f0f5ff; }
+.queue-slot.filled { border:2px solid var(--success); background:#f0f9f4; cursor:default; }
+.queue-slot.extracting { border:2px solid var(--gold); background:#fff8e1; cursor:default; }
+.slot-num { font-size:.65rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--faint); margin-bottom:4px; }
+.slot-name { font-size:.78rem; font-weight:700; color:var(--navy);
+  margin-bottom:2px; line-height:1.3; max-width:100%; word-break:break-word; }
+.slot-meta { font-size:.68rem; color:var(--muted); line-height:1.4; }
+.slot-empty-label { font-size:.72rem; color:var(--faint); }
+.slot-check { position:absolute; top:7px; right:9px; background:var(--success);
+  color:white; font-size:.6rem; font-weight:700; width:18px; height:18px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.slot-remove { position:absolute; top:5px; left:8px; background:none; border:none;
+  color:#dc2626; font-size:.85rem; cursor:pointer; padding:0; line-height:1; }
+@media(max-width:600px) { #queue-grid { grid-template-columns:1fr !important; } }
 </style>
 </head>
 <body>
@@ -223,41 +247,61 @@ tbody td:not(:first-child) { text-align:center; }
 
 <main class="main">
 
-  <!-- SELECTOR -->
+  <!-- UPLOAD QUEUE -->
   <div id="selector-section">
     <div class="card">
-      <div class="card-title">📋 Choose a Loan Estimate to Analyze</div>
-      <p style="font-size:.84rem; color:var(--muted); margin-bottom:18px;">These are three real sample LEs from different lenders — all for the same $350K home in Rochester, MI with current March 2026 rates. Click one to see a full comparison, or click "Compare All Three" below.</p>
-      <div class="le-grid">
-        <div class="le-tile" id="tile-bigbank" onclick="selectOne('bigbank')">
-          <div class="tile-icon">🏦</div>
-          <div class="tile-name">First National Bank</div>
-          <div class="tile-rate">6.625%</div>
-          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,130 · Fees: $7,980</div>
-          <div class="tile-rep"><div class="stars">★★★☆☆</div><div>3.2/5 · ~20 reviews</div></div>
+      <div class="card-title">📋 Upload Your Loan Estimates</div>
+      <p style="font-size:.84rem; color:var(--muted); margin-bottom:20px;">
+        Upload the Loan Estimates you received — PDFs or photos, up to 3 lenders.
+        Drop them all before clicking Analyze. The AI reads each one and compares every number.
+      </p>
+
+      <!-- Drop zone -->
+      <div class="upload-area" id="upload-area"
+           onclick="document.getElementById('le-file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <div style="font-size:2.4rem; margin-bottom:10px;">📂</div>
+        <div style="font-weight:700; font-size:1rem; color:var(--navy); margin-bottom:5px;">Drop your Loan Estimate PDFs here</div>
+        <div style="font-size:.82rem; color:var(--muted);">or <span style="color:var(--blue-light);font-weight:600;">click to browse</span> &nbsp;·&nbsp; PDF or image &nbsp;·&nbsp; up to 3 files</div>
+        <input type="file" id="le-file-input" accept=".pdf,.png,.jpg,.jpeg"
+               multiple style="display:none" onchange="handleFileSelect(event)">
+      </div>
+
+      <!-- 3 queue slots — always visible, fill as files added -->
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;" id="queue-grid">
+        <div class="queue-slot empty" id="slot-0" onclick="document.getElementById('le-file-input').click()">
+          <div class="slot-num">Lender 1</div>
+          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
+          <div class="slot-empty-label">Click or drop to add</div>
         </div>
-        <div class="le-tile" id="tile-creditunion" onclick="selectOne('creditunion')">
-          <div class="tile-icon">🤝</div>
-          <div class="tile-name">Oakland Community CU</div>
-          <div class="tile-rate">6.750%</div>
-          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,157 · Fees: $7,490</div>
-          <div class="tile-rep"><div class="stars">★★★★☆</div><div>4.1/5 · ~180 reviews</div></div>
+        <div class="queue-slot empty" id="slot-1" onclick="document.getElementById('le-file-input').click()">
+          <div class="slot-num">Lender 2</div>
+          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
+          <div class="slot-empty-label">Click or drop to add</div>
         </div>
-        <div class="le-tile" id="tile-online" onclick="selectOne('online')">
-          <div class="tile-icon">💻</div>
-          <div class="tile-name">National Direct Lender</div>
-          <div class="tile-rate">6.500%</div>
-          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,101 · Fees: $7,420</div>
-          <div class="tile-rep"><div class="stars">★★★★☆</div><div>4.4/5 · 39K+ reviews</div></div>
+        <div class="queue-slot empty" id="slot-2" onclick="document.getElementById('le-file-input').click()">
+          <div class="slot-num">Lender 3</div>
+          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
+          <div class="slot-empty-label">Click or drop to add</div>
         </div>
       </div>
-      <div class="btn-row" style="margin-top:14px;">
-        <button class="btn btn-primary" id="single-btn" disabled onclick="runSingle()">Select a lender to analyze →</button>
-        <button class="btn btn-gold" onclick="runAll()">⚡ Compare All Three Side-by-Side</button>
+
+      <p id="queue-hint" style="font-size:.78rem; color:var(--muted); text-align:center; margin-bottom:16px;">
+        Add at least 1 LE to analyze — or all 3 for a full side-by-side comparison.
+      </p>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="single-btn" disabled onclick="runSingleUploaded()">
+          Analyze 1 LE vs Tommy →
+        </button>
+        <button class="btn btn-gold" id="all-btn" disabled onclick="runAllUploaded()">
+          ⚡ Compare All Side-by-Side
+        </button>
       </div>
     </div>
   </div>
-
   <!-- RESULTS: SINGLE LE -->
   <div class="results-wrap" id="single-results">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
@@ -476,32 +520,275 @@ async function showLoading(title, sub, steps, durations) {
 // ═══════════════════════════════════════════════════════════
 // SINGLE LE FLOW
 // ═══════════════════════════════════════════════════════════
-function selectOne(key) {
-  document.querySelectorAll('.le-tile').forEach(t => t.classList.remove('selected'));
-  document.getElementById('tile-' + key).classList.add('selected');
-  selectedKey = key;
-  const btn = document.getElementById('single-btn');
-  btn.disabled = false;
-  btn.textContent = 'Analyze ' + LE[key].name + ' →';
+// ═══════════════════════════════════════════════════════════
+// UPLOAD QUEUE SYSTEM
+// ═══════════════════════════════════════════════════════════
+const uploadedFiles = [];
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-area').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files)
+    .filter(f => f.type === 'application/pdf' || f.type.startsWith('image/'));
+  processFiles(files);
+}
+function handleFileSelect(e) {
+  processFiles(Array.from(e.target.files));
+  e.target.value = '';
 }
 
-async function runSingle() {
-  if (!selectedKey) return;
-  const le = LE[selectedKey];
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function processFiles(files) {
+  for (const file of files) {
+    if (uploadedFiles.length >= 3) break;
+    if (uploadedFiles.find(u => u.name === file.name)) continue;
+    const b64 = await fileToBase64(file);
+    const mediaType = file.type === 'application/pdf' ? 'application/pdf' : 'image/jpeg';
+    const entry = { file, b64, name: file.name, mediaType, extracted: null };
+    uploadedFiles.push(entry);
+    const idx = uploadedFiles.length - 1;
+    renderSlotFilled(idx, entry, false);
+    updateButtons();
+    extractInBackground(entry, idx);
+  }
+}
+
+function renderSlotFilled(idx, entry, done) {
+  const slot = document.getElementById('slot-' + idx);
+  if (!slot) return;
+  const short = entry.name.replace(/\.pdf$/i,'').replace(/\.jpe?g$/i,'').substring(0, 26);
+  slot.className = 'queue-slot ' + (done ? 'filled' : 'extracting');
+  slot.onclick = null;
+  slot.innerHTML =
+    '<button class="slot-remove" onclick="removeSlot(' + idx + ')" title="Remove">✕</button>' +
+    (done ? '<div class="slot-check">✓</div>' : '') +
+    '<div class="slot-num">Lender ' + (idx+1) + '</div>' +
+    '<div style="font-size:1.4rem; margin:4px 0;">' + (done ? '📋' : '⏳') + '</div>' +
+    '<div class="slot-name" id="slot-name-' + idx + '">' + short + '</div>' +
+    '<div class="slot-meta" id="slot-meta-' + idx + '">' +
+      (done ? '' : '<span style="color:var(--gold)">Reading...</span>') +
+    '</div>';
+}
+
+function updateSlotDone(idx, ex) {
+  const slot = document.getElementById('slot-' + idx);
+  if (!slot) return;
+  slot.className = 'queue-slot filled';
+  // Add checkmark
+  if (!slot.querySelector('.slot-check')) {
+    const chk = document.createElement('div');
+    chk.className = 'slot-check'; chk.textContent = '✓';
+    slot.appendChild(chk);
+  }
+  // Update icon
+  const icons = slot.querySelectorAll('div');
+  icons.forEach(d => { if (d.textContent === '⏳') d.textContent = '📋'; });
+  // Update name and meta
+  const nameEl = document.getElementById('slot-name-' + idx);
+  const metaEl = document.getElementById('slot-meta-' + idx);
+  if (nameEl && ex.lenderName) nameEl.textContent = ex.lenderName.substring(0, 26);
+  if (metaEl) {
+    const rate = ex.interestRate ? ex.interestRate.toFixed(3) + '%' : '—';
+    const pi = ex.monthlyPI ? ' · $' + Math.round(ex.monthlyPI).toLocaleString() + '/mo' : '';
+    metaEl.innerHTML = '<span style="color:var(--success);font-weight:600;">' + rate + pi + '</span>';
+  }
+}
+
+function removeSlot(idx) {
+  uploadedFiles.splice(idx, 1);
+  // Re-render all 3 slots fresh
+  for (let i = 0; i < 3; i++) {
+    const slot = document.getElementById('slot-' + i);
+    if (!slot) continue;
+    if (i < uploadedFiles.length) {
+      const entry = uploadedFiles[i];
+      renderSlotFilled(i, entry, !!entry.extracted);
+      if (entry.extracted) updateSlotDone(i, entry.extracted);
+    } else {
+      slot.className = 'queue-slot empty';
+      slot.onclick = () => document.getElementById('le-file-input').click();
+      slot.innerHTML =
+        '<div class="slot-num">Lender ' + (i+1) + '</div>' +
+        '<div style="font-size:1.6rem; margin:6px 0;">📄</div>' +
+        '<div class="slot-empty-label">Click or drop to add</div>';
+    }
+  }
+  updateButtons();
+}
+
+async function extractInBackground(entry, idx) {
+  try {
+    const block = entry.mediaType === 'application/pdf'
+      ? { type:'document', source:{ type:'base64', media_type:entry.mediaType, data:entry.b64 } }
+      : { type:'image',    source:{ type:'base64', media_type:entry.mediaType, data:entry.b64 } };
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:500,
+        messages:[{ role:'user', content:[
+          block,
+          { type:'text', text:'Mortgage Loan Estimate PDF. Return ONLY valid JSON (no markdown):
+{"lenderName":"","loanAmount":0,"interestRate":0,"apr":0,"monthlyPI":0,"totalClosingCosts":0,"cashToClose":0,"loanType":""}
+Numbers without $ or %. Null if not found.' }
+        ]}]
+      })
+    });
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+    const text = (data.content && data.content[0] && data.content[0].text) || '';
+    const cleaned = text.replace(/```json|```/g,'').trim();
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      const ex = JSON.parse(match[0]);
+      entry.extracted = ex;
+      updateSlotDone(idx, ex);
+      updateButtons();
+    }
+  } catch(e) {
+    // Extraction failed — still let user proceed, we'll use filename as lender name
+    const metaEl = document.getElementById('slot-meta-' + idx);
+    if (metaEl) metaEl.innerHTML = '<span style="color:var(--muted)">Ready to analyze</span>';
+    const slot = document.getElementById('slot-' + idx);
+    if (slot) { slot.className = 'queue-slot filled'; }
+    updateButtons();
+  }
+}
+
+function updateButtons() {
+  const n = uploadedFiles.length;
+  const hint = document.getElementById('queue-hint');
+  const sb = document.getElementById('single-btn');
+  const ab = document.getElementById('all-btn');
+  sb.disabled = n < 1;
+  ab.disabled = n < 2;
+  if (n === 0) {
+    hint.textContent = 'Add at least 1 LE to analyze — or all 3 for a full side-by-side comparison.';
+    sb.textContent = 'Analyze 1 LE vs Tommy →';
+    ab.textContent = '⚡ Compare All Side-by-Side';
+  } else if (n === 1) {
+    hint.innerHTML = '<strong>1 LE added.</strong> Add 1–2 more lenders, or analyze this one vs Tommy now.';
+    sb.textContent = 'Analyze This LE vs Tommy →';
+    ab.textContent = '⚡ Add 2+ LEs to compare side-by-side';
+  } else if (n === 2) {
+    hint.innerHTML = '<strong>2 LEs added.</strong> Compare these two, or add a 3rd for a full 3-way.';
+    sb.textContent = 'Analyze First LE vs Tommy →';
+    ab.textContent = '⚡ Compare Both Side-by-Side';
+  } else {
+    hint.innerHTML = '<strong>3 LEs uploaded</strong> — ready for full 3-way comparison!';
+    sb.textContent = 'Analyze First LE vs Tommy →';
+    ab.textContent = '⚡ Compare All Three Side-by-Side';
+  }
+}
+
+// Convert uploaded entry to LE shape
+function uploadedToLE(entry, idx) {
+  const ex = entry.extracted || {};
+  const key = 'up_' + idx;
+  const name = ex.lenderName || entry.name.replace(/\.pdf$/i,'').substring(0,30);
+  const rate = ex.interestRate || 6.5;
+  const loan = ex.loanAmount || 300000;
+  const pi   = ex.monthlyPI  || calcPI(loan, rate);
+  return {
+    key, icon:'📄', name, short: name.split(' ')[0] || 'Lender '+(idx+1),
+    rate, apr: ex.apr || (rate + 0.22),
+    loan, pi, closing: ex.totalClosingCosts || 0, ctc: ex.cashToClose || 0,
+    rep:{ stars:'—', rating:'See details', reviews:'—',
+          type: ex.loanType || 'Mortgage Lender',
+          jdpower:'—', bbb:'—', trustpilot:'—', awards:[],
+          summary:'Details from your uploaded Loan Estimate.', watchout:'' }
+  };
+}
+
+async function runSingleUploaded() {
+  if (uploadedFiles.length < 1) return;
+  const le = uploadedToLE(uploadedFiles[0], 0);
+  LE[le.key] = le;
+  selectedKey = le.key;
   document.getElementById('selector-section').style.display = 'none';
-
-  await showLoading(
-    'Analyzing ' + le.name,
-    'Reviewing your Loan Estimate line by line...',
-    SINGLE_STEPS,
-    [800, 700, 900, 800, 1400, 400]
-  );
-
+  await showLoading('Analyzing ' + le.name, 'Reviewing your Loan Estimate line by line...', SINGLE_STEPS, [800,700,900,800,1400,400]);
   buildSingleResults(le);
   document.getElementById('single-results').classList.add('visible');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top:0, behavior:'smooth' });
   generateSingleNarrative(le);
 }
+
+async function runAllUploaded() {
+  if (uploadedFiles.length < 2) return;
+  const les = uploadedFiles.map((f,i) => uploadedToLE(f,i));
+  // Inject into LE map using the 3 standard keys so buildAllResults works
+  const keys = ['bigbank','creditunion','online'];
+  les.forEach((le, i) => { LE[keys[i]] = le; });
+  document.getElementById('selector-section').style.display = 'none';
+  await showLoading('Comparing All Lenders', 'Analyzing every number, every fee, every lender...', ALL_STEPS, [900,800,900,700,1600,600]);
+  buildAllResults();
+  document.getElementById('all-results').classList.add('visible');
+  window.scrollTo({ top:0, behavior:'smooth' });
+  generateAllNarrativeFromUploads(les);
+}
+
+async function generateAllNarrativeFromUploads(les) {
+  const valid = les.filter(le => le.rate > 0 && le.pi > 0);
+  if (!valid.length) { fallbackAll(); return; }
+  const lines = valid.map((le,i) => {
+    const tr = tommyRate(le.rate);
+    const tp = calcPI(le.loan, tr);
+    const sav = Math.round((le.pi-tp)*360 + le.closing - tommyClosing(le.loan));
+    return (i+1)+'. '+le.name+': '+le.rate+'% rate, '+le.apr.toFixed(3)+'% APR (spread '+((le.apr-le.rate).toFixed(3))+'%), $'+le.closing.toLocaleString()+' closing, $'+Math.round(le.pi).toLocaleString()+'/mo P&I. Savings vs Tommy: $'+sav.toLocaleString()+'.';
+  }).join('
+');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:900,
+        messages:[{ role:'user', content:
+          'You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer. A buyer compared '+valid.length+' Loan Estimates.
+
+'+lines+'
+
+Current Freddie Mac 30-yr average: 6.38% (3/26/2026). Tommy competes through the nation's largest mortgage company — no lender name mentioned.
+
+Write 4 short paragraphs in Tommy's warm, direct voice (plain English, no bullets):
+1. Big picture — how do these offers compare to current market?
+2. APR spread analysis — flag anything above 0.25% as fees possibly baked in.
+3. What the numbers mean in real dollars over 30 years.
+4. What Tommy offers and why a competing quote is worth 10 minutes.
+
+Then write "VERDICT:" with one sentence starting "Call me" or "Text me."
+
+Under 270 words. No markdown.'
+        }]
+      })
+    });
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+    const text = (data.content&&data.content[0]&&data.content[0].text)||'';
+    if (text) {
+      const vMatch = text.match(/VERDICT:\s*(.+)/i);
+      const body = text.replace(/VERDICT:\s*.+/i,'').trim();
+      document.getElementById('tn-title').textContent = 'My analysis of your '+valid.length+' offers:';
+      document.getElementById('tn-body').innerHTML = body.split('
+
+').map(p=>'<p>'+p+'</p>').join('');
+      document.getElementById('tn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I'll put together a competing Loan Estimate that beats all of these, usually same-day.';
+      document.getElementById('tn-verdict-wrap').style.display = 'block';
+    } else { fallbackAll(); }
+  } catch(e) { fallbackAll(); }
+}
+
+// Legacy stubs (kept so nothing breaks)
+function selectOne(key) { selectedKey = key; }
+async function runSingle() { await runSingleUploaded(); }
+async function runAll()   { await runAllUploaded(); }
+
 
 function buildSingleResults(le) {
   const tRate = tommyRate(le.rate);
@@ -1448,12 +1735,21 @@ function goBack() {
   document.getElementById('selector-section').style.display = 'block';
   document.getElementById('single-results').classList.remove('visible');
   document.getElementById('all-results').classList.remove('visible');
-  document.querySelectorAll('.le-tile').forEach(t => t.classList.remove('selected'));
   selectedKey = null;
-  const btn = document.getElementById('single-btn');
-  btn.disabled = true;
-  btn.textContent = 'Select a lender to analyze →';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Reset upload queue
+  uploadedFiles.length = 0;
+  for (let i = 0; i < 3; i++) {
+    const slot = document.getElementById('slot-' + i);
+    if (!slot) continue;
+    slot.className = 'queue-slot empty';
+    slot.onclick = () => document.getElementById('le-file-input').click();
+    slot.innerHTML =
+      '<div class="slot-num">Lender ' + (i+1) + '</div>' +
+      '<div style="font-size:1.6rem; margin:6px 0;">📄</div>' +
+      '<div class="slot-empty-label">Click or drop to add</div>';
+  }
+  updateButtons();
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 </script>
 
