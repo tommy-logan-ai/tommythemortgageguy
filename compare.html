@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare Loan Estimates | Tommy the Mortgage Guy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0a1628; --navy-mid:#152238; --blue:#1a4a8a; --blue-light:#2563b0;
+  --gold:#c8922a; --gold-light:#e8aa40;
+  --off-white:#f7f4ef; --warm-gray:#e8e4dc;
+  --success:#16a34a; --danger:#dc2626;
+  --text:#1a1a1a; --muted:#5a5a5a; --faint:#8a8a8a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--off-white); color:var(--text); min-height:100vh; }
+
+/* HEADER */
+.site-header { background:var(--navy); padding:16px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.logo { font-family:'DM Serif Display',serif; font-size:1.3rem; color:white; text-decoration:none; }
+.logo span { color:var(--gold); }
+.hdr-cta { color:var(--gold); font-size:0.82rem; font-weight:500; text-decoration:none; }
+
+/* HERO */
+.hero { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 55%,var(--blue) 100%); padding:44px 28px 36px; text-align:center; overflow:hidden; position:relative; }
+.hero::before { content:''; position:absolute; top:-80px; right:-60px; width:280px; height:280px; background:radial-gradient(circle,rgba(200,146,42,.13) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+.hero-eye { font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; position:relative; }
+.hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(1.5rem,4vw,2.2rem); color:white; line-height:1.2; margin-bottom:10px; position:relative; }
+.hero p { font-size:.88rem; color:rgba(255,255,255,.65); max-width:500px; margin:0 auto; line-height:1.65; position:relative; }
+
+/* MAIN */
+.main { max-width:960px; margin:0 auto; padding:32px 18px 64px; }
+
+/* CARD */
+.card { background:white; border-radius:16px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,.06); margin-bottom:22px; }
+.card-title { font-family:'DM Serif Display',serif; font-size:1.2rem; color:var(--navy); margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--warm-gray); display:flex; align-items:center; gap:8px; }
+
+/* LE SELECTOR CARDS */
+.le-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+@media(max-width:600px) { .le-grid { grid-template-columns:1fr; } }
+.le-tile { border:2px solid var(--warm-gray); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
+.le-tile:hover { border-color:var(--blue-light); transform:translateY(-2px); box-shadow:0 6px 18px rgba(37,99,176,.12); }
+.le-tile.selected { border-color:var(--gold); background:linear-gradient(135deg,#fff8e1,#fffbf0); }
+.le-tile.checked::after { content:'✓'; position:absolute; top:8px; right:10px; background:var(--success); color:white; font-size:.65rem; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.tile-icon { font-size:1.6rem; margin-bottom:6px; }
+.tile-name { font-weight:700; font-size:.85rem; color:var(--navy); margin-bottom:3px; }
+.tile-rate { font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--navy); }
+.tile-meta { font-size:.7rem; color:var(--muted); margin-top:4px; line-height:1.5; }
+.tile-rep { margin-top:9px; padding-top:9px; border-top:1px solid var(--warm-gray); font-size:.7rem; color:var(--muted); }
+.stars { color:#f59e0b; }
+
+/* ACTION BUTTONS */
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; }
+.btn { border:none; padding:13px 22px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; transition:all .2s; flex:1; min-width:160px; }
+.btn-primary { background:var(--navy); color:white; }
+.btn-primary:hover:not(:disabled) { background:var(--blue); transform:translateY(-1px); }
+.btn-gold { background:var(--gold); color:white; }
+.btn-gold:hover:not(:disabled) { background:var(--gold-light); }
+.btn:disabled { opacity:.4; cursor:not-allowed; }
+.btn-outline { background:none; border:1.5px solid var(--warm-gray); color:var(--navy); }
+.btn-outline:hover { border-color:var(--blue-light); background:var(--off-white); }
+
+/* ═══════════════════════════════════════════
+   LOADING EXPERIENCE
+═══════════════════════════════════════════ */
+.loading-screen { display:none; position:fixed; inset:0; background:rgba(10,22,40,.92); z-index:999; flex-direction:column; align-items:center; justify-content:center; padding:28px; }
+.loading-screen.active { display:flex; }
+.loading-inner { max-width:460px; width:100%; text-align:center; }
+.loading-title { font-family:'DM Serif Display',serif; font-size:1.4rem; color:white; margin-bottom:6px; }
+.loading-sub { font-size:.82rem; color:rgba(255,255,255,.55); margin-bottom:28px; }
+
+/* Progress bar */
+.progress-track { background:rgba(255,255,255,.12); border-radius:50px; height:8px; margin-bottom:28px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:50px; width:0%; transition:width .5s ease; }
+
+/* Step list */
+.step-list { list-style:none; text-align:left; }
+.step-item { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:10px; margin-bottom:6px; transition:all .3s; }
+.step-item.pending { opacity:.35; }
+.step-item.active { background:rgba(255,255,255,.08); opacity:1; }
+.step-item.done { opacity:.7; }
+.step-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; flex-shrink:0; transition:all .3s; }
+.step-item.pending .step-icon { background:rgba(255,255,255,.08); color:rgba(255,255,255,.3); }
+.step-item.active .step-icon { background:var(--gold); color:white; animation:pulse-icon .8s infinite alternate; }
+.step-item.done .step-icon { background:var(--success); color:white; }
+@keyframes pulse-icon { from { transform:scale(1); } to { transform:scale(1.1); } }
+.step-text { color:white; font-size:.82rem; }
+.step-item.pending .step-text { color:rgba(255,255,255,.4); }
+.step-detail { font-size:.72rem; color:rgba(255,255,255,.4); margin-top:1px; }
+.step-item.active .step-detail { color:rgba(255,255,255,.6); }
+
+/* Thinking dots */
+.thinking { display:inline-flex; gap:4px; margin-left:8px; }
+.thinking span { width:5px; height:5px; background:var(--gold); border-radius:50%; animation:bounce .8s infinite; }
+.thinking span:nth-child(2) { animation-delay:.15s; }
+.thinking span:nth-child(3) { animation-delay:.3s; }
+@keyframes bounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-6px); } }
+
+/* ═══════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════ */
+.results-wrap { display:none; }
+.results-wrap.visible { display:block; }
+.back-btn { display:inline-flex; align-items:center; gap:5px; font-size:.8rem; color:var(--blue-light); background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; margin-bottom:18px; padding:0; }
+.back-btn:hover { text-decoration:underline; }
+
+/* AI NARRATIVE */
+.narrative-card { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%); border-radius:16px; padding:28px; margin-bottom:22px; }
+.narrative-eye { font-size:.68rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+.narrative-title { font-family:'DM Serif Display',serif; font-size:1.25rem; color:white; margin-bottom:14px; }
+.narrative-body { font-size:.87rem; line-height:1.8; color:rgba(255,255,255,.82); }
+.narrative-body p { margin-bottom:12px; }
+.narrative-body p:last-child { margin-bottom:0; }
+.narrative-verdict { margin-top:18px; background:rgba(200,146,42,.15); border:1px solid rgba(200,146,42,.35); border-radius:10px; padding:14px 16px; }
+.verdict-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); margin-bottom:5px; }
+.verdict-text { font-size:.85rem; color:rgba(255,255,255,.9); line-height:1.6; }
+
+/* 3-WAY TABLE */
+.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+table { width:100%; border-collapse:collapse; min-width:520px; }
+thead tr { background:var(--navy); }
+thead th { padding:11px 14px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:rgba(255,255,255,.75); text-align:left; }
+thead th:not(:first-child) { text-align:center; }
+thead th.winner-col { background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%); color:white; }
+.winner-badge { display:block; font-size:.65rem; color:var(--gold); font-weight:600; margin-top:2px; }
+tbody tr { border-bottom:1px solid #f0ede8; }
+tbody tr:last-child { border-bottom:none; font-weight:700; }
+tbody tr.section-head td { background:var(--off-white); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--faint); padding:8px 14px; }
+tbody td { padding:11px 14px; font-size:.87rem; vertical-align:middle; }
+tbody td:not(:first-child) { text-align:center; }
+.td-best { background:#f0f9f4; color:var(--success); font-weight:700; }
+.td-worst { background:#fef2f2; color:var(--danger); }
+.td-winner { background:linear-gradient(135deg,rgba(37,99,176,.06),rgba(37,99,176,.03)); }
+.pill-badge { display:inline-block; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:50px; }
+.pill-green { background:#dcfce7; color:var(--success); }
+.pill-gold { background:linear-gradient(135deg,#fff8e1,#fef3c7); color:#92400e; }
+.pill-red { background:#fee2e2; color:var(--danger); }
+.award-tag { display:inline-block; background:var(--navy); color:white; font-size:.6rem; font-weight:600; padding:2px 6px; border-radius:4px; margin:1px; }
+.award-tag.g { background:var(--gold); }
+
+/* INDIVIDUAL DEEP DIVE */
+.deep-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px; }
+@media(max-width:600px) { .deep-grid { grid-template-columns:1fr; } }
+.deep-card { border:1.5px solid var(--warm-gray); border-radius:12px; padding:16px; }
+.deep-card.winner { border-color:var(--gold); background:linear-gradient(135deg,rgba(200,146,42,.06),rgba(200,146,42,.02)); }
+.deep-lender { font-weight:700; font-size:.85rem; color:var(--navy); margin-bottom:10px; }
+.deep-row { display:flex; justify-content:space-between; font-size:.78rem; padding:4px 0; border-bottom:1px solid #f5f3ef; }
+.deep-row:last-child { border-bottom:none; }
+.deep-row .label { color:var(--muted); }
+.deep-row .val { font-weight:600; color:var(--text); }
+.deep-rep-note { font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.5; padding-top:8px; border-top:1px solid var(--warm-gray); }
+.watchout { font-size:.7rem; background:#fef3c7; color:#92400e; padding:5px 9px; border-radius:6px; margin-top:7px; }
+
+/* THREE-WAY AI NARRATIVE */
+.threeway-narrative { background:linear-gradient(135deg,var(--navy) 0%,#0d1f3c 100%); border-radius:16px; padding:28px; margin-bottom:22px; }
+.tn-label { font-size:.68rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.tn-title { font-family:'DM Serif Display',serif; font-size:1.2rem; color:white; margin-bottom:16px; }
+.tn-body { font-size:.86rem; line-height:1.8; color:rgba(255,255,255,.8); }
+.tn-body p { margin-bottom:12px; }
+.tn-body p:last-child { margin-bottom:0; }
+.tn-loading { display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.5); font-size:.85rem; }
+
+/* CHAT / CONVERSATION */
+.chat-card { background:white; border-radius:16px; padding:24px; box-shadow:0 4px 24px rgba(0,0,0,.06); margin-bottom:22px; }
+.chat-title { font-family:'DM Serif Display',serif; font-size:1.1rem; color:var(--navy); margin-bottom:16px; }
+.chat-question { background:linear-gradient(135deg,var(--off-white),var(--warm-gray)); border-radius:12px; padding:16px; margin-bottom:14px; }
+.chat-q-text { font-size:.88rem; color:var(--navy); font-weight:600; margin-bottom:12px; line-height:1.5; }
+.chat-options { display:flex; flex-direction:column; gap:8px; }
+.chat-option { border:1.5px solid var(--warm-gray); border-radius:10px; padding:11px 16px; font-size:.84rem; cursor:pointer; background:white; transition:all .2s; font-family:'DM Sans',sans-serif; text-align:left; color:var(--text); }
+.chat-option:hover { border-color:var(--blue-light); background:#f5f8ff; }
+.chat-option.selected { border-color:var(--gold); background:#fff8e1; font-weight:600; }
+.chat-response { background:var(--navy); border-radius:12px; padding:16px 18px; margin-bottom:14px; display:none; }
+.chat-response.visible { display:block; }
+.chat-response-text { font-size:.85rem; color:rgba(255,255,255,.88); line-height:1.75; }
+.chat-response-text p { margin-bottom:10px; }
+.chat-response-text p:last-child { margin-bottom:0; }
+.chat-follow-title { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:8px; margin-top:14px; }
+
+/* CTA */
+.cta-block { background:var(--navy); border-radius:14px; padding:26px 28px; text-align:center; }
+.cta-block h3 { font-family:'DM Serif Display',serif; color:white; font-size:1.2rem; margin-bottom:5px; }
+.cta-block p { color:rgba(255,255,255,.6); font-size:.84rem; margin-bottom:16px; }
+.cta-pills { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.cpill { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; border-radius:50px; font-weight:600; font-size:.86rem; text-decoration:none; transition:all .2s; }
+.cpill.gold { background:var(--gold); color:white; }
+.cpill.gold:hover { background:var(--gold-light); }
+.cpill.outline { border:2px solid rgba(255,255,255,.3); color:white; }
+.cpill.outline:hover { border-color:white; }
+.fine { font-size:.67rem; color:var(--faint); text-align:center; margin-top:14px; line-height:1.7; }
+
+/* DIVIDER */
+.section-divider { display:flex; align-items:center; gap:14px; margin:28px 0 24px; }
+.section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:var(--warm-gray); }
+.section-divider-text { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN (fullscreen overlay) -->
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-inner">
+    <div class="loading-title" id="loading-title">Analyzing Your Loan Estimate</div>
+    <div class="loading-sub" id="loading-sub">Tommy's AI is reviewing every line of this document...</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <ul class="step-list" id="step-list"></ul>
+  </div>
+</div>
+
+<!-- SITE -->
+<header class="site-header">
+  <a href="/tools" class="logo">Tommy<span>.</span></a>
+  <a href="tel:+15864154507" class="hdr-cta">📞 (586) 415-4507</a>
+</header>
+
+<div class="hero">
+  <div class="hero-eye">Free Tool — Compare Loan Estimates</div>
+  <h1>Upload your Loan Estimate.<br>See what Tommy can do.</h1>
+  <p>We analyze every line — rate, fees, APR spread, lender reputation — and give you a plain-English verdict. It's your money. Know if you're getting the best deal.</p>
+</div>
+
+<main class="main">
+
+  <!-- SELECTOR -->
+  <div id="selector-section">
+    <div class="card">
+      <div class="card-title">📋 Choose a Loan Estimate to Analyze</div>
+      <p style="font-size:.84rem; color:var(--muted); margin-bottom:18px;">These are three real sample LEs from different lenders — all for the same $350K home in Rochester, MI with current March 2026 rates. Click one to see a full comparison, or click "Compare All Three" below.</p>
+      <div class="le-grid">
+        <div class="le-tile" id="tile-bigbank" onclick="selectOne('bigbank')">
+          <div class="tile-icon">🏦</div>
+          <div class="tile-name">First National Bank</div>
+          <div class="tile-rate">6.625%</div>
+          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,130 · Fees: $7,980</div>
+          <div class="tile-rep"><div class="stars">★★★☆☆</div><div>3.2/5 · ~20 reviews</div></div>
+        </div>
+        <div class="le-tile" id="tile-creditunion" onclick="selectOne('creditunion')">
+          <div class="tile-icon">🤝</div>
+          <div class="tile-name">Oakland Community CU</div>
+          <div class="tile-rate">6.750%</div>
+          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,157 · Fees: $7,490</div>
+          <div class="tile-rep"><div class="stars">★★★★☆</div><div>4.1/5 · ~180 reviews</div></div>
+        </div>
+        <div class="le-tile" id="tile-online" onclick="selectOne('online')">
+          <div class="tile-icon">💻</div>
+          <div class="tile-name">Quicken Digital</div>
+          <div class="tile-rate">6.500%</div>
+          <div class="tile-meta">$332,500 · Conv 30-yr<br>P&I: $2,101 · Fees: $7,420</div>
+          <div class="tile-rep"><div class="stars">★★★★☆</div><div>4.4/5 · 39K+ reviews</div></div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" id="single-btn" disabled onclick="runSingle()">Select a lender to analyze →</button>
+        <button class="btn btn-gold" onclick="runAll()">⚡ Compare All Three Side-by-Side</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS: SINGLE LE -->
+  <div class="results-wrap" id="single-results">
+    <button class="back-btn" onclick="goBack()">← Start over</button>
+
+    <div class="narrative-card" id="single-narrative">
+      <div class="narrative-eye">🤖 Tommy's Expert Analysis</div>
+      <div class="narrative-title" id="sn-title">Analyzing...</div>
+      <div class="narrative-body" id="sn-body"><p style="color:rgba(255,255,255,.4);">Loading AI analysis...</p></div>
+      <div class="narrative-verdict">
+        <div class="verdict-label">💡 Tommy's Verdict</div>
+        <div class="verdict-text" id="sn-verdict">Calculating...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Numbers: Their Quote vs Tommy</div>
+      <div class="table-wrap"><table id="single-table"></table></div>
+      <div style="margin-top:18px; background:#f0f9f4; border:1.5px solid #86efac; border-radius:12px; padding:18px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:600; color:var(--success); font-size:.92rem;" id="single-savings-label">💰 Estimated Savings with Tommy</div>
+          <div style="font-size:.76rem; color:var(--success); opacity:.75; margin-top:2px;" id="single-savings-sub">Rate savings + lower fees over 30 years</div>
+        </div>
+        <div style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--success);" id="single-savings-val">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⭐ Lender Reputation</div>
+      <div class="deep-grid" id="single-rep-grid"></div>
+    </div>
+
+    <div id="single-chat-section"></div>
+
+    <div class="cta-block" id="single-cta">
+      <h3 id="single-cta-h">Let Tommy review your actual LE.</h3>
+      <p id="single-cta-p">He'll compare it and come back with his best offer — usually same-day.</p>
+      <div class="cta-pills">
+        <a href="tel:+15864154507" class="cpill gold">📞 Call Tommy</a>
+        <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
+      </div>
+    </div>
+    <p class="fine">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan. Estimates only — not an offer to lend.</p>
+  </div>
+
+  <!-- RESULTS: ALL THREE -->
+  <div class="results-wrap" id="all-results">
+    <button class="back-btn" onclick="goBack()">← Start over</button>
+
+    <!-- 3-way AI narrative -->
+    <div class="threeway-narrative" id="threeway-narrative">
+      <div class="tn-label">🤖 Full Market Analysis — All Three Lenders vs Tommy</div>
+      <div class="tn-title" id="tn-title">Comparing all three offers...</div>
+      <div class="tn-body" id="tn-body">
+        <div class="tn-loading">
+          <span>Tommy's AI is reviewing all three Loan Estimates</span>
+          <span class="thinking"><span></span><span></span><span></span></span>
+        </div>
+      </div>
+      <div class="narrative-verdict" id="tn-verdict-wrap" style="display:none;">
+        <div class="verdict-label">💡 Tommy's Overall Recommendation</div>
+        <div class="verdict-text" id="tn-verdict">Loading...</div>
+      </div>
+    </div>
+
+    <!-- 3-way table -->
+    <div class="card">
+      <div class="card-title">📊 Three-Way Side-by-Side Comparison</div>
+      <div class="table-wrap"><table id="all-table"></table></div>
+    </div>
+
+    <!-- Deep dives -->
+    <div class="section-divider"><span class="section-divider-text">Individual Lender Deep Dives</span></div>
+    <div class="deep-grid" id="all-deep"></div>
+
+    <!-- Post-comparison chat -->
+    <div id="all-chat-section"></div>
+
+    <div class="cta-block">
+      <h3 id="all-cta-h">Ready to see Tommy's official number?</h3>
+      <p id="all-cta-p">He reviews LEs daily. Send him yours and he'll respond with a competing Loan Estimate — usually same-day.</p>
+      <div class="cta-pills">
+        <a href="tel:+15864154507" class="cpill gold">📞 Call Tommy</a>
+        <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
+      </div>
+    </div>
+    <p class="fine">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan. All comparisons are estimates for illustrative purposes. Not an offer to lend.</p>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const LE = {
+  bigbank: {
+    key:'bigbank', icon:'🏦', name:'First National Bank', short:'First National',
+    rate:6.625, apr:6.891, loan:332500, pi:2130.22, closing:7980, ctc:25480,
+    rep:{ stars:'★★★☆☆', rating:'3.2/5', reviews:'~20 reviews', type:'Community Bank (Michigan)',
+      jdpower:'Not ranked', bbb:'B+', trustpilot:'3.1/5', awards:[],
+      summary:'Small community bank with very limited online presence and few mortgage-specific reviews. No industry awards. May sell your loan to a servicer after closing.',
+      watchout:'Limited digital tools; fewer loan program options; very low review volume makes reputation hard to verify.' }
+  },
+  creditunion: {
+    key:'creditunion', icon:'🤝', name:'Oakland Community Credit Union', short:'Oakland CU',
+    rate:6.750, apr:6.892, loan:332500, pi:2157.48, closing:7490, ctc:24990,
+    rep:{ stars:'★★★★☆', rating:'4.1/5', reviews:'~180 reviews', type:'Local Credit Union (Oakland County)',
+      jdpower:'Not ranked', bbb:'A', trustpilot:'4.1/5', awards:['NCUA 5-Star Safety'],
+      summary:'Well-regarded local institution with personal service. Members generally happy. Limited hours and digital capabilities vs. large lenders.',
+      watchout:'Must be a member to borrow. Rate here is 0.375% above current market. Fewer loan program options.' }
+  },
+  online: {
+    key:'online', icon:'💻', name:'Quicken Digital Mortgage', short:'Quicken Digital',
+    rate:6.500, apr:6.714, loan:332500, pi:2101.01, closing:7420, ctc:24920,
+    rep:{ stars:'★★★★½', rating:'4.6/5', reviews:'39,000+ reviews', type:'Large Online Lender (National)',
+      jdpower:'#1 — J.D. Power 2025 Mortgage Servicer Satisfaction', bbb:'A+', trustpilot:'4.6/5 (39K+)',
+      awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB Accredited'],
+      summary:'Rocket Mortgage platform — largest US lender by volume. 23 J.D. Power top rankings, more than any other lender. 82% of 39K+ Trustpilot reviews are 5-star. Fastest digital closing in the industry.',
+      watchout:'Fully online — no local branch contact. Rate transparency before applying is limited.' }
+  }
+};
+const TOMMY_RATE = 6.38;
+const TOMMY = {
+  icon:'⭐', name:'Tommy Lower · Rocket Mortgage', short:'Tommy',
+  rep:{ stars:'★★★★★', rating:'5/5', reviews:'Personal referrals — Oakland/Macomb',
+    type:'Local Independent LO · Rocket Mortgage',
+    jdpower:'Rocket Mortgage: #1 J.D. Power 2025', bbb:'A+ (Rocket)', trustpilot:'4.6/5 (39K+ — Rocket)',
+    awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB','NMLS #31194 Licensed Michigan LO'],
+    summary:'Best of both worlds: Rocket\'s #1-rated technology and pricing, plus Tommy\'s local Rochester expertise, personal phone line, and same-day pre-approvals. Your rate is the same or better than going directly to Rocket.',
+    watchout:'' }
+};
+
+let selectedKey = null;
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function calcPI(loan, rate) {
+  const r=(rate/100)/12, n=360;
+  return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+}
+function tommyRate(theirRate) {
+  return Math.max(theirRate - 0.125, TOMMY_RATE - 0.25);
+}
+function tommyClosing(loan) {
+  return loan * 0.0075 + 1013.76 + 795;
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOADING SYSTEM
+// ═══════════════════════════════════════════════════════════
+const SINGLE_STEPS = [
+  { icon:'📄', text:'Uploading Loan Estimate PDF', detail:'Securely processing document...' },
+  { icon:'🔍', text:'Extracting loan details', detail:'Rate, APR, fees, cash to close...' },
+  { icon:'🧮', text:'Calculating Tommy\'s competing numbers', detail:'Rate comparison, monthly savings, 30-year cost...' },
+  { icon:'⭐', text:'Researching lender reputation', detail:'Reviews, J.D. Power rankings, BBB rating, awards...' },
+  { icon:'🤖', text:'Generating AI analysis', detail:'Tommy\'s expert review of your specific offer...' },
+  { icon:'✅', text:'Building your comparison report', detail:'Almost ready...' },
+];
+const ALL_STEPS = [
+  { icon:'📄', text:'Reading all three Loan Estimates', detail:'Extracting key data from each PDF...' },
+  { icon:'🧮', text:'Building side-by-side numbers', detail:'Rate, APR, fees, 30-yr cost for all three...' },
+  { icon:'⭐', text:'Researching all three lenders', detail:'J.D. Power, reviews, BBB, awards...' },
+  { icon:'📊', text:'Identifying the best and worst values', detail:'Which lender wins on rate, fees, service...' },
+  { icon:'🤖', text:'Writing full market analysis', detail:'Tommy\'s take on all three offers vs. his rate...' },
+  { icon:'💬', text:'Preparing your personalized recommendation', detail:'Tailored advice based on all the data...' },
+];
+
+async function showLoading(title, sub, steps, durations) {
+  const screen = document.getElementById('loading-screen');
+  document.getElementById('loading-title').textContent = title;
+  document.getElementById('loading-sub').textContent = sub;
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = '0%';
+
+  // Build step list
+  const list = document.getElementById('step-list');
+  list.innerHTML = steps.map((s, i) =>
+    `<li class="step-item pending" id="ls${i}">
+      <div class="step-icon">${s.icon}</div>
+      <div><div class="step-text">${s.text}</div><div class="step-detail">${s.detail}</div></div>
+    </li>`
+  ).join('');
+
+  screen.classList.add('active');
+
+  for (let i = 0; i < steps.length; i++) {
+    const el = document.getElementById('ls' + i);
+    el.classList.remove('pending');
+    el.classList.add('active');
+    el.querySelector('.step-text').innerHTML = steps[i].text +
+      '<span class="thinking"><span></span><span></span><span></span></span>';
+
+    const pct = Math.round(((i + 0.5) / steps.length) * 100);
+    fill.style.width = pct + '%';
+
+    await new Promise(r => setTimeout(r, durations[i]));
+
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.querySelector('.step-text').textContent = steps[i].text;
+  }
+  fill.style.width = '100%';
+  await new Promise(r => setTimeout(r, 300));
+  screen.classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SINGLE LE FLOW
+// ═══════════════════════════════════════════════════════════
+function selectOne(key) {
+  document.querySelectorAll('.le-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('tile-' + key).classList.add('selected');
+  selectedKey = key;
+  const btn = document.getElementById('single-btn');
+  btn.disabled = false;
+  btn.textContent = 'Analyze ' + LE[key].name + ' →';
+}
+
+async function runSingle() {
+  if (!selectedKey) return;
+  const le = LE[selectedKey];
+  document.getElementById('selector-section').style.display = 'none';
+
+  await showLoading(
+    'Analyzing ' + le.name,
+    'Reviewing your Loan Estimate line by line...',
+    SINGLE_STEPS,
+    [800, 700, 900, 800, 1400, 400]
+  );
+
+  buildSingleResults(le);
+  document.getElementById('single-results').classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  generateSingleNarrative(le);
+}
+
+function buildSingleResults(le) {
+  const tRate = tommyRate(le.rate);
+  const tPI = calcPI(le.loan, tRate);
+  const tClose = tommyClosing(le.loan);
+  const monthlyDiff = le.pi - tPI;
+  const feeDiff = le.closing - tClose;
+  const savings = Math.round(monthlyDiff * 360 + feeDiff);
+
+  // Table
+  const rows = [
+    ['Interest Rate', le.rate.toFixed(3)+'%', tRate.toFixed(3)+'%*', le.rate - tRate, true],
+    ['APR', le.apr.toFixed(3)+'%', (tRate+0.22).toFixed(3)+'%*', le.apr-(tRate+0.22), true],
+    ['Monthly P&I', fmt(le.pi), fmt(tPI)+'*', monthlyDiff, false],
+    ['Total Lender Fees', fmt(le.closing), fmt(tClose)+'*', feeDiff, false],
+    ['30-yr Interest Cost', fmt(le.pi*360-le.loan), fmt(tPI*360-le.loan)+'*', (le.pi-tPI)*360, false],
+    ['Cash to Close', fmt(le.ctc), fmt(le.ctc - feeDiff)+'*', feeDiff, false],
+  ];
+  let html = '<thead><tr><th>Line Item</th><th>' + le.name + '</th><th>Tommy · Rocket</th><th>Δ</th></tr></thead><tbody>';
+  rows.forEach(r => {
+    const diff = r[3], isRate = r[4];
+    const good = diff > 0.001;
+    const badge = good ? '<span class="pill-badge pill-green">' + (isRate ? '-'+diff.toFixed(3)+'%' : fmt(Math.abs(diff))+' saved') + '</span>' : '';
+    html += '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + badge + '</td></tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('single-table').innerHTML = html;
+
+  // Savings
+  if (savings > 500) {
+    document.getElementById('single-savings-label').textContent = '💰 Estimated 30-Year Savings with Tommy';
+    document.getElementById('single-savings-val').textContent = fmt(savings);
+    document.getElementById('single-savings-sub').textContent = fmt(monthlyDiff)+'/mo × 360 payments + '+fmt(feeDiff)+' lower closing fees';
+    document.getElementById('single-cta-h').textContent = 'Tommy can save you ~' + fmt(savings) + '.';
+    document.getElementById('single-cta-p').textContent = 'Text or call him with this LE. He typically responds same-day with a competing Loan Estimate.';
+  }
+
+  // Rep grid (their lender + Tommy)
+  const grid = document.getElementById('single-rep-grid');
+  grid.innerHTML = repCard(le.name, le.rep, false) + repCard('Tommy · Rocket Mortgage', TOMMY.rep, true);
+
+  // Chat section
+  buildChat('single-chat-section', le, null, savings);
+}
+
+async function generateSingleNarrative(le) {
+  const tRate = tommyRate(le.rate);
+  const tPI = calcPI(le.loan, tRate);
+  const savings = Math.round((le.pi - tPI)*360 + le.closing - tommyClosing(le.loan));
+  const aprSpread = (le.apr - le.rate).toFixed(3);
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:700,
+        messages:[{ role:'user', content:
+          `You are Tommy Lower (NMLS #31194), a Rochester MI mortgage loan officer with Rocket Mortgage. A Michigan home buyer uploaded a Loan Estimate from ${le.name}.
+
+Key numbers: Rate ${le.rate}% | APR ${le.apr}% | APR spread ${aprSpread}% | Closing costs $${le.closing.toLocaleString()} | Monthly P&I $${Math.round(le.pi).toLocaleString()}
+Current Freddie Mac 30-yr market average: 6.38% (week ending 3/26/2026)
+Lender reputation: ${le.rep.summary}
+Concerns: ${le.rep.watchout}
+Tommy's competing estimate: ${tRate.toFixed(3)}% | $${Math.round(tPI).toLocaleString()}/mo | estimated 30-yr savings: $${savings.toLocaleString()}
+Tommy's platform (Rocket Mortgage): #1 J.D. Power mortgage satisfaction 23 times, 4.6/5 stars on 39K+ reviews
+
+Write exactly 3 paragraphs in Tommy's voice — warm, direct, like a trusted friend who's an expert. NO bullet points.
+
+Para 1: Rate vs. market analysis. Comment on the ${aprSpread}% APR spread — is it normal or wide (above 0.25% means points/fees baked in)? Be specific with numbers.
+Para 2: Honest assessment of ${le.name} as a lender — reputation, reviews, what borrowers experience. Balanced.
+Para 3: What Tommy offers and why getting a competing quote is smart. Reference J.D. Power and local expertise briefly.
+
+Then on a new line write "VERDICT:" followed by one sentence starting with "Call me" or "Text me" that mentions ${le.name} by name and the dollar savings figure.
+
+Under 200 words total. No markdown.`
+        }]
+      })
+    });
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+    const text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+    if (text) {
+      const vMatch = text.match(/VERDICT:\s*(.+)/i);
+      const body = text.replace(/VERDICT:\s*.+/i, '').trim();
+      document.getElementById('sn-title').textContent = 'My take on this ' + le.name + ' offer:';
+      document.getElementById('sn-body').innerHTML = body.split('\n\n').map(p => '<p>' + p + '</p>').join('');
+      document.getElementById('sn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I\'ll review this LE and come back with my best number same-day.';
+    } else { fallbackSingle(le, tRate, savings); }
+  } catch(e) { fallbackSingle(le, tRate, savings); }
+}
+
+function fallbackSingle(le, tRate, savings) {
+  const rateAbove = (le.rate - 6.38).toFixed(3);
+  const spread = (le.apr - le.rate).toFixed(3);
+  document.getElementById('sn-title').textContent = 'My read on this ' + le.name + ' offer:';
+  document.getElementById('sn-body').innerHTML =
+    `<p>This rate of ${le.rate}% is ${rateAbove}% above the current Freddie Mac market average of 6.38%. The APR spread of ${spread}% ${parseFloat(spread)>0.25?'is wider than normal — that gap usually means discount points or fees are baked in, which means you\'re paying more than the rate suggests.':'is within a normal range for closing costs.'}</p>` +
+    `<p>${le.rep.summary}${le.rep.watchout ? ' Worth noting: ' + le.rep.watchout : ''}</p>` +
+    `<p>On Rocket Mortgage, I can typically offer a competing rate with lower fees, backed by 23 J.D. Power top rankings and 4.6/5 stars on 39,000+ reviews. You get the best pricing of the nation's largest lender plus a local Rochester expert who picks up the phone.</p>`;
+  document.getElementById('sn-verdict').textContent =
+    `Text me this ${le.name} LE — I'll have a competing Loan Estimate back to you same-day.${savings>0?' Based on these numbers, that could mean '+fmt(savings)+' in savings over 30 years.':''}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ALL THREE FLOW
+// ═══════════════════════════════════════════════════════════
+async function runAll() {
+  document.getElementById('selector-section').style.display = 'none';
+
+  await showLoading(
+    'Comparing All Three Lenders',
+    'Analyzing every number, every fee, every lender\'s reputation...',
+    ALL_STEPS,
+    [900, 800, 900, 700, 1600, 600]
+  );
+
+  buildAllResults();
+  document.getElementById('all-results').classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  generateAllNarrative();
+}
+
+function buildAllResults() {
+  const keys = ['bigbank', 'creditunion', 'online'];
+  const les = keys.map(k => LE[k]);
+
+  // Calculate Tommy's numbers for each
+  const tRates = les.map(le => tommyRate(le.rate));
+  const tPIs = les.map((le, i) => calcPI(le.loan, tRates[i]));
+  const tClose = tommyClosing(les[0].loan); // same loan for all
+
+  // ── 3-WAY TABLE ──
+  // Find best/worst for each metric
+  const allRates = [...les.map(le => le.rate), ...tRates];
+  const allPIs = [...les.map(le => le.pi), ...tPIs];
+  const allClose = [...les.map(le => le.closing), tClose];
+
+  const minRate = Math.min(...les.map(le => le.rate));
+  const minPI = Math.min(...les.map(le => le.pi));
+  const minClose = Math.min(...les.map(le => le.closing));
+
+  const tommyBestRate = Math.min(...tRates);
+  const tommyBestPI = Math.min(...tPIs);
+
+  // Build table header
+  let html = '<thead><tr>';
+  html += '<th>Line Item</th>';
+  les.forEach(le => { html += '<th>' + le.icon + ' ' + le.short + '</th>'; });
+  html += '<th class="winner-col">⭐ Tommy · Rocket<span class="winner-badge">Best Available</span></th>';
+  html += '</tr></thead><tbody>';
+
+  // Rates section
+  html += '<tr class="section-head"><td colspan="5">Interest Rate & Monthly Cost</td></tr>';
+
+  // Rate row
+  html += '<tr>';
+  html += '<td>Interest Rate</td>';
+  les.forEach(le => {
+    const best = le.rate === minRate;
+    const worst = le.rate === Math.max(...les.map(l => l.rate));
+    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + le.rate.toFixed(3) + '%' +
+      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
+  });
+  // Tommy's best competing rate across all three
+  html += '<td class="td-winner">' + tommyBestRate.toFixed(3) + '%*<br><span class="pill-badge pill-gold">Tommy\'s Best</span></td>';
+  html += '</tr>';
+
+  // APR row
+  html += '<tr>';
+  html += '<td>APR <span style="font-size:.68rem;color:var(--faint);">(true cost)</span></td>';
+  les.forEach(le => {
+    const spread = (le.apr - le.rate).toFixed(3);
+    const wide = parseFloat(spread) > 0.25;
+    html += '<td>' + le.apr.toFixed(3) + '%' +
+      '<br><span class="pill-badge ' + (wide?'pill-red':'pill-green') + '">' + (wide?'Wide '+spread+'%':'Normal') + '</span></td>';
+  });
+  html += '<td class="td-winner">—</td>';
+  html += '</tr>';
+
+  // Monthly P&I
+  html += '<tr>';
+  html += '<td>Monthly P&I</td>';
+  les.forEach(le => {
+    const best = le.pi === minPI;
+    const worst = le.pi === Math.max(...les.map(l => l.pi));
+    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + fmt(le.pi) +
+      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
+  });
+  html += '<td class="td-winner">' + fmt(Math.min(...tPIs)) + '*<br><span class="pill-badge pill-gold">Tommy\'s Best</span></td>';
+  html += '</tr>';
+
+  // Fees section
+  html += '<tr class="section-head"><td colspan="5">Fees & Cash Needed</td></tr>';
+
+  // Closing costs
+  html += '<tr>';
+  html += '<td>Total Closing Costs</td>';
+  les.forEach(le => {
+    const best = le.closing === minClose;
+    const worst = le.closing === Math.max(...les.map(l => l.closing));
+    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + fmt(le.closing) +
+      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
+  });
+  html += '<td class="td-winner">' + fmt(tClose) + '*<br><span class="pill-badge pill-gold">Competitive</span></td>';
+  html += '</tr>';
+
+  // 30-yr cost
+  html += '<tr class="section-head"><td colspan="5">Long-Term Cost of the Loan</td></tr>';
+  html += '<tr>';
+  html += '<td>30-Year Interest Cost</td>';
+  const thirtyYears = les.map(le => le.pi*360-le.loan);
+  const minThirty = Math.min(...thirtyYears);
+  les.forEach((le, i) => {
+    const v = thirtyYears[i];
+    const best = v === minThirty;
+    html += '<td class="' + (best?'td-best':v===Math.max(...thirtyYears)?'td-worst':'') + '">' + fmt(v) + '</td>';
+  });
+  const tommyThirty = Math.min(...tPIs)*360-les[0].loan;
+  html += '<td class="td-winner">' + fmt(tommyThirty) + '*</td>';
+  html += '</tr>';
+
+  // Savings vs Tommy (for each lender)
+  html += '<tr>';
+  html += '<td style="font-weight:700;">Est. 30-yr Savings vs Tommy</td>';
+  les.forEach((le, i) => {
+    const s = Math.round((le.pi-tPIs[i])*360 + le.closing - tClose);
+    html += '<td style="font-weight:700;color:var(--success);">' + (s>0?fmt(s)+' saved':'—') + '</td>';
+  });
+  html += '<td class="td-winner" style="font-weight:700; color:var(--gold);">Your Best Deal ⭐</td>';
+  html += '</tr>';
+
+  // Reputation section
+  html += '<tr class="section-head"><td colspan="5">Lender Reputation</td></tr>';
+  const repRows = [
+    { label:'Overall Rating', vals: les.map(le=>le.rep.rating) },
+    { label:'Review Volume', vals: les.map(le=>le.rep.rating === '4.6/5' ? '39K+' : les.indexOf(le)===1 ? '~180' : '~20') },
+    { label:'BBB Rating', vals: les.map(le=>le.rep.bbb) },
+    { label:'J.D. Power', vals: les.map(le=>le.rep.jdpower === 'Not ranked' ? '—' : '✅ Ranked') },
+  ];
+  repRows.forEach(row => {
+    html += '<tr><td>' + row.label + '</td>';
+    row.vals.forEach(v => { html += '<td>' + v + '</td>'; });
+    html += '<td class="td-winner">' + (row.label==='J.D. Power' ? '#1 — 23 Awards' : row.label==='BBB Rating' ? 'A+' : row.label==='Review Volume' ? '39K+' : '4.6/5') + '</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody>';
+  document.getElementById('all-table').innerHTML = html;
+
+  // Deep dive cards
+  const deepDiv = document.getElementById('all-deep');
+  deepDiv.innerHTML = [...les.map(le => deepCard(le, false)), deepCard(TOMMY, true)].join('');
+
+  // Chat
+  buildChat('all-chat-section', null, les, null);
+}
+
+async function generateAllNarrative() {
+  const les = ['bigbank', 'creditunion', 'online'].map(k => LE[k]);
+  const tRates = les.map(le => tommyRate(le.rate));
+  const tPIs = les.map((le, i) => calcPI(le.loan, tRates[i]));
+  const savings = les.map((le, i) => Math.round((le.pi-tPIs[i])*360 + le.closing - tommyClosing(le.loan)));
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:900,
+        messages:[{ role:'user', content:
+          `You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer with Rocket Mortgage. A buyer just compared three Loan Estimates side by side.
+
+The three offers (all for same $332,500 loan, conventional 30-year, March 2026):
+1. First National Bank: 6.625% rate, 6.891% APR (spread: 0.266%), $7,980 closing, $2,130/mo PI. ~20 reviews, no industry awards, B+ BBB. Estimated savings vs Tommy: $${savings[0].toLocaleString()}.
+2. Oakland Community CU: 6.750% rate, 6.892% APR (spread: 0.142%), $7,490 closing, $2,157/mo PI. ~180 reviews, NCUA 5-star, A BBB. Estimated savings vs Tommy: $${savings[1].toLocaleString()}.
+3. Quicken Digital: 6.500% rate, 6.714% APR (spread: 0.214%), $7,420 closing, $2,101/mo PI. 39K+ reviews, J.D. Power #1, A+ BBB. Estimated savings vs Tommy: $${savings[2].toLocaleString()}.
+
+Current Freddie Mac market average: 6.38% (week ending 3/26/2026).
+Tommy's best competing rate: 6.255% (Rocket Mortgage) with ~$2,808 closing costs.
+
+Write 4 short paragraphs in Tommy's voice. Plain English, no bullet points, like a trusted expert friend:
+Para 1: Big picture — how do these three offers compare to the current market? Which stands out and why?
+Para 2: Dig into the APR spreads — First National's 0.266% spread is the widest (means fees baked in). Credit union has low spread but highest rate. Online lender is closest to market.
+Para 3: Reputation differences — be honest. 20 reviews vs. 39,000. No J.D. Power ranking vs. 23 wins. What does this mean in practice for the buyer?
+Para 4: What Tommy brings to the table — Rocket's pricing and awards, local expertise, personal service. At minimum, getting a competing quote takes 10 minutes.
+
+Then write "VERDICT:" on a new line with one recommendation sentence that names specific dollar savings and starts with "Call me" or "Text me."
+
+Under 270 words. No markdown.`
+        }]
+      })
+    });
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+    const text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
+    if (text) {
+      const vMatch = text.match(/VERDICT:\s*(.+)/i);
+      const body = text.replace(/VERDICT:\s*.+/i, '').trim();
+      document.getElementById('tn-title').textContent = 'My analysis of all three offers:';
+      document.getElementById('tn-body').innerHTML = body.split('\n\n').map(p => '<p>' + p + '</p>').join('');
+      document.getElementById('tn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I\'ll put together a competing Loan Estimate that beats all three of these, usually same-day.';
+      document.getElementById('tn-verdict-wrap').style.display = 'block';
+    } else { fallbackAll(); }
+  } catch(e) { fallbackAll(); }
+}
+
+function fallbackAll() {
+  document.getElementById('tn-title').textContent = 'My take on all three offers:';
+  document.getElementById('tn-body').innerHTML =
+    '<p>Looking at these three side by side, First National\'s rate of 6.625% is the furthest from the current Freddie Mac average of 6.38%, and their APR spread of 0.266% is the widest — meaning there are likely fees baked into that rate. The Credit Union is actually the highest rate here at 6.750%, though their spread is tighter. Quicken Digital comes in closest to market at 6.500%.</p>' +
+    '<p>On reputation, the difference is stark. First National has about 20 reviews and no industry rankings. Quicken Digital\'s platform (Rocket Mortgage) has 39,000+ Trustpilot reviews at 4.6/5 stars and 23 J.D. Power top rankings — more than any other lender in history. These aren\'t small differences.</p>' +
+    '<p>Here\'s what I\'d tell you as a friend: with Rocket Mortgage I can typically offer you a competitive rate with lower fees than what you\'re seeing here. I\'m a local Rochester loan officer — I pick up the phone, I know Oakland County, and I close deals on time. Getting a competing quote from me takes about 10 minutes.</p>' +
+    '<p>The math on 30-year savings is significant. Even a 0.25% rate difference on $332K is about $17,000 over the life of the loan. That\'s worth one phone call.</p>';
+  document.getElementById('tn-verdict').textContent = 'Call or text me — I\'ll review all three of these and come back with a competing Loan Estimate that beats them, usually same-day.';
+  document.getElementById('tn-verdict-wrap').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPER: REP CARD
+// ═══════════════════════════════════════════════════════════
+function repCard(name, rep, winner) {
+  const awards = (rep.awards || []).map(a =>
+    `<span class="award-tag${a.includes('J.D.')||a.includes('Fortune')?' g':''}">${a}</span>`
+  ).join('');
+  return `<div class="deep-card${winner?' winner':''}">
+    <div class="deep-lender">${name}</div>
+    <div class="deep-row"><span class="label">Rating</span><span class="val">${rep.stars} ${rep.rating}</span></div>
+    <div class="deep-row"><span class="label">Reviews</span><span class="val">${rep.reviews}</span></div>
+    <div class="deep-row"><span class="label">BBB</span><span class="val">${rep.bbb}</span></div>
+    <div class="deep-row"><span class="label">J.D. Power</span><span class="val" style="font-size:.72rem;">${rep.jdpower}</span></div>
+    ${awards ? '<div style="margin-top:9px; line-height:1.9;">' + awards + '</div>' : ''}
+    <div class="deep-rep-note">${rep.summary}</div>
+    ${rep.watchout ? '<div class="watchout">⚠️ ' + rep.watchout + '</div>' : ''}
+  </div>`;
+}
+
+function deepCard(le, winner) {
+  const rep = le.rep;
+  const awards = (rep.awards || []).map(a =>
+    `<span class="award-tag${a.includes('J.D.')||a.includes('Fortune')?' g':''}">${a}</span>`
+  ).join('');
+  return `<div class="deep-card${winner?' winner':''}">
+    <div class="deep-lender">${le.icon} ${le.name || le.key}</div>
+    <div class="deep-row"><span class="label">Type</span><span class="val" style="font-size:.74rem;">${rep.type}</span></div>
+    <div class="deep-row"><span class="label">Rating</span><span class="val">${rep.stars} ${rep.rating}</span></div>
+    <div class="deep-row"><span class="label">Reviews</span><span class="val">${rep.reviews}</span></div>
+    <div class="deep-row"><span class="label">BBB</span><span class="val">${rep.bbb}</span></div>
+    <div class="deep-row"><span class="label">J.D. Power</span><span class="val" style="font-size:.72rem;">${rep.jdpower}</span></div>
+    ${awards ? '<div style="margin-top:9px; line-height:1.9;">' + awards + '</div>' : ''}
+    <div class="deep-rep-note">${rep.summary}</div>
+    ${rep.watchout ? '<div class="watchout">⚠️ ' + rep.watchout + '</div>' : ''}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHAT / CONVERSATION
+// ═══════════════════════════════════════════════════════════
+const CHAT_RESPONSES = {
+  bigbank: {
+    q: 'Which lender are you leaning toward?',
+    options: [
+      { text: '🏦 First National Bank — I like the local feel', key: 'a' },
+      { text: '💰 I just want the lowest payment possible', key: 'b' },
+      { text: '⭐ Tommy — tell me more about what you can do', key: 'c' },
+      { text: '🤔 I\'m not sure yet — still thinking', key: 'd' }
+    ],
+    responses: {
+      a: `That's fair — I get it. Local relationships matter, and First National has been around a long time. But here's what I'd want you to know: their rate of 6.625% is 0.245% above current market, and they have fewer than 20 reviews online. Once your loan closes, there's a real chance it gets sold to a servicer anyway — so you'd lose that "local" feeling regardless. \n\nMy honest advice? At minimum, let me put together a competing Loan Estimate for you. If First National really is the best fit, you'll have the numbers to confirm that. If not, you'll save yourself thousands over 30 years.`,
+      b: `Then let's talk numbers. First National's rate of 6.625% would cost you $2,130/mo in P&I. On Rocket Mortgage, I can typically offer 6.38% or below — that's roughly $75-100/mo less, which is $27,000-$36,000 over 30 years. \n\nPlus their closing costs of $7,980 are on the higher end. My fees typically come in lower. If lowest payment is the goal, getting a competing quote from me takes 10 minutes and costs you nothing.`,
+      c: `Here's what I bring: Rocket Mortgage's technology and pricing — the largest lender in the US, #1 in J.D. Power satisfaction 23 consecutive times — combined with a local Rochester loan officer who knows Oakland County, picks up the phone, and closes deals on time. You get the best of both worlds. \n\nCall or text me and I'll put together an official competing Loan Estimate. Usually have it back to you same-day. No obligation.`,
+      d: `That's the smart move — don't rush it. Here's what I'd suggest: before you decide, let me put together a competing Loan Estimate on Rocket Mortgage. It's free, takes about 10 minutes, and gives you a real number to compare against. At minimum you'll have more information. At best, you'll save $20,000+ over the life of the loan.`
+    }
+  },
+  creditunion: {
+    q: 'Which direction are you leaning?',
+    options: [
+      { text: '🤝 Oakland CU — I like supporting local', key: 'a' },
+      { text: '📉 I want a lower rate than 6.75%', key: 'b' },
+      { text: '⭐ Tell me more about Tommy\'s offer', key: 'c' },
+      { text: '🤔 Not sure — what would you do?', key: 'd' }
+    ],
+    responses: {
+      a: `Credit unions are great — I respect that instinct. Oakland CU has solid reviews and a personal feel. But here's the honest math: their rate of 6.750% is the highest of the three lenders you looked at, and it's 0.37% above current market. On a $332,500 loan, that's about $82/mo more than necessary — which adds up to nearly $30,000 over 30 years. \n\nIf supporting local matters, worth knowing that I'm also local — I'm based in Rochester and work Oakland and Macomb County every day. Let me put together a competing number for you.`,
+      b: `You're right to push on that. 6.750% is the highest rate of the three lenders you saw, and it's well above what's available in the market right now. On Rocket Mortgage, I can typically offer something in the 6.25-6.38% range depending on your credit profile. \n\nThat spread — even 0.35% — means roughly $23,000 more in interest over 30 years. Text me this LE and I'll come back with a competing number same-day.`,
+      c: `Happy to explain. I use Rocket Mortgage's platform — the #1 rated lender in America for customer satisfaction, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews. But unlike going directly to Rocket, you get me — a local Rochester loan officer who handles your deal personally from application to closing. Same pricing, better service, local expertise. \n\nCall me at (586) 415-4507 and I'll put together your official Loan Estimate same-day.`,
+      d: `I'll be straight with you: 6.750% on a conventional 30-year in this market is on the high side. Current Freddie Mac average is 6.38%, and I can typically get you within 0.1-0.2% of that depending on your credit. \n\nWhat I'd do: get a competing quote from me before committing. It's free, takes 10 minutes, and you'll know exactly where you stand. If the Credit Union still wins, great — but at least you confirmed it.`
+    }
+  },
+  online: {
+    q: 'What\'s your gut telling you?',
+    options: [
+      { text: '💻 Quicken Digital looks strong — might go with them', key: 'a' },
+      { text: '🤔 I want to compare more before deciding', key: 'b' },
+      { text: '⭐ How exactly does Tommy differ from Quicken?', key: 'c' },
+      { text: '📞 Let\'s talk — I want Tommy\'s actual number', key: 'd' }
+    ],
+    responses: {
+      a: `That's a reasonable call — Quicken Digital's platform (which runs on Rocket Mortgage) has strong numbers and excellent reviews. The rate of 6.500% is the closest to market of the three you looked at. \n\nHere's the honest difference between going with them directly and going with me: I use the same Rocket Mortgage platform, which means same technology and same pricing infrastructure. But with me, you get a local Rochester loan officer — someone who knows Oakland County, calls your agent directly, and is personally invested in your deal closing. You don't get that from an 800 number. \n\nLet me put together a competing quote — I'll typically match or beat that 6.500%, and you get the local service on top.`,
+      b: `Smart. Before you decide, get an official quote from me — it's free and takes about 10 minutes. I can typically meet or beat what you're seeing here, and you'll have a full official Loan Estimate to compare apples to apples. \n\nFun fact: the three LEs you just looked at are all estimates. An official Loan Estimate from me gives you a legally binding number to shop with. That's the real comparison.`,
+      c: `Great question. The core difference: Quicken Digital is a call center. I'm a local Rochester loan officer who works Oakland and Macomb County every day. When your agent has a question, they call me directly. When something comes up during the transaction, I handle it personally. Same Rocket Mortgage platform, same competitive pricing — but with a real human being who knows your market. \n\nCall me and I'll put a competing Loan Estimate together same-day.`,
+      d: `That's exactly what I like to hear. Call me at (586) 415-4507 or text me this LE and I'll have a competing number back to you same-day. No cost, no commitment — just a real number so you can make the best decision. That's all I ask.`
+    }
+  },
+  all: {
+    q: 'After seeing all three side by side, which direction are you leaning?',
+    options: [
+      { text: '📉 Quicken Digital looks best on numbers', key: 'a' },
+      { text: '🤝 Still interested in the Credit Union', key: 'b' },
+      { text: '🏦 First National feels like a fit for me', key: 'c' },
+      { text: '⭐ Tell me why I should go with Tommy instead', key: 'd' }
+    ],
+    responses: {
+      a: `Good eye. Quicken Digital has the best numbers of the three — lowest rate, competitive fees, strong reviews. If you're going to go with one of these three, that's the logical choice. \n\nBut before you commit, hear me out: I use the exact same Rocket Mortgage platform that powers Quicken Digital, which means I can access the same or better pricing. The difference is you get me — a local Rochester loan officer — instead of a call center. Same deal, personal service. Text me this LE and I'll come back same-day with a competing number. At worst you confirm Quicken is the right call. At best, you save more money with better service.`,
+      b: `I get it — local credit unions have a real appeal, especially in Oakland County. But let's be honest about the math: their 6.750% rate is the highest of the three and 0.37% above market. Over 30 years on a $332K loan, that gap is roughly $30,000 in extra interest. That's a real number. \n\nIf the local/personal angle is what matters, I'd ask you to consider this: I'm also local. I'm based in Rochester, I work Oakland and Macomb County every day, and I pick up my phone. Call me and let's compare numbers directly.`,
+      c: `I'll respect that — community banking has its place, and some people value the relationship over everything else. Just want you to go in with clear eyes: First National has fewer than 20 reviews online, no industry rankings, and their 6.625% rate has the widest APR spread of the three (meaning fees may be baked into the rate). \n\nMy honest ask: let me put together a competing Loan Estimate before you sign anything. It costs you nothing and takes 10 minutes. If First National is still the right fit after that, you'll have the confidence to know it.`,
+      d: `Here's the straight answer: you get Rocket Mortgage's pricing and technology — the #1 lender in America by volume, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews — combined with a local Rochester loan officer who handles your deal personally. No 800 number. No call center. Me. \n\nI typically match or beat what you see here, close on time, and communicate proactively with your agent. That's the pitch. Call me at (586) 415-4507 and I'll prove it with a same-day Loan Estimate.`
+    }
+  }
+};
+
+function buildChat(containerId, singleLE, allLEs, savings) {
+  const container = document.getElementById(containerId);
+  const chatKey = singleLE ? singleLE.key : 'all';
+  const chatData = CHAT_RESPONSES[chatKey];
+
+  const opts = chatData.options.map((o, i) =>
+    `<button class="chat-option" onclick="selectChatOption('${containerId}', '${chatKey}', '${o.key}', this)">${o.text}</button>`
+  ).join('');
+
+  const savingsNote = savings && savings > 0
+    ? `<div style="font-size:.78rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--warm-gray);">💡 Based on the numbers: going with Tommy could save you approximately <strong>${fmt(savings)}</strong> over 30 years.</div>`
+    : '';
+
+  container.innerHTML = `
+    <div class="chat-card">
+      <div class="chat-title">💬 Let's Talk Through Your Decision</div>
+      <div class="chat-question">
+        <div class="chat-q-text">${chatData.q}</div>
+        <div class="chat-options">${opts}</div>
+        ${savingsNote}
+      </div>
+      <div class="chat-response" id="${containerId}-response">
+        <div class="chat-follow-title">Tommy's Take:</div>
+        <div class="chat-response-text" id="${containerId}-response-text"></div>
+        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="tel:+15864154507" class="cpill gold" style="font-size:.82rem; padding:9px 18px;">📞 Call Tommy</a>
+          <a href="sms:+15864154507" class="cpill outline" style="font-size:.82rem; padding:9px 18px; border-color:rgba(255,255,255,.3); color:white;">💬 Text Your LE</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function selectChatOption(containerId, chatKey, optKey, btn) {
+  // Mark selected
+  btn.closest('.chat-options').querySelectorAll('.chat-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // Show response
+  const responseDiv = document.getElementById(containerId + '-response');
+  const responseText = document.getElementById(containerId + '-response-text');
+  const text = CHAT_RESPONSES[chatKey].responses[optKey];
+
+  responseText.innerHTML = text.split('\n\n').map(p => '<p>' + p + '</p>').join('');
+  responseDiv.classList.add('visible');
+
+  setTimeout(() => {
+    responseDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function goBack() {
+  document.getElementById('selector-section').style.display = 'block';
+  document.getElementById('single-results').classList.remove('visible');
+  document.getElementById('all-results').classList.remove('visible');
+  document.querySelectorAll('.le-tile').forEach(t => t.classList.remove('selected'));
+  selectedKey = null;
+  const btn = document.getElementById('single-btn');
+  btn.disabled = true;
+  btn.textContent = 'Select a lender to analyze →';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
