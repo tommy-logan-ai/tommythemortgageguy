@@ -8,10 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<!-- Google Maps Places API for address autocomplete -->
-<!-- TOMMY: Replace GOOGLE_MAPS_KEY_HERE with your actual key from console.cloud.google.com -->
-<!-- Restrict key to: tommythemortgageguy.com in Google Cloud Console > APIs > Credentials -->
-<script src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_KEY_HERE&libraries=places&callback=initAutocomplete" async defer></script>
+<!-- Address autocomplete: OpenStreetMap Nominatim (free, no API key needed) -->
 
 <style>
   :root {
@@ -188,11 +185,15 @@
   .compare-table tr:last-child td { border-bottom: none; font-weight: 700; }
   .savings-badge { display: inline-block; background: #dcfce7; color: #16a34a; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 50px; margin-left: 6px; }
 
-  /* ── GOOGLE AUTOCOMPLETE OVERRIDE ── */
-  .pac-container { border-radius: 10px; border: 1.5px solid #d4d0c8; box-shadow: 0 8px 24px rgba(0,0,0,0.12); font-family: 'DM Sans', sans-serif; margin-top: 4px; z-index: 9999; }
-  .pac-item { padding: 10px 14px; font-size: 0.9rem; cursor: pointer; }
-  .pac-item:hover { background: var(--off-white); }
-  .pac-item-query { font-weight: 600; color: var(--navy); }
+  /* ── ADDRESS AUTOCOMPLETE DROPDOWN ── */
+  .address-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1.5px solid #d4d0c8; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); z-index: 9999; max-height: 280px; overflow-y: auto; }
+  .addr-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f0ede8; display: flex; align-items: flex-start; gap: 10px; transition: background 0.1s; }
+  .addr-item:last-child { border-bottom: none; }
+  .addr-item:hover, .addr-item.selected { background: var(--off-white); }
+  .addr-pin-sm { font-size: 0.9rem; margin-top: 1px; flex-shrink: 0; }
+  .addr-main { font-size: 0.9rem; font-weight: 600; color: var(--navy); }
+  .addr-secondary { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+  .addr-searching { padding: 14px 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
   /* ── FOOTER ── */
   .tools-footer { background: var(--navy); padding: 32px; text-align: center; }
@@ -229,15 +230,17 @@
       <h2 class="card-title">What's my payment on this home?</h2>
       <p class="card-sub">Start by typing the address. We'll pull the actual property taxes and calculate your true monthly payment.</p>
 
-      <!-- Address autocomplete -->
-      <div class="address-field">
+      <!-- Address autocomplete (OpenStreetMap Nominatim — free, no key needed) -->
+      <div class="address-field" style="position:relative;">
         <label class="address-label">Property Address</label>
-        <div class="address-input-wrap">
+        <div class="address-input-wrap" style="position:relative;">
           <span class="address-pin">📍</span>
           <input type="text" class="address-input" id="address-input" 
                  placeholder="Start typing an address..." 
                  autocomplete="off"
-                 oninput="onAddressType()">
+                 oninput="onAddressType(this.value)"
+                 onkeydown="onAddressKeydown(event)">
+          <div class="address-dropdown" id="address-dropdown" style="display:none;"></div>
         </div>
         <div class="address-hint">Type to search — we'll find the exact property</div>
       </div>
@@ -571,7 +574,6 @@ const COUNTY_TAX_RATES = {
 let selectedPlace = null;
 let foundTaxAmount = null;
 let foundCounty = null;
-let autocomplete = null;
 let taxLookupInProgress = false;
 
 // ─── TAB SWITCHING ────────────────────────────────────────────────────
@@ -582,22 +584,142 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
 }
 
-// ─── GOOGLE PLACES AUTOCOMPLETE ──────────────────────────────────────
-function initAutocomplete() {
-  const input = document.getElementById('address-input');
-  autocomplete = new google.maps.places.Autocomplete(input, {
-    types: ['address'],
-    componentRestrictions: { country: 'us' },
-    fields: ['formatted_address', 'address_components', 'geometry', 'place_id']
-  });
-  autocomplete.addListener('place_changed', onPlaceSelected);
+// ─── ADDRESS AUTOCOMPLETE (OpenStreetMap Nominatim — free, no key) ──────
+let searchTimeout = null;
+let currentSuggestions = [];
+let selectedSuggestionIndex = -1;
+
+function onAddressType(val) {
+  if (!val || val.trim().length < 4) {
+    closeDropdown();
+    if (!val || !val.trim()) resetAddressState();
+    return;
+  }
+  clearTimeout(searchTimeout);
+  showDropdownSearching();
+  // Debounce 400ms to avoid hammering API while typing
+  searchTimeout = setTimeout(() => fetchAddressSuggestions(val.trim()), 400);
 }
 
-function onAddressType() {
-  // If user clears the field, reset state
-  if (!document.getElementById('address-input').value.trim()) {
-    resetAddressState();
+function onAddressKeydown(e) {
+  const dd = document.getElementById('address-dropdown');
+  if (dd.style.display === 'none') return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, currentSuggestions.length - 1);
+    renderDropdown(currentSuggestions);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+    renderDropdown(currentSuggestions);
+  } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+    e.preventDefault();
+    selectSuggestion(currentSuggestions[selectedSuggestionIndex]);
+  } else if (e.key === 'Escape') {
+    closeDropdown();
   }
+}
+
+async function fetchAddressSuggestions(query) {
+  try {
+    // Nominatim: free OpenStreetMap geocoder — bias to Michigan
+    const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&countrycodes=us&q=${encodeURIComponent(query + ', Michigan')}&dedupe=1`;
+    const res = await fetch(url, {
+      headers: { 'Accept-Language': 'en', 'User-Agent': 'TommyMortgageTools/1.0' }
+    });
+    const data = await res.json();
+    
+    // Filter to house/street results for Michigan
+    const places = data.filter(p => 
+      p.address && 
+      (p.type === 'house' || p.type === 'residential' || p.class === 'place' || 
+       p.addresstype === 'house' || p.addresstype === 'road' ||
+       (p.address.house_number && p.address.road)) &&
+      (p.address.state === 'Michigan' || p.address.state_code === 'MI')
+    ).slice(0, 5);
+
+    // If strict filter returns nothing, show top results from Michigan
+    const fallback = data.filter(p => 
+      p.address && (p.address.state === 'Michigan' || p.address.state_code === 'MI')
+    ).slice(0, 5);
+    
+    currentSuggestions = places.length > 0 ? places : fallback;
+    selectedSuggestionIndex = -1;
+    renderDropdown(currentSuggestions);
+  } catch(e) {
+    closeDropdown();
+  }
+}
+
+function renderDropdown(suggestions) {
+  const dd = document.getElementById('address-dropdown');
+  if (!suggestions || suggestions.length === 0) {
+    dd.innerHTML = '<div class="addr-searching">No addresses found — try adding city or ZIP</div>';
+    dd.style.display = 'block';
+    return;
+  }
+  dd.innerHTML = suggestions.map((s, i) => {
+    const addr = s.address || {};
+    const main = [addr.house_number, addr.road].filter(Boolean).join(' ') || s.display_name.split(',')[0];
+    const secondary = [addr.city || addr.town || addr.village, addr.county, addr.postcode].filter(Boolean).join(', ');
+    const sel = i === selectedSuggestionIndex ? ' selected' : '';
+    return `<div class="addr-item${sel}" onclick="selectSuggestion(currentSuggestions[${i}])">
+      <span class="addr-pin-sm">📍</span>
+      <div><div class="addr-main">${main}</div><div class="addr-secondary">${secondary}</div></div>
+    </div>`;
+  }).join('');
+  dd.style.display = 'block';
+}
+
+function showDropdownSearching() {
+  const dd = document.getElementById('address-dropdown');
+  dd.innerHTML = '<div class="addr-searching">Searching...</div>';
+  dd.style.display = 'block';
+}
+
+function closeDropdown() {
+  const dd = document.getElementById('address-dropdown');
+  dd.style.display = 'none';
+  currentSuggestions = [];
+  selectedSuggestionIndex = -1;
+}
+
+async function selectSuggestion(place) {
+  const addr = place.address || {};
+  
+  // Build clean formatted address
+  const parts = [
+    addr.house_number && addr.road ? addr.house_number + ' ' + addr.road : null,
+    addr.city || addr.town || addr.village || addr.suburb,
+    addr.state_code || addr.state,
+    addr.postcode
+  ].filter(Boolean);
+  const formatted = parts.join(', ');
+  
+  document.getElementById('address-input').value = formatted;
+  closeDropdown();
+
+  // Extract county — Nominatim returns it as "Oakland County" or just "Oakland"
+  let county = (addr.county || '').replace(' County', '').replace(' county', '').trim();
+  let zip = addr.postcode || '';
+  
+  foundCounty = county;
+  selectedPlace = { formatted, county, zip, lat: place.lat, lon: place.lon };
+
+  // Show property found card
+  document.getElementById('property-found').classList.add('visible');
+  document.getElementById('pf-address-line').textContent = formatted;
+  document.getElementById('chip-county').textContent = county ? county + ' County' : 'Michigan';
+  document.getElementById('chip-zip').textContent = zip ? 'ZIP: ' + zip : '';
+  document.getElementById('chip-tax').className = 'pf-chip loading';
+  document.getElementById('chip-tax').textContent = '🔍 Looking up property taxes...';
+
+  // Close dropdown when clicking outside
+  setTimeout(() => {
+    document.getElementById('address-input').blur();
+  }, 100);
+
+  await lookupPropertyTaxes(formatted, county, zip, addr.house_number + ' ' + (addr.road || ''));
 }
 
 function resetAddressState() {
@@ -608,48 +730,13 @@ function resetAddressState() {
   document.getElementById('tax-source-hint').textContent = '';
   document.getElementById('property-tax').value = '';
   document.getElementById('property-tax').placeholder = 'Auto-filled from address';
+  closeDropdown();
 }
 
-async function onPlaceSelected() {
-  const place = autocomplete.getPlace();
-  if (!place.geometry) return;
-
-  selectedPlace = place;
-  const formatted = place.formatted_address;
-
-  // Parse address components
-  const components = place.address_components || [];
-  let county = '';
-  let zip = '';
-  let city = '';
-  let streetNumber = '';
-  let street = '';
-
-  components.forEach(c => {
-    if (c.types.includes('administrative_area_level_2')) county = c.long_name.replace(' County', '');
-    if (c.types.includes('postal_code')) zip = c.short_name;
-    if (c.types.includes('locality')) city = c.long_name;
-    if (c.types.includes('street_number')) streetNumber = c.long_name;
-    if (c.types.includes('route')) street = c.long_name;
-  });
-
-  foundCounty = county;
-
-  // Show property found card
-  const pfDiv = document.getElementById('property-found');
-  pfDiv.classList.add('visible');
-  document.getElementById('pf-address-line').textContent = formatted;
-  document.getElementById('chip-county').textContent = county ? county + ' County' : 'Michigan';
-  document.getElementById('chip-zip').textContent = zip ? 'ZIP: ' + zip : '';
-  document.getElementById('chip-tax').className = 'pf-chip loading';
-  document.getElementById('chip-tax').textContent = '🔍 Looking up property taxes...';
-
-  // Auto-fill purchase price hint from address if field is empty
-  // (Don't override if user already typed something)
-
-  // Look up actual property taxes via AI
-  await lookupPropertyTaxes(formatted, county, zip, streetNumber + ' ' + street);
-}
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.address-input-wrap')) closeDropdown();
+});
 
 async function lookupPropertyTaxes(fullAddress, county, zip, streetAddress) {
   taxLookupInProgress = true;
