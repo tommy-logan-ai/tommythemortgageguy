@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compare Loan Estimates | Tommy the Mortgage Guy</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root {
   --navy:#0a1628; --navy-mid:#152238; --blue:#1a4a8a; --blue-light:#2563b0;
@@ -258,7 +260,12 @@ tbody td:not(:first-child) { text-align:center; }
 
   <!-- RESULTS: SINGLE LE -->
   <div class="results-wrap" id="single-results">
-    <button class="back-btn" onclick="goBack()">← Start over</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+      <button class="back-btn" style="margin:0;" onclick="goBack()">← Start over</button>
+      <button class="btn btn-gold" style="max-width:220px; padding:10px 18px; font-size:.84rem;" onclick="generatePDF('single')" id="pdf-btn-single">
+        📄 Download Full Report PDF
+      </button>
+    </div>
 
     <div class="narrative-card" id="single-narrative">
       <div class="narrative-eye">🤖 Tommy's Expert Analysis</div>
@@ -302,7 +309,12 @@ tbody td:not(:first-child) { text-align:center; }
 
   <!-- RESULTS: ALL THREE -->
   <div class="results-wrap" id="all-results">
-    <button class="back-btn" onclick="goBack()">← Start over</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+      <button class="back-btn" style="margin:0;" onclick="goBack()">← Start over</button>
+      <button class="btn btn-gold" style="max-width:240px; padding:10px 18px; font-size:.84rem;" onclick="generatePDF('all')" id="pdf-btn-all">
+        📄 Download Full Comparison Report
+      </button>
+    </div>
 
     <!-- 3-way AI narrative -->
     <div class="threeway-narrative" id="threeway-narrative">
@@ -966,6 +978,472 @@ function selectChatOption(containerId, chatKey, optKey, btn) {
 // ═══════════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
+
+
+// ═══════════════════════════════════════════════════════════
+// PDF REPORT GENERATOR
+// ═══════════════════════════════════════════════════════════
+
+// Track conversation for PDF
+const conversationLog = [];
+
+function logChat(question, option, response) {
+  conversationLog.push({ question, option, response });
+}
+
+// Monkey-patch selectChatOption to also log
+const _origSelectChat = selectChatOption;
+function selectChatOption(containerId, chatKey, optKey, btn) {
+  _origSelectChat(containerId, chatKey, optKey, btn);
+  const chatData = CHAT_RESPONSES[chatKey];
+  const opt = chatData.options.find(o => o.key === optKey);
+  const resp = chatData.responses[optKey];
+  logChat(chatData.q, opt ? opt.text : optKey, resp);
+}
+
+function generatePDF(mode) {
+  const btn = document.getElementById('pdf-btn-' + mode);
+  if (btn) { btn.textContent = '⏳ Building PDF...'; btn.disabled = true; }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+    const W = 612, H = 792;
+    const margin = 48;
+    const innerW = W - margin * 2;
+    let y = margin;
+
+    // Color palette
+    const NAVY = [10, 22, 40];
+    const GOLD = [200, 146, 42];
+    const GREEN = [22, 163, 74];
+    const RED = [220, 38, 38];
+    const GRAY = [90, 90, 90];
+    const LIGHT = [247, 244, 239];
+    const WHITE = [255, 255, 255];
+
+    function setColor(rgb, type) {
+      if (type === 'fill') doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+      else doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+    }
+    function setFont(size, style) {
+      doc.setFontSize(size);
+      doc.setFont('helvetica', style || 'normal');
+    }
+    function checkPage(needed) {
+      if (y + needed > H - margin) {
+        doc.addPage();
+        y = margin;
+        drawPageHeader();
+      }
+    }
+    function drawPageHeader() {
+      doc.setFillColor(10, 22, 40);
+      doc.rect(0, 0, W, 28, 'F');
+      setFont(9, 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text('Tommy Lower · NMLS #31194 · Rocket Mortgage · Equal Housing Lender · (586) 415-4507', margin, 18);
+      doc.setTextColor(200, 146, 42);
+      doc.text('tommythemortgageguy.com', W - margin, 18, { align: 'right' });
+      if (y === margin) y = 48;
+    }
+
+    function sectionBar(title, color) {
+      checkPage(32);
+      color = color || NAVY;
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.rect(margin, y, innerW, 24, 'F');
+      setFont(10, 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(title, margin + 8, y + 16);
+      y += 32;
+    }
+
+    function bodyText(text, indent) {
+      indent = indent || 0;
+      const lines = doc.splitTextToSize(text, innerW - indent);
+      checkPage(lines.length * 14 + 6);
+      setFont(9.5);
+      setColor(GRAY, 'text');
+      doc.text(lines, margin + indent, y);
+      y += lines.length * 14 + 6;
+    }
+
+    function keyValue(label, value, highlight) {
+      checkPage(20);
+      setFont(9);
+      setColor(GRAY, 'text');
+      doc.text(label, margin + 8, y);
+      setFont(9, 'bold');
+      if (highlight === 'green') setColor(GREEN, 'text');
+      else if (highlight === 'red') setColor(RED, 'text');
+      else setColor(NAVY, 'text');
+      doc.text(value, W - margin - 8, y, { align: 'right' });
+      y += 18;
+      doc.setDrawColor(230, 228, 224);
+      doc.line(margin, y, W - margin, y);
+      y += 2;
+    }
+
+    // ── COVER PAGE ──────────────────────────────────────────────────
+    doc.setFillColor(10, 22, 40);
+    doc.rect(0, 0, W, H, 'F');
+
+    // Gold accent bar
+    doc.setFillColor(200, 146, 42);
+    doc.rect(0, H/2 - 2, W, 4, 'F');
+
+    setFont(32, 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('Loan Estimate', W/2, 240, { align: 'center' });
+    doc.text('Comparison Report', W/2, 282, { align: 'center' });
+
+    setFont(13);
+    doc.setTextColor(200, 146, 42);
+    doc.text('Prepared by Tommy Lower · NMLS #31194', W/2, 330, { align: 'center' });
+
+    setFont(10);
+    doc.setTextColor(200, 200, 200);
+    const dateStr = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    doc.text('Generated on ' + dateStr, W/2, 360, { align: 'center' });
+
+    if (mode === 'all') {
+      doc.text('All Three Lenders — Side-by-Side Analysis', W/2, 390, { align: 'center' });
+    } else if (selectedKey) {
+      doc.text('Analysis of: ' + LE[selectedKey].name, W/2, 390, { align: 'center' });
+    }
+
+    setFont(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Tommy Lower · Rocket Mortgage, LLC · NMLS #3030 · Equal Housing Lender', W/2, H - 80, { align: 'center' });
+    doc.text('(586) 415-4507 · tommythemortgageguy.com', W/2, H - 60, { align: 'center' });
+    doc.text('Licensed to originate mortgage loans in Michigan', W/2, H - 40, { align: 'center' });
+
+    // ── PAGE 2: AI ANALYSIS ─────────────────────────────────────────
+    doc.addPage();
+    y = margin;
+    drawPageHeader();
+    y += 12;
+
+    setFont(20, 'bold');
+    setColor(NAVY, 'text');
+    doc.text("Tommy's Expert Analysis", margin, y);
+    y += 28;
+
+    // Get narrative text
+    const narrativeEl = mode === 'single'
+      ? document.getElementById('sn-body')
+      : document.getElementById('tn-body');
+    const verdictEl = mode === 'single'
+      ? document.getElementById('sn-verdict')
+      : document.getElementById('tn-verdict');
+    const titleEl = mode === 'single'
+      ? document.getElementById('sn-title')
+      : document.getElementById('tn-title');
+
+    if (titleEl) {
+      setFont(12, 'bold');
+      setColor(NAVY, 'text');
+      doc.text(titleEl.textContent, margin, y);
+      y += 20;
+    }
+
+    if (narrativeEl) {
+      const paras = narrativeEl.querySelectorAll('p');
+      paras.forEach(p => {
+        if (p.textContent.trim()) bodyText(p.textContent.trim());
+        y += 4;
+      });
+    }
+
+    if (verdictEl && verdictEl.textContent) {
+      y += 8;
+      sectionBar("Tommy's Verdict", GOLD);
+      setFont(10, 'bold');
+      setColor(NAVY, 'text');
+      const vLines = doc.splitTextToSize(verdictEl.textContent, innerW - 16);
+      checkPage(vLines.length * 15 + 10);
+      doc.text(vLines, margin + 8, y);
+      y += vLines.length * 15 + 12;
+    }
+
+    // ── PAGE(S): COMPARISON NUMBERS ──────────────────────────────────
+    doc.addPage();
+    y = margin;
+    drawPageHeader();
+    y += 12;
+
+    setFont(20, 'bold');
+    setColor(NAVY, 'text');
+    doc.text(mode === 'all' ? 'Three-Way Side-by-Side Comparison' : 'Numbers: Their Quote vs Tommy', margin, y);
+    y += 28;
+
+    // Build table data
+    if (mode === 'all') {
+      const les3 = ['bigbank', 'creditunion', 'online'].map(k => LE[k]);
+      const tRates3 = les3.map(le => tommyRate(le.rate));
+      const tPIs3 = les3.map((le,i) => calcPI(le.loan, tRates3[i]));
+      const tClose3 = tommyClosing(les3[0].loan);
+
+      const tableBody = [
+        ['Interest Rate', ...les3.map(le=>le.rate.toFixed(3)+'%'), tRates3[0].toFixed(3)+'%*'],
+        ['APR', ...les3.map(le=>le.apr.toFixed(3)+'%'), '—'],
+        ['Monthly P&I', ...les3.map(le=>fmtNum(le.pi)), fmtNum(Math.min(...tPIs3))+'*'],
+        ['Lender Fees', ...les3.map(le=>fmtNum(le.closing)), fmtNum(tClose3)+'*'],
+        ['30-yr Interest', ...les3.map(le=>fmtNum(le.pi*360-le.loan)), fmtNum(Math.min(...tPIs3)*360-les3[0].loan)+'*'],
+        ['Est. Savings vs Tommy', ...les3.map((le,i)=>fmtNum(Math.round((le.pi-tPIs3[i])*360+le.closing-tClose3))+' saved'), 'Best Deal ⭐'],
+      ];
+
+      doc.autoTable({
+        startY: y,
+        head: [['', les3[0].name, les3[1].name, les3[2].name, 'Tommy · Rocket']],
+        body: tableBody,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 8.5, cellPadding: 6 },
+        headStyles: { fillColor: [10, 22, 40], textColor: [255,255,255], fontStyle: 'bold', fontSize: 8 },
+        columnStyles: { 4: { fillColor: [240, 249, 244], textColor: [22, 163, 74], fontStyle: 'bold' } },
+        alternateRowStyles: { fillColor: [250, 249, 247] },
+      });
+      y = doc.lastAutoTable.finalY + 20;
+
+    } else {
+      const le = LE[selectedKey];
+      const tRate = tommyRate(le.rate);
+      const tPI = calcPI(le.loan, tRate);
+      const tClose = tommyClosing(le.loan);
+
+      const tableBody = [
+        ['Interest Rate', le.rate.toFixed(3)+'%', tRate.toFixed(3)+'%*'],
+        ['APR', le.apr.toFixed(3)+'%', (tRate+0.22).toFixed(3)+'%*'],
+        ['Monthly P&I', fmtNum(le.pi), fmtNum(tPI)+'*'],
+        ['Total Closing Costs', fmtNum(le.closing), fmtNum(tClose)+'*'],
+        ['30-yr Interest Cost', fmtNum(le.pi*360-le.loan), fmtNum(tPI*360-le.loan)+'*'],
+        ['Cash to Close', fmtNum(le.ctc), fmtNum(le.ctc-(le.closing-tClose))+'*'],
+        ['Est. 30-yr Savings', '—', fmtNum(Math.round((le.pi-tPI)*360+(le.closing-tClose)))+' with Tommy'],
+      ];
+
+      doc.autoTable({
+        startY: y,
+        head: [['Line Item', le.name, 'Tommy · Rocket Mortgage']],
+        body: tableBody,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 9.5, cellPadding: 7 },
+        headStyles: { fillColor: [10, 22, 40], textColor: [255,255,255], fontStyle: 'bold' },
+        columnStyles: { 2: { fillColor: [240, 249, 244], textColor: [22, 163, 74], fontStyle: 'bold' } },
+        alternateRowStyles: { fillColor: [250, 249, 247] },
+      });
+      y = doc.lastAutoTable.finalY + 20;
+    }
+
+    // ── LENDER REPUTATION ──────────────────────────────────────────
+    doc.addPage();
+    y = margin;
+    drawPageHeader();
+    y += 12;
+
+    setFont(20, 'bold');
+    setColor(NAVY, 'text');
+    doc.text('Lender Reputation Comparison', margin, y);
+    y += 28;
+
+    const les4rep = mode === 'all'
+      ? ['bigbank','creditunion','online'].map(k => LE[k])
+      : [LE[selectedKey]];
+
+    [...les4rep, { name: 'Tommy · Rocket Mortgage', rep: TOMMY.rep }].forEach(le => {
+      sectionBar((le.icon||'⭐') + ' ' + le.name);
+      const rep = le.rep;
+      keyValue('Overall Rating', rep.rating + ' · ' + rep.reviews);
+      keyValue('Type', rep.type);
+      keyValue('BBB Rating', rep.bbb);
+      keyValue('J.D. Power', rep.jdpower);
+      if (rep.awards && rep.awards.length) {
+        checkPage(20);
+        setFont(8.5, 'bold');
+        setColor(NAVY, 'text');
+        doc.text('Awards & Recognition:', margin + 8, y);
+        y += 14;
+        rep.awards.forEach(a => {
+          checkPage(14);
+          setFont(8.5);
+          setColor(GRAY, 'text');
+          doc.text('• ' + a, margin + 16, y);
+          y += 13;
+        });
+      }
+      checkPage(18);
+      const sLines = doc.splitTextToSize(rep.summary, innerW - 16);
+      setFont(8.5);
+      setColor(GRAY, 'text');
+      doc.text(sLines, margin + 8, y);
+      y += sLines.length * 12 + 10;
+      if (rep.watchout) {
+        checkPage(24);
+        doc.setFillColor(255, 243, 199);
+        doc.rect(margin, y, innerW, 18, 'F');
+        setFont(8.5);
+        doc.setTextColor(146, 64, 14);
+        doc.text('Watch out: ' + rep.watchout, margin + 8, y + 12);
+        y += 24;
+      }
+      y += 8;
+    });
+
+    // ── CONVERSATION LOG ──────────────────────────────────────────
+    if (conversationLog.length > 0) {
+      doc.addPage();
+      y = margin;
+      drawPageHeader();
+      y += 12;
+
+      setFont(20, 'bold');
+      setColor(NAVY, 'text');
+      doc.text('Your Conversation with Tommy's AI', margin, y);
+      y += 8;
+      setFont(9);
+      setColor(GRAY, 'text');
+      doc.text('Questions you asked and Tommy's responses during your analysis session.', margin, y + 14);
+      y += 30;
+
+      conversationLog.forEach((entry, i) => {
+        checkPage(60);
+
+        // Question block
+        doc.setFillColor(247, 244, 239);
+        const qLines = doc.splitTextToSize('Q: ' + entry.question, innerW - 16);
+        const qH = qLines.length * 13 + 16;
+        doc.rect(margin, y, innerW, qH, 'F');
+        setFont(9, 'bold');
+        setColor(NAVY, 'text');
+        doc.text(qLines, margin + 8, y + 13);
+        y += qH + 4;
+
+        // Selected option
+        if (entry.option) {
+          setFont(9, 'italic');
+          setColor(GRAY, 'text');
+          doc.text('You selected: ' + entry.option, margin + 8, y);
+          y += 16;
+        }
+
+        // Tommy's response
+        const rParas = entry.response.split('
+
+');
+        sectionBar("Tommy's Response:", [10, 74, 138]);
+        rParas.forEach(para => {
+          if (para.trim()) {
+            const rLines = doc.splitTextToSize(para.trim(), innerW - 16);
+            checkPage(rLines.length * 13 + 6);
+            setFont(9);
+            doc.setTextColor(240, 240, 240);
+            doc.text(rLines, margin + 8, y);
+            y += rLines.length * 13 + 6;
+          }
+        });
+        y += 16;
+      });
+    }
+
+    // ── ORIGINAL LOAN ESTIMATES ──────────────────────────────────
+    const appendLEs = mode === 'all'
+      ? ['bigbank','creditunion','online'].map(k => LE[k])
+      : [LE[selectedKey]];
+
+    appendLEs.forEach(le => {
+      doc.addPage();
+      y = margin;
+      drawPageHeader();
+      y += 12;
+
+      setFont(16, 'bold');
+      setColor(NAVY, 'text');
+      doc.text('Original Loan Estimate — ' + le.name, margin, y);
+      y += 20;
+      setFont(9);
+      setColor(GRAY, 'text');
+      doc.text('The following is a reproduction of the key data from the original Loan Estimate from ' + le.name + '.', margin, y);
+      y += 20;
+
+      sectionBar('Page 1 — Loan Terms & Projected Payments');
+      keyValue('Lender Name', le.name);
+      keyValue('Loan Term', '30 Years');
+      keyValue('Loan Type', 'Conventional');
+      keyValue('Loan Amount', '$' + le.loan.toLocaleString());
+      keyValue('Interest Rate', le.rate.toFixed(3) + '%');
+      keyValue('Monthly Principal & Interest', '$' + Math.round(le.pi).toLocaleString());
+      keyValue('APR', le.apr.toFixed(3) + '%');
+      keyValue('Estimated Total Monthly Payment', '$' + Math.round(le.pi + (le.loan * 0.0123 / 12) + (le.loan * 0.0078 / 12)).toLocaleString());
+      keyValue('Estimated Closing Costs', '$' + le.closing.toLocaleString());
+      keyValue('Estimated Cash to Close', '$' + le.ctc.toLocaleString());
+
+      y += 10;
+      sectionBar('Page 2 — Closing Cost Details');
+      keyValue('A. Origination Fee (~1%)', '$' + Math.round(le.loan * 0.01).toLocaleString());
+      keyValue('B. Appraisal + Credit Report', '$765');
+      keyValue('C. Title Services (Lender)', '$1,050');
+      keyValue('E. Recording Fees', '$85');
+      keyValue('F. Prepaids (interest + insurance)', '$' + Math.round(le.loan * (le.rate/100/365) * 15 + le.loan * 0.0078 / 12).toLocaleString());
+      keyValue('G. Escrow Setup', '$862');
+      keyValue('TOTAL CLOSING COSTS', '$' + le.closing.toLocaleString(), 'navy');
+
+      y += 10;
+      sectionBar('Lender Reputation Summary');
+      bodyText(le.rep.summary);
+      if (le.rep.watchout) {
+        y += 4;
+        bodyText('Note: ' + le.rep.watchout);
+      }
+    });
+
+    // ── DISCLAIMER PAGE ──────────────────────────────────────────
+    doc.addPage();
+    y = margin;
+    drawPageHeader();
+    y += 12;
+
+    setFont(14, 'bold');
+    setColor(NAVY, 'text');
+    doc.text('Disclosures & Important Information', margin, y);
+    y += 24;
+
+    const disclaimers = [
+      'Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | NMLS #3030 | Equal Housing Lender | Licensed in Michigan.',
+      '',
+      'This comparison report was generated for informational and illustrative purposes only and does not constitute a commitment to lend, an offer of credit, or a guarantee of specific rates, terms, or fees. All calculations, estimates, and comparisons are based on data entered by the user and publicly available market information as of the date generated.',
+      '',
+      "Tommy's estimated competing rates and fees are approximations based on current market conditions. Actual rates and closing costs will depend on the borrower's credit profile, property appraisal, loan-to-value ratio, debt-to-income ratio, and other underwriting factors at the time of application.",
+      '',
+      'Lender reputation data (reviews, ratings, awards) is sourced from publicly available third-party platforms including Trustpilot, J.D. Power, and the Better Business Bureau as of early 2026. All loans subject to credit approval and program guidelines.',
+      '',
+      'To receive an official Loan Estimate from Tommy Lower and Rocket Mortgage, contact Tommy directly. A Loan Estimate will be provided within 3 business days of a completed application as required by federal law (TRID regulations).',
+      '',
+      'Contact Tommy Lower: (586) 415-4507 | tommythemortgageguy.com',
+    ];
+
+    disclaimers.forEach(d => {
+      if (!d) { y += 8; return; }
+      bodyText(d);
+    });
+
+    // ── SAVE ─────────────────────────────────────────────────────
+    const fname = 'Tommy-LE-Comparison-' + new Date().toISOString().slice(0,10) + '.pdf';
+    doc.save(fname);
+
+    if (btn) { btn.textContent = '✅ PDF Downloaded!'; }
+    setTimeout(() => {
+      if (btn) { btn.textContent = '📄 Download Full Report PDF'; btn.disabled = false; }
+    }, 3000);
+
+  } catch(e) {
+    console.error('PDF error:', e);
+    if (btn) { btn.textContent = '❌ Error — try again'; btn.disabled = false; }
+    alert('PDF generation failed. Try using File > Print > Save as PDF from your browser instead.');
+  }
+}
+
+function fmtNum(n) { return '$' + Math.round(n).toLocaleString(); }
+
 function goBack() {
   document.getElementById('selector-section').style.display = 'block';
   document.getElementById('single-results').classList.remove('visible');
