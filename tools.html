@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+<!-- Google Maps Places API for address autocomplete -->
+<!-- TOMMY: Replace GOOGLE_MAPS_KEY_HERE with your actual key from console.cloud.google.com -->
+<!-- Restrict key to: tommythemortgageguy.com in Google Cloud Console > APIs > Credentials -->
+<script src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_KEY_HERE&libraries=places&callback=initAutocomplete" async defer></script>
+
 <style>
   :root {
     --navy: #0a1628;
@@ -23,673 +28,248 @@
     --text-muted: #5a5a5a;
     --text-light: #8a8a8a;
     --success: #16a34a;
+    --success-bg: #f0f9f4;
     --danger: #dc2626;
     --border: rgba(255,255,255,0.08);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--off-white);
-    color: var(--text);
-    min-height: 100vh;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
 
   /* ── HEADER ── */
-  .site-header {
-    background: var(--navy);
-    padding: 18px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .site-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: white;
-    text-decoration: none;
-  }
+  .site-header { background: var(--navy); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .site-logo { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: white; text-decoration: none; }
   .site-logo span { color: var(--gold); }
-  .header-cta {
-    color: var(--gold);
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
-  }
+  .header-cta { color: var(--gold); font-size: 0.85rem; font-weight: 500; text-decoration: none; }
 
   /* ── HERO ── */
-  .tools-hero {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--blue) 100%);
-    padding: 64px 32px 56px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .tools-hero::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -80px;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(200,146,42,0.12) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .tools-hero::after {
-    content: '';
-    position: absolute;
-    bottom: -40px; left: -60px;
-    width: 240px; height: 240px;
-    background: radial-gradient(circle, rgba(37,99,176,0.2) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .hero-eyebrow {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-    position: relative; z-index: 1;
-  }
-  .hero-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    color: white;
-    line-height: 1.15;
-    margin-bottom: 16px;
-    position: relative; z-index: 1;
-  }
-  .hero-sub {
-    font-size: 1rem;
-    color: rgba(255,255,255,0.65);
-    max-width: 520px;
-    margin: 0 auto;
-    line-height: 1.6;
-    position: relative; z-index: 1;
-  }
+  .tools-hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--blue) 100%); padding: 64px 32px 56px; text-align: center; position: relative; overflow: hidden; }
+  .tools-hero::before { content: ''; position: absolute; top: -60px; right: -80px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(200,146,42,0.12) 0%, transparent 70%); border-radius: 50%; }
+  .hero-eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; position: relative; z-index: 1; }
+  .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: white; line-height: 1.15; margin-bottom: 16px; position: relative; z-index: 1; }
+  .hero-sub { font-size: 1rem; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto; line-height: 1.6; position: relative; z-index: 1; }
 
-  /* ── TAB NAV ── */
-  .tab-nav {
-    background: white;
-    border-bottom: 1px solid var(--warm-gray);
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .tab-btn {
-    padding: 18px 36px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  /* ── TABS ── */
+  .tab-nav { background: white; border-bottom: 1px solid var(--warm-gray); display: flex; justify-content: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .tab-btn { padding: 18px 36px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--text-muted); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
   .tab-btn:hover { color: var(--navy); }
-  .tab-btn.active {
-    color: var(--navy);
-    border-bottom-color: var(--gold);
-    font-weight: 600;
-  }
-  .tab-icon { font-size: 1.1rem; }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
 
-  /* ── MAIN CONTENT ── */
-  .tools-main {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 48px 24px;
-  }
-
+  /* ── MAIN ── */
+  .tools-main { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
   .tool-panel { display: none; }
   .tool-panel.active { display: block; }
 
   /* ── CARD ── */
-  .card {
-    background: white;
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    margin-bottom: 24px;
-  }
-  .card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.5rem;
-    color: var(--navy);
-    margin-bottom: 6px;
-  }
-  .card-sub {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-    line-height: 1.5;
-  }
+  .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); margin-bottom: 24px; }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 6px; }
+  .card-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 32px; line-height: 1.5; }
 
-  /* ── FORM ELEMENTS ── */
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
+  /* ── ADDRESS SEARCH ── */
+  .address-field { position: relative; margin-bottom: 20px; }
+  .address-label { font-size: 0.8rem; font-weight: 600; color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .address-input-wrap { position: relative; }
+  .address-pin { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; z-index: 2; pointer-events: none; }
+  .address-input { width: 100%; padding: 14px 14px 14px 42px; border: 2px solid #d4d0c8; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text); background: #fefefe; outline: none; transition: all 0.2s; }
+  .address-input:focus { border-color: var(--blue-light); box-shadow: 0 0 0 4px rgba(37,99,176,0.10); }
+  .address-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 5px; }
+
+  /* Property data badge */
+  .property-found { display: none; background: linear-gradient(135deg, #f0f9f4 0%, #e8f5ee 100%); border: 1.5px solid #86efac; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+  .property-found.visible { display: flex; gap: 12px; align-items: flex-start; }
+  .pf-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .pf-content strong { font-size: 0.9rem; color: #15803d; display: block; margin-bottom: 2px; }
+  .pf-details { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .pf-chip { background: white; border: 1px solid #86efac; border-radius: 6px; padding: 3px 10px; font-size: 0.78rem; color: #15803d; font-weight: 500; }
+  .pf-chip.loading { color: var(--text-muted); border-color: var(--warm-gray); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* ── FORM ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
   .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
-  .form-row.single { grid-template-columns: 1fr; }
-
-  @media (max-width: 600px) {
-    .form-row, .form-row.three { grid-template-columns: 1fr; }
-    .card { padding: 24px; }
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .form-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--navy);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .form-input, .form-select {
-    padding: 12px 16px;
-    border: 1.5px solid #d4d0c8;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    color: var(--text);
-    background: #fefefe;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none;
-    -webkit-appearance: none;
-  }
-  .form-input:focus, .form-select:focus {
-    border-color: var(--blue-light);
-    box-shadow: 0 0 0 3px rgba(37,99,176,0.12);
-  }
+  @media(max-width:600px) { .form-row, .form-row.three { grid-template-columns: 1fr; } .card { padding: 24px; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 0.8rem; font-weight: 600; color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; }
+  .form-input, .form-select { padding: 12px 16px; border: 1.5px solid #d4d0c8; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text); background: #fefefe; outline: none; transition: all 0.2s; -webkit-appearance: none; }
+  .form-input:focus, .form-select:focus { border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(37,99,176,0.12); }
   .form-input.has-prefix { padding-left: 28px; }
-  .input-wrap {
-    position: relative;
-  }
-  .input-prefix {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-    pointer-events: none;
-  }
-  .input-suffix {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    pointer-events: none;
-  }
-  .form-hint {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    margin-top: 2px;
-  }
+  .input-wrap { position: relative; }
+  .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem; pointer-events: none; }
+  .input-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; }
+  .form-hint { font-size: 0.75rem; color: var(--text-light); }
+  .form-hint.source { color: var(--success); font-weight: 500; }
 
   /* ── BUTTONS ── */
-  .btn-primary {
-    background: var(--navy);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    margin-top: 8px;
-    letter-spacing: 0.02em;
-  }
-  .btn-primary:hover {
-    background: var(--blue);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(10,22,40,0.2);
-  }
-  .btn-gold {
-    background: var(--gold);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    margin-top: 8px;
-  }
-  .btn-gold:hover {
-    background: var(--gold-light);
-    transform: translateY(-1px);
-  }
+  .btn-primary { background: var(--navy); color: white; border: none; padding: 16px 32px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 8px; }
+  .btn-primary:hover { background: var(--blue); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(10,22,40,0.2); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
   /* ── RESULTS ── */
   .results-section { display: none; }
   .results-section.visible { display: block; }
+  .results-headline { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--navy); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--warm-gray); }
 
-  .results-headline {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.1rem;
-    color: var(--navy);
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid var(--warm-gray);
-  }
+  .payment-big { text-align: center; background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); border-radius: 14px; padding: 32px 24px; margin-bottom: 24px; color: white; }
+  .payment-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .payment-address { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-bottom: 8px; font-style: italic; }
+  .payment-number { font-family: 'DM Serif Display', serif; font-size: 3.2rem; color: white; line-height: 1; margin-bottom: 4px; }
+  .payment-note { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
 
-  /* Monthly breakdown */
-  .payment-big {
-    text-align: center;
-    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-    border-radius: 14px;
-    padding: 32px 24px;
-    margin-bottom: 24px;
-    color: white;
-  }
-  .payment-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 8px;
-  }
-  .payment-number {
-    font-family: 'DM Serif Display', serif;
-    font-size: 3.2rem;
-    color: white;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .payment-note {
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.5);
-  }
-
-  .breakdown-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   @media(max-width:600px) { .breakdown-grid { grid-template-columns: 1fr; } }
+  .breakdown-item { background: var(--off-white); border-radius: 10px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .breakdown-item.highlight { background: white; border: 1.5px solid var(--warm-gray); }
+  .bi-label { font-size: 0.83rem; color: var(--text-muted); }
+  .bi-sublabel { font-size: 0.7rem; color: var(--text-light); margin-top: 2px; }
+  .bi-val { font-weight: 600; font-size: 0.95rem; color: var(--text); text-align: right; }
+  .bi-source { font-size: 0.65rem; color: var(--success); display: block; text-align: right; }
 
-  .breakdown-item {
-    background: var(--off-white);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .breakdown-item.total {
-    background: var(--navy);
-    color: white;
-  }
-  .bi-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-  .breakdown-item.total .bi-label { color: rgba(255,255,255,0.65); }
-  .bi-val {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--text);
-  }
-  .breakdown-item.total .bi-val { color: white; }
-
-  /* Closing costs */
-  .closing-section {
-    background: white;
-    border: 1.5px solid var(--warm-gray);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-  .closing-title {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--navy);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 0.78rem;
-  }
-  .closing-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0ede8;
-    font-size: 0.9rem;
-  }
-  .closing-row:last-child { border-bottom: none; }
-  .closing-row.subtotal {
-    font-weight: 600;
-    border-top: 2px solid var(--warm-gray);
-    border-bottom: none;
-    margin-top: 4px;
-    padding-top: 12px;
-    color: var(--navy);
-  }
-  .closing-note {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    margin-top: 4px;
-  }
-
-  /* Cash to close */
-  .cash-to-close {
-    background: linear-gradient(135deg, #f0f9f4 0%, #e8f5ee 100%);
-    border: 1.5px solid #a7d4b4;
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .ctc-label { font-weight: 600; color: #15803d; font-size: 0.95rem; }
-  .ctc-sub { font-size: 0.8rem; color: #15803d; opacity: 0.7; }
-  .ctc-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: #15803d;
-    font-weight: 700;
-  }
-
-  /* MSHDA callout */
-  .mshda-callout {
-    background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
-    border: 1.5px solid var(--gold);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .mshda-icon { font-size: 1.5rem; flex-shrink: 0; }
-  .mshda-text strong { color: var(--navy); font-size: 0.95rem; display: block; margin-bottom: 4px; }
-  .mshda-text span { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-
-  /* Rate scenarios */
-  .scenario-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+  .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
   @media(max-width:600px) { .scenario-grid { grid-template-columns: 1fr; } }
-
-  .scenario-card {
-    border: 1.5px solid var(--warm-gray);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .scenario-card.featured {
-    border-color: var(--gold);
-    background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
-  }
+  .scenario-card { border: 1.5px solid var(--warm-gray); border-radius: 12px; padding: 16px; text-align: center; }
+  .scenario-card.featured { border-color: var(--gold); background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%); }
   .sc-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
   .sc-rate { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); }
   .sc-payment { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
   .scenario-card.featured .sc-label { color: var(--gold); }
-  .scenario-card.featured .sc-rate { color: var(--navy); }
 
-  /* ── CTA BLOCK ── */
-  .cta-block {
-    background: var(--navy);
-    border-radius: 14px;
-    padding: 28px 32px;
-    text-align: center;
-    margin-top: 8px;
-  }
-  .cta-block h3 {
-    font-family: 'DM Serif Display', serif;
-    color: white;
-    font-size: 1.3rem;
-    margin-bottom: 6px;
-  }
-  .cta-block p {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.88rem;
-    margin-bottom: 20px;
-  }
-  .cta-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .cta-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
+  .closing-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0ede8; font-size: 0.9rem; }
+  .closing-row:last-child { border-bottom: none; }
+  .closing-row.subtotal { font-weight: 600; border-top: 2px solid var(--warm-gray); border-bottom: none; margin-top: 4px; padding-top: 12px; color: var(--navy); }
+  .closing-note { font-size: 0.75rem; color: var(--text-light); margin-top: 6px; }
+
+  .cash-to-close { background: linear-gradient(135deg, #f0f9f4 0%, #e8f5ee 100%); border: 1.5px solid #a7d4b4; border-radius: 14px; padding: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+  .ctc-label { font-weight: 600; color: #15803d; font-size: 0.95rem; }
+  .ctc-sub { font-size: 0.8rem; color: #15803d; opacity: 0.7; }
+  .ctc-val { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #15803d; }
+
+  .mshda-callout { background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%); border: 1.5px solid var(--gold); border-radius: 14px; padding: 20px 24px; margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-start; }
+  .mshda-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .mshda-text strong { color: var(--navy); font-size: 0.95rem; display: block; margin-bottom: 4px; }
+  .mshda-text span { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── CTA ── */
+  .cta-block { background: var(--navy); border-radius: 14px; padding: 28px 32px; text-align: center; margin-top: 8px; }
+  .cta-block h3 { font-family: 'DM Serif Display', serif; color: white; font-size: 1.3rem; margin-bottom: 6px; }
+  .cta-block p { color: rgba(255,255,255,0.6); font-size: 0.88rem; margin-bottom: 20px; }
+  .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .cta-pill { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; }
   .cta-pill.gold { background: var(--gold); color: white; }
   .cta-pill.gold:hover { background: var(--gold-light); }
   .cta-pill.outline { border: 2px solid rgba(255,255,255,0.3); color: white; }
-  .cta-pill.outline:hover { border-color: white; background: rgba(255,255,255,0.05); }
-  .disclaimer {
-    font-size: 0.72rem;
-    color: var(--text-light);
-    margin-top: 20px;
-    line-height: 1.6;
-    text-align: center;
-  }
+  .cta-pill.outline:hover { border-color: white; }
+  .disclaimer { font-size: 0.72rem; color: var(--text-light); margin-top: 20px; line-height: 1.6; text-align: center; }
 
-  /* ── LE UPLOAD TOOL ── */
-  .upload-zone {
-    border: 2px dashed #c8c4bc;
-    border-radius: 14px;
-    padding: 48px 32px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: #fafaf8;
-    margin-bottom: 24px;
-    position: relative;
-  }
-  .upload-zone:hover, .upload-zone.drag-over {
-    border-color: var(--blue-light);
-    background: #f0f5ff;
-  }
+  /* ── LE COMPARE ── */
+  .upload-zone { border: 2px dashed #c8c4bc; border-radius: 14px; padding: 48px 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafaf8; margin-bottom: 24px; }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--blue-light); background: #f0f5ff; }
   .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .upload-title {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--navy);
-    margin-bottom: 6px;
-  }
+  .upload-title { font-weight: 600; font-size: 1rem; color: var(--navy); margin-bottom: 6px; }
   .upload-sub { font-size: 0.85rem; color: var(--text-muted); }
   .upload-sub span { color: var(--blue-light); font-weight: 500; }
   #le-file-input { display: none; }
 
-  .le-processing {
-    display: none;
-    text-align: center;
-    padding: 32px;
-  }
-  .le-processing.active { display: block; }
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid var(--warm-gray);
-    border-top-color: var(--blue-light);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 16px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* LE Results */
-  .le-comparison {
-    display: none;
-    margin-top: 8px;
-  }
+  .le-comparison { display: none; }
   .le-comparison.visible { display: block; }
-
-  .compare-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  .compare-col {
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-  }
-  .compare-col.theirs {
-    background: #fef2f2;
-    border: 1.5px solid #fca5a5;
-  }
-  .compare-col.ours {
-    background: linear-gradient(135deg, #f0f9f4 0%, #e8f5ee 100%);
-    border: 1.5px solid #86efac;
-  }
-  .cc-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
-  .compare-col.theirs .cc-label { color: #dc2626; }
-  .compare-col.ours .cc-label { color: #16a34a; }
+  .compare-header { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .compare-col { border-radius: 12px; padding: 20px; text-align: center; }
+  .compare-col.theirs { background: #fef2f2; border: 1.5px solid #fca5a5; }
+  .compare-col.ours { background: var(--success-bg); border: 1.5px solid #86efac; }
+  .cc-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .compare-col.theirs .cc-label { color: var(--danger); }
+  .compare-col.ours .cc-label { color: var(--success); }
   .cc-lender { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
-  .cc-rate {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.2rem;
-    color: var(--navy);
-    line-height: 1;
-  }
+  .cc-rate { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--navy); line-height: 1; }
   .cc-payment { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
-
   .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-  .compare-table th {
-    text-align: left;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-light);
-    padding: 8px 12px;
-    border-bottom: 2px solid var(--warm-gray);
-  }
+  .compare-table th { text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); padding: 8px 12px; border-bottom: 2px solid var(--warm-gray); }
   .compare-table th:not(:first-child) { text-align: right; }
-  .compare-table td {
-    padding: 12px 12px;
-    font-size: 0.9rem;
-    border-bottom: 1px solid #f0ede8;
-  }
+  .compare-table td { padding: 12px 12px; font-size: 0.9rem; border-bottom: 1px solid #f0ede8; }
   .compare-table td:not(:first-child) { text-align: right; font-weight: 500; }
   .compare-table tr:last-child td { border-bottom: none; font-weight: 700; }
-  .savings-badge {
-    display: inline-block;
-    background: #dcfce7;
-    color: #16a34a;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 50px;
-    margin-left: 6px;
-  }
-  .negative-badge {
-    background: #fee2e2;
-    color: #dc2626;
-  }
+  .savings-badge { display: inline-block; background: #dcfce7; color: #16a34a; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 50px; margin-left: 6px; }
+
+  /* ── GOOGLE AUTOCOMPLETE OVERRIDE ── */
+  .pac-container { border-radius: 10px; border: 1.5px solid #d4d0c8; box-shadow: 0 8px 24px rgba(0,0,0,0.12); font-family: 'DM Sans', sans-serif; margin-top: 4px; z-index: 9999; }
+  .pac-item { padding: 10px 14px; font-size: 0.9rem; cursor: pointer; }
+  .pac-item:hover { background: var(--off-white); }
+  .pac-item-query { font-weight: 600; color: var(--navy); }
 
   /* ── FOOTER ── */
-  .tools-footer {
-    background: var(--navy);
-    padding: 32px;
-    text-align: center;
-  }
-  .footer-disclaimer {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.3);
-    line-height: 1.7;
-    max-width: 680px;
-    margin: 0 auto;
-  }
+  .tools-footer { background: var(--navy); padding: 32px; text-align: center; }
+  .footer-disclaimer { font-size: 0.72rem; color: rgba(255,255,255,0.3); line-height: 1.7; max-width: 680px; margin: 0 auto; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="site-header">
   <a href="/" class="site-logo">Tommy<span>.</span></a>
   <a href="tel:+15864154507" class="header-cta">📞 (586) 415-4507</a>
 </header>
 
-<!-- HERO -->
 <section class="tools-hero">
   <div class="hero-eyebrow">Free Michigan Mortgage Tools</div>
   <h1 class="hero-title">Know your numbers<br><em>before</em> you commit.</h1>
-  <p class="hero-sub">Real payment estimates. Real Michigan closing costs. And if you've got a quote from another lender — find out in 60 seconds if Tommy can beat it.</p>
+  <p class="hero-sub">Enter any address. Get real property taxes, an accurate payment estimate, and what you'll need at closing — for that exact home.</p>
 </section>
 
-<!-- TAB NAV -->
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('calculator')" id="tab-calculator">
-    <span class="tab-icon">🏠</span> Payment Calculator
+    <span>🏠</span> Payment Calculator
   </button>
   <button class="tab-btn" onclick="switchTab('le-compare')" id="tab-le-compare">
-    <span class="tab-icon">📄</span> Compare Your LE
+    <span>📄</span> Compare Your LE
   </button>
 </nav>
 
-<!-- MAIN CONTENT -->
 <main class="tools-main">
 
-  <!-- ===== TAB 1: PAYMENT CALCULATOR ===== -->
+  <!-- ===== TAB 1: CALCULATOR ===== -->
   <div class="tool-panel active" id="panel-calculator">
     <div class="card">
-      <h2 class="card-title">What's my monthly payment?</h2>
-      <p class="card-sub">Enter the basics below. I'll show you the full picture — payment, taxes, insurance, PMI, and what you'll need at closing.</p>
+      <h2 class="card-title">What's my payment on this home?</h2>
+      <p class="card-sub">Start by typing the address. We'll pull the actual property taxes and calculate your true monthly payment.</p>
 
+      <!-- Address autocomplete -->
+      <div class="address-field">
+        <label class="address-label">Property Address</label>
+        <div class="address-input-wrap">
+          <span class="address-pin">📍</span>
+          <input type="text" class="address-input" id="address-input" 
+                 placeholder="Start typing an address..." 
+                 autocomplete="off"
+                 oninput="onAddressType()">
+        </div>
+        <div class="address-hint">Type to search — we'll find the exact property</div>
+      </div>
+
+      <!-- Property found badge -->
+      <div class="property-found" id="property-found">
+        <div class="pf-icon">✅</div>
+        <div class="pf-content">
+          <strong id="pf-address-line">Property found</strong>
+          <div class="pf-details" id="pf-details">
+            <span class="pf-chip loading" id="chip-tax">🔍 Looking up taxes...</span>
+            <span class="pf-chip" id="chip-county"></span>
+            <span class="pf-chip" id="chip-zip"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loan details -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Purchase Price</label>
           <div class="input-wrap">
             <span class="input-prefix">$</span>
-            <input type="number" class="form-input has-prefix" id="purchase-price" placeholder="350,000" min="50000" max="2000000" oninput="onInputChange()">
+            <input type="number" class="form-input has-prefix" id="purchase-price" 
+                   placeholder="350,000" oninput="onPriceChange()">
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Down Payment</label>
           <div class="input-wrap">
-            <input type="number" class="form-input" id="down-pct" placeholder="5" min="0" max="100" oninput="onInputChange()">
+            <input type="number" class="form-input" id="down-pct" 
+                   placeholder="5" min="0" max="100" oninput="onDownChange()">
             <span class="input-suffix">%</span>
           </div>
           <span class="form-hint" id="down-dollar-hint"></span>
@@ -699,130 +279,136 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Loan Type</label>
-          <select class="form-select" id="loan-type" onchange="onInputChange()">
+          <select class="form-select" id="loan-type" onchange="onLoanTypeChange()">
             <option value="conv">Conventional</option>
             <option value="fha">FHA</option>
-            <option value="va">VA (0% down)</option>
+            <option value="va">VA (0% down, no PMI)</option>
             <option value="usda">USDA (0% down)</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">County</label>
-          <select class="form-select" id="county" onchange="onInputChange()">
-            <option value="oakland">Oakland County</option>
-            <option value="macomb">Macomb County</option>
-            <option value="wayne">Wayne County</option>
-            <option value="washtenaw">Washtenaw County</option>
-            <option value="livingston">Livingston County</option>
-            <option value="other">Other Michigan</option>
-          </select>
+          <label class="form-label">Annual Property Tax</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" class="form-input has-prefix" id="property-tax" 
+                   placeholder="Auto-filled from address">
+          </div>
+          <span class="form-hint source" id="tax-source-hint"></span>
         </div>
       </div>
 
-      <button class="btn-primary" onclick="calculatePayment()">Calculate My Payment →</button>
+      <button class="btn-primary" id="calc-btn" onclick="calculatePayment()">Calculate My Payment →</button>
     </div>
 
     <!-- RESULTS -->
     <div class="results-section" id="calc-results">
 
-      <!-- Big monthly payment -->
       <div class="payment-big">
         <div class="payment-label">Estimated Monthly Payment</div>
+        <div class="payment-address" id="res-address-line"></div>
         <div class="payment-number" id="res-total-monthly">$—</div>
-        <div class="payment-note">Principal + Interest + Taxes + Insurance <span id="res-pmi-note"></span></div>
+        <div class="payment-note" id="res-payment-note">Principal + Interest + Taxes + Insurance</div>
       </div>
 
-      <!-- Breakdown grid -->
       <div class="breakdown-grid">
-        <div class="breakdown-item">
-          <span class="bi-label">Principal & Interest</span>
-          <span class="bi-val" id="res-pi">—</span>
+        <div class="breakdown-item highlight">
+          <div>
+            <div class="bi-label">Principal & Interest</div>
+            <div class="bi-sublabel" id="res-rate-sublabel"></div>
+          </div>
+          <div class="bi-val" id="res-pi">—</div>
         </div>
-        <div class="breakdown-item">
-          <span class="bi-label">Est. Property Tax</span>
-          <span class="bi-val" id="res-tax">—</span>
+        <div class="breakdown-item highlight">
+          <div>
+            <div class="bi-label">Property Tax</div>
+          </div>
+          <div>
+            <div class="bi-val" id="res-tax">—</div>
+            <div class="bi-source" id="res-tax-source"></div>
+          </div>
         </div>
-        <div class="breakdown-item">
-          <span class="bi-label">Homeowner's Insurance</span>
-          <span class="bi-val" id="res-ins">—</span>
+        <div class="breakdown-item highlight">
+          <div>
+            <div class="bi-label">Homeowner's Insurance</div>
+            <div class="bi-sublabel" id="res-ins-sublabel"></div>
+          </div>
+          <div>
+            <div class="bi-val" id="res-ins">—</div>
+            <div class="bi-source">Michigan avg rate</div>
+          </div>
         </div>
-        <div class="breakdown-item" id="pmi-item">
-          <span class="bi-label">PMI / MIP</span>
-          <span class="bi-val" id="res-pmi">—</span>
-        </div>
-        <div class="breakdown-item" id="ufmip-item" style="display:none">
-          <span class="bi-label">FHA Upfront MIP (financed)</span>
-          <span class="bi-val" id="res-ufmip">—</span>
+        <div class="breakdown-item highlight" id="pmi-item">
+          <div>
+            <div class="bi-label" id="pmi-label">PMI</div>
+            <div class="bi-sublabel" id="pmi-sublabel"></div>
+          </div>
+          <div class="bi-val" id="res-pmi">—</div>
         </div>
       </div>
 
       <!-- Rate scenarios -->
       <div class="card" style="padding:28px; margin-bottom:24px;">
-        <div class="results-headline">Rate Scenarios (30-yr Fixed)</div>
-        <div class="scenario-grid" id="scenario-grid">
-          <!-- filled by JS -->
-        </div>
-        <p style="font-size:0.78rem; color:var(--text-light); margin-top:8px;">* Based on Freddie Mac survey week ending 3/26/2026 (6.38% avg). Your actual rate depends on credit, loan type, and lender.</p>
+        <div class="results-headline">Rate Scenarios — What If Rates Move?</div>
+        <div class="scenario-grid" id="scenario-grid"></div>
+        <p style="font-size:0.78rem; color:var(--text-light); margin-top:8px;">Based on Freddie Mac 30-yr avg of 6.38% (week ending 3/26/2026). Your actual rate depends on credit, down payment, and loan type. Tommy can lock your rate same-day.</p>
       </div>
 
-      <!-- MSHDA callout (conditional) -->
+      <!-- MSHDA -->
       <div class="mshda-callout" id="mshda-callout" style="display:none">
         <div class="mshda-icon">🏦</div>
         <div class="mshda-text">
-          <strong>You may qualify for Michigan's MSHDA Down Payment Assistance</strong>
-          <span>MSHDA offers up to $10,000 in down payment assistance for eligible buyers — which could reduce your cash to close significantly. Ask Tommy if you qualify.</span>
+          <strong>You may qualify for MSHDA Down Payment Assistance — up to $10,000</strong>
+          <span>Michigan's state housing program offers eligible buyers up to $10,000 toward down payment and closing costs. This could significantly reduce your cash needed at closing. Ask Tommy if this home qualifies.</span>
         </div>
       </div>
 
       <!-- Closing costs -->
       <div class="card" style="padding:28px; margin-bottom:24px;">
         <div class="results-headline">Estimated Closing Costs (Buyer)</div>
-        <div class="closing-section" style="border:none; padding:0;">
-          <div class="closing-row"><span>Loan Origination Fee (~1%)</span><span id="cc-origination">—</span></div>
-          <div class="closing-row"><span>Appraisal</span><span>$600 – $750</span></div>
-          <div class="closing-row"><span>Credit Report</span><span>$30 – $50</span></div>
-          <div class="closing-row"><span>Lender's Title Insurance</span><span id="cc-title-lender">—</span></div>
-          <div class="closing-row"><span>Owner's Title Insurance (seller typically pays)</span><span id="cc-title-owner">—</span></div>
-          <div class="closing-row"><span>Recording Fees</span><span>$50 – $100</span></div>
-          <div class="closing-row"><span>Prepaid Interest (15 days est.)</span><span id="cc-prepaid-interest">—</span></div>
-          <div class="closing-row"><span>Escrow Setup (taxes + insurance 2–3 months)</span><span id="cc-escrow">—</span></div>
-          <div id="ufmip-closing-row" class="closing-row" style="display:none"><span>FHA Upfront MIP (1.75% of loan)</span><span id="cc-ufmip">—</span></div>
-          <div class="closing-row subtotal"><span>Total Estimated Closing Costs</span><span id="cc-total">—</span></div>
-        </div>
-        <p class="closing-note">Closing costs in Michigan typically range from $4,000–$8,000 depending on loan size and lender. These are estimates — Tommy provides exact numbers in your Loan Estimate.</p>
+        <div class="closing-row"><span>Loan Origination (~0.75–1%)</span><span id="cc-origination">—</span></div>
+        <div class="closing-row"><span>Appraisal</span><span>$600 – $750</span></div>
+        <div class="closing-row"><span>Credit Report</span><span>~$40</span></div>
+        <div class="closing-row"><span>Lender's Title Insurance</span><span id="cc-title-lender">—</span></div>
+        <div class="closing-row"><span>Owner's Title Insurance <em style="font-size:0.78rem; opacity:0.7">(seller often pays in MI)</em></span><span id="cc-title-owner">—</span></div>
+        <div class="closing-row"><span>Recording Fees</span><span>$75 – $100</span></div>
+        <div class="closing-row"><span>Prepaid Interest (~15 days)</span><span id="cc-prepaid-interest">—</span></div>
+        <div class="closing-row"><span>Escrow Setup (2–3 months taxes + insurance)</span><span id="cc-escrow">—</span></div>
+        <div class="closing-row" id="ufmip-row" style="display:none"><span>FHA Upfront MIP (1.75%, financed)</span><span id="cc-ufmip">—</span></div>
+        <div class="closing-row subtotal"><span>Total Estimated Closing Costs</span><span id="cc-total">—</span></div>
+        <p class="closing-note">Michigan buyer closing costs typically run $4,000–$8,000. These are estimates — Tommy provides exact numbers in your official Loan Estimate.</p>
       </div>
 
-      <!-- Cash to Close -->
+      <!-- Cash to close -->
       <div class="cash-to-close">
         <div>
           <div class="ctc-label">💰 Total Cash to Close</div>
-          <div class="ctc-sub">Down payment + closing costs</div>
+          <div class="ctc-sub">Down payment + estimated closing costs</div>
         </div>
-        <div class="ctc-val" id="res-cash-to-close">—</div>
+        <div class="ctc-val" id="res-ctc">—</div>
       </div>
 
       <!-- CTA -->
       <div class="cta-block">
-        <h3>Ready to see your actual numbers?</h3>
-        <p>These are estimates. Tommy gives you a real Loan Estimate — usually the same day.</p>
+        <h3>Ready for your real numbers?</h3>
+        <p>These are estimates. Tommy provides an official Loan Estimate — usually the same day you reach out.</p>
         <div class="cta-buttons">
           <a href="tel:+15864154507" class="cta-pill gold">📞 Call Tommy</a>
           <a href="sms:+15864154507" class="cta-pill outline">💬 Text Tommy</a>
         </div>
       </div>
+
       <p class="disclaimer">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan.<br>
-      All calculations are estimates for illustrative purposes only. Actual payments and costs vary based on credit score, lender fees, and market conditions. Not an offer to lend.</p>
+      All calculations are estimates for illustrative purposes only. Property tax data sourced from public records where available. Actual payments and costs vary based on credit score, final loan terms, lender fees, and market conditions at time of application. Not an offer to lend.</p>
     </div>
   </div>
 
-  <!-- ===== TAB 2: LE COMPARISON ===== -->
+  <!-- ===== TAB 2: LE COMPARE ===== -->
   <div class="tool-panel" id="panel-le-compare">
     <div class="card">
       <h2 class="card-title">Got a quote from another lender?</h2>
-      <p class="card-sub">Upload your Loan Estimate (LE) and I'll analyze it — then show you exactly how Tommy compares on rate, fees, and total cost. Takes about 30 seconds.</p>
+      <p class="card-sub">Upload your Loan Estimate and I'll analyze it — then show you exactly how Tommy compares on rate, fees, and total cost.</p>
 
-      <!-- Upload zone -->
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('le-file-input').click()" 
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('le-file-input').click()"
            ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
         <div class="upload-icon">📋</div>
         <div class="upload-title">Drop your Loan Estimate here</div>
@@ -830,7 +416,6 @@
         <input type="file" id="le-file-input" accept=".pdf,.png,.jpg,.jpeg" onchange="handleFileSelect(event)">
       </div>
 
-      <!-- Or manual entry -->
       <div style="text-align:center; margin:-12px 0 24px; color:var(--text-muted); font-size:0.85rem;">— or enter key numbers manually —</div>
 
       <div class="form-row">
@@ -862,7 +447,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Their Monthly P&I</label>
+          <label class="form-label">Monthly P&I</label>
           <div class="input-wrap">
             <span class="input-prefix">$</span>
             <input type="number" class="form-input has-prefix" id="le-monthly" placeholder="2,095">
@@ -871,12 +456,12 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Their Closing Costs (Section A+B)</label>
+          <label class="form-label">Their Closing Costs</label>
           <div class="input-wrap">
             <span class="input-prefix">$</span>
             <input type="number" class="form-input has-prefix" id="le-closing" placeholder="5,200">
           </div>
-          <span class="form-hint">Found on Page 2, Sections A & B of their LE</span>
+          <span class="form-hint">Page 2, Sections A+B of their LE</span>
         </div>
         <div class="form-group">
           <label class="form-label">Their Cash to Close</label>
@@ -884,23 +469,14 @@
             <span class="input-prefix">$</span>
             <input type="number" class="form-input has-prefix" id="le-ctc" placeholder="28,500">
           </div>
-          <span class="form-hint">Page 3 of their LE, "Calculating Cash to Close"</span>
+          <span class="form-hint">Page 3 of their LE</span>
         </div>
       </div>
 
       <button class="btn-primary" onclick="analyzeLE()">Analyze & Compare →</button>
     </div>
 
-    <!-- Processing -->
-    <div class="le-processing" id="le-processing">
-      <div class="spinner"></div>
-      <p style="color:var(--text-muted); font-size:0.9rem;">Analyzing your Loan Estimate with AI...</p>
-    </div>
-
-    <!-- Comparison Results -->
     <div class="le-comparison" id="le-comparison">
-
-      <!-- Side-by-side headers -->
       <div class="card" style="padding:28px; margin-bottom:24px;">
         <div class="results-headline">Head-to-Head Comparison</div>
         <div class="compare-header">
@@ -914,23 +490,15 @@
             <div class="cc-label">Tommy's Estimate</div>
             <div class="cc-lender">Tommy Lower · Rocket Mortgage</div>
             <div class="cc-rate" id="cmp-our-rate">—%</div>
-            <div class="cc-payment" id="cmp-our-payment">—/mo P&I</div>
+            <div class="cc-payment" id="cmp-our-payment">—/mo P&I*</div>
           </div>
         </div>
-
         <table class="compare-table">
           <thead>
-            <tr>
-              <th>Line Item</th>
-              <th>Their Quote</th>
-              <th>Tommy's Est.</th>
-              <th>Difference</th>
-            </tr>
+            <tr><th>Item</th><th>Their Quote</th><th>Tommy's Est.</th><th>Difference</th></tr>
           </thead>
-          <tbody id="cmp-table-body">
-          </tbody>
+          <tbody id="cmp-table-body"></tbody>
         </table>
-
         <div class="cash-to-close" id="cmp-savings-box">
           <div>
             <div class="ctc-label" id="cmp-savings-label">💰 Potential Savings</div>
@@ -938,23 +506,18 @@
           </div>
           <div class="ctc-val" id="cmp-savings-val">—</div>
         </div>
-
-        <div class="mshda-callout" style="margin-top:0; margin-bottom:0;">
+        <div class="mshda-callout" style="margin-bottom:0">
           <div class="mshda-icon">⚠️</div>
           <div class="mshda-text">
             <strong>These are estimates — not a binding offer</strong>
-            <span>To get Tommy's official Loan Estimate (required by law within 3 business days of application), call or text him. He'll shop it against the competition and come back with his best number.</span>
+            <span>Tommy's official Loan Estimate (required by law) comes after a quick application. Call or text him — he'll come back with his best number, usually same-day.</span>
           </div>
         </div>
       </div>
-
-      <!-- What the LE analysis found -->
       <div class="card" id="le-ai-analysis" style="padding:28px; display:none;">
         <div class="results-headline">📋 What We Found in Your LE</div>
         <div id="le-ai-text" style="font-size:0.9rem; line-height:1.7; color:var(--text-muted);"></div>
       </div>
-
-      <!-- CTA -->
       <div class="cta-block">
         <h3>Let Tommy beat that quote.</h3>
         <p>Send him the LE directly — he'll call you back with his best number, usually same-day.</p>
@@ -964,79 +527,54 @@
         </div>
       </div>
       <p class="disclaimer">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed in Michigan.<br>
-      Comparison estimates are for illustrative purposes only and do not constitute a commitment to lend or a guarantee of rates or terms. Tommy's actual rate and fees depend on borrower qualifications, loan type, and market conditions at time of application.</p>
+      Comparison estimates are for illustrative purposes only. Tommy's actual rate and fees depend on borrower qualifications, loan type, and market conditions at time of application.</p>
     </div>
   </div>
 
 </main>
 
-<!-- FOOTER -->
 <footer class="tools-footer">
   <p class="footer-disclaimer">Tommy Lower | NMLS #31194 | Rocket Mortgage, LLC | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.<br>
-  This website is operated by Tommy Lower as an independent loan officer. Content and calculations reflect estimates and market observations and are not an offer to lend or commitment to a specific rate or program. All loans subject to credit approval and program guidelines.</p>
+  This website is operated by Tommy Lower as an independent loan officer. Content and calculations are estimates only and are not an offer to lend or commitment to a specific rate or program. All loans subject to credit approval and program guidelines.</p>
 </footer>
 
 <script>
-// ─── MICHIGAN DATA ───────────────────────────────────────────────────
-const COUNTY_TAX_RATES = {
-  // Effective property tax rate on purchase price (Michigan: taxable value ≈ 50% of purchase price)
-  // Formula: purchasePrice * 0.5 * millageRate / 1000
-  // We store the effective rate on purchase price directly for simplicity
-  oakland:   0.0123,  // ~1.23% effective
-  macomb:    0.0128,  // ~1.28% effective
-  wayne:     0.0220,  // ~2.20% effective (high millage areas)
-  washtenaw: 0.0156,  // ~1.56% effective
-  livingston:0.0105,  // ~1.05% effective
-  other:     0.0135   // Michigan average
-};
-
-const COUNTY_NAMES = {
-  oakland: 'Oakland County', macomb: 'Macomb County', wayne: 'Wayne County',
-  washtenaw: 'Washtenaw County', livingston: 'Livingston County', other: 'Michigan'
-};
-
-// Current rates (Freddie Mac week ending 3/26/2026)
+// ─── MICHIGAN DATA ────────────────────────────────────────────────────
 const CURRENT_RATE_30 = 6.38;
-const CURRENT_RATE_15 = 5.75;
 
-// PMI rates (annual % of loan)
-const PMI_RATES = { conv5: 0.0085, conv10: 0.0065, conv15: 0.0050, fha: 0.0055 };
+// Michigan homeowners insurance — county-level rates
+// Source: MoneyGeek/Quadrant 2025 data, scaled by home value
+// Michigan average: ~$2,195/yr for $250K home = 0.878% of value
+// Rochester/Oakland: slightly lower, Detroit/Wayne: higher
+const COUNTY_INS_RATES = {
+  Oakland:    0.0078,  // $1,950/yr on $250K — competitive market, newer homes
+  Macomb:     0.0082,  // $2,050/yr on $250K
+  Wayne:      0.0105,  // $2,625/yr on $250K — urban, higher theft/flood risk
+  Washtenaw:  0.0075,  // $1,875/yr on $250K — Ann Arbor area, favorable
+  Livingston: 0.0072,  // $1,800/yr on $250K — rural/suburban, low risk
+  default:    0.0088   // Statewide average
+};
 
-// FHA UFMIP
-const FHA_UFMIP = 0.0175;
-const FHA_ANNUAL_MIP = 0.0055;
+// County property tax fallback rates (effective rate on purchase price)
+// Michigan: taxable value ≈ 50% of SEV ≈ 25-30% of market value for new buyers
+// For NEW buyers: first year taxes reset to ~50% of purchase price × millage
+const COUNTY_TAX_RATES = {
+  Oakland:    0.0123,
+  Macomb:     0.0128,
+  Wayne:      0.0220,
+  Washtenaw:  0.0156,
+  Livingston: 0.0105,
+  default:    0.0135
+};
 
-// Insurance estimate (annual, as % of purchase)
-const INSURANCE_RATE = 0.0055; // ~0.55% of value
+// State vars
+let selectedPlace = null;
+let foundTaxAmount = null;
+let foundCounty = null;
+let autocomplete = null;
+let taxLookupInProgress = false;
 
-// ─── UTILS ───────────────────────────────────────────────────────────
-function fmt(n) {
-  return '$' + Math.round(n).toLocaleString('en-US');
-}
-function fmtDec(n, d=2) {
-  return '$' + n.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
-}
-function calcPI(loanAmt, annualRate, termYears=30) {
-  const r = (annualRate/100)/12;
-  const n = termYears*12;
-  if(r === 0) return loanAmt/n;
-  return loanAmt * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
-}
-
-// Title insurance estimates (rough Michigan rates)
-function calcLenderTitle(loanAmt) {
-  if(loanAmt <= 100000) return 350;
-  if(loanAmt <= 200000) return 475;
-  if(loanAmt <= 300000) return 600;
-  if(loanAmt <= 400000) return 725;
-  if(loanAmt <= 500000) return 875;
-  return 875 + (loanAmt - 500000) * 0.0015;
-}
-function calcOwnerTitle(price) {
-  return price * 0.004; // ~0.4% of purchase price
-}
-
-// ─── TAB SWITCHING ──────────────────────────────────────────────────
+// ─── TAB SWITCHING ────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1044,130 +582,356 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
 }
 
-// ─── CALCULATOR ─────────────────────────────────────────────────────
-function onInputChange() {
-  const price = parseFloat(document.getElementById('purchase-price').value) || 0;
-  const pct = parseFloat(document.getElementById('down-pct').value) || 0;
-  if(price > 0 && pct >= 0) {
-    const dpDollars = price * pct / 100;
-    document.getElementById('down-dollar-hint').textContent = fmt(dpDollars) + ' down';
+// ─── GOOGLE PLACES AUTOCOMPLETE ──────────────────────────────────────
+function initAutocomplete() {
+  const input = document.getElementById('address-input');
+  autocomplete = new google.maps.places.Autocomplete(input, {
+    types: ['address'],
+    componentRestrictions: { country: 'us' },
+    fields: ['formatted_address', 'address_components', 'geometry', 'place_id']
+  });
+  autocomplete.addListener('place_changed', onPlaceSelected);
+}
+
+function onAddressType() {
+  // If user clears the field, reset state
+  if (!document.getElementById('address-input').value.trim()) {
+    resetAddressState();
   }
 }
 
+function resetAddressState() {
+  selectedPlace = null;
+  foundTaxAmount = null;
+  foundCounty = null;
+  document.getElementById('property-found').classList.remove('visible');
+  document.getElementById('tax-source-hint').textContent = '';
+  document.getElementById('property-tax').value = '';
+  document.getElementById('property-tax').placeholder = 'Auto-filled from address';
+}
+
+async function onPlaceSelected() {
+  const place = autocomplete.getPlace();
+  if (!place.geometry) return;
+
+  selectedPlace = place;
+  const formatted = place.formatted_address;
+
+  // Parse address components
+  const components = place.address_components || [];
+  let county = '';
+  let zip = '';
+  let city = '';
+  let streetNumber = '';
+  let street = '';
+
+  components.forEach(c => {
+    if (c.types.includes('administrative_area_level_2')) county = c.long_name.replace(' County', '');
+    if (c.types.includes('postal_code')) zip = c.short_name;
+    if (c.types.includes('locality')) city = c.long_name;
+    if (c.types.includes('street_number')) streetNumber = c.long_name;
+    if (c.types.includes('route')) street = c.long_name;
+  });
+
+  foundCounty = county;
+
+  // Show property found card
+  const pfDiv = document.getElementById('property-found');
+  pfDiv.classList.add('visible');
+  document.getElementById('pf-address-line').textContent = formatted;
+  document.getElementById('chip-county').textContent = county ? county + ' County' : 'Michigan';
+  document.getElementById('chip-zip').textContent = zip ? 'ZIP: ' + zip : '';
+  document.getElementById('chip-tax').className = 'pf-chip loading';
+  document.getElementById('chip-tax').textContent = '🔍 Looking up property taxes...';
+
+  // Auto-fill purchase price hint from address if field is empty
+  // (Don't override if user already typed something)
+
+  // Look up actual property taxes via AI
+  await lookupPropertyTaxes(formatted, county, zip, streetNumber + ' ' + street);
+}
+
+async function lookupPropertyTaxes(fullAddress, county, zip, streetAddress) {
+  taxLookupInProgress = true;
+  document.getElementById('tax-source-hint').textContent = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Search for the annual property taxes for this Michigan property: "${fullAddress}". 
+
+Look on Zillow, Redfin, or public county records. Find the actual tax amount paid last year.
+
+Return ONLY a JSON object like this (no other text):
+{
+  "annualTax": 4250,
+  "source": "Zillow",
+  "confidence": "high",
+  "note": "2024 taxes from Zillow listing"
+}
+
+If you cannot find actual taxes, use this formula: purchase price × 0.5 × county millage rate. For ${county} County Michigan, use millage rate of 0.032 (homestead). Return confidence "estimated" and note "Estimated using county millage rate".
+
+Only return JSON.`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    let taxData = null;
+
+    // Extract text from response (may include tool use)
+    for (const block of (data.content || [])) {
+      if (block.type === 'text' && block.text) {
+        try {
+          const clean = block.text.replace(/```json|```/g, '').trim();
+          // Find JSON object in text
+          const match = clean.match(/\{[\s\S]*\}/);
+          if (match) {
+            taxData = JSON.parse(match[0]);
+            break;
+          }
+        } catch(e) {}
+      }
+    }
+
+    if (taxData && taxData.annualTax && taxData.annualTax > 100) {
+      foundTaxAmount = taxData.annualTax;
+      document.getElementById('property-tax').value = Math.round(taxData.annualTax);
+
+      const confidence = taxData.confidence === 'high' ? '✅' : '~';
+      const sourceText = `${confidence} ${taxData.note || 'Found in ' + (taxData.source || 'public records')}`;
+      document.getElementById('tax-source-hint').textContent = sourceText;
+
+      // Update chip
+      document.getElementById('chip-tax').className = 'pf-chip';
+      document.getElementById('chip-tax').textContent = '$' + Math.round(taxData.annualTax).toLocaleString() + '/yr taxes';
+    } else {
+      // Fallback to county rate
+      useFallbackTax(county);
+    }
+  } catch(e) {
+    useFallbackTax(county);
+  }
+
+  taxLookupInProgress = false;
+}
+
+function useFallbackTax(county) {
+  const rate = COUNTY_TAX_RATES[county] || COUNTY_TAX_RATES.default;
+  const price = parseFloat(document.getElementById('purchase-price').value) || 0;
+  if (price > 0) {
+    const estimatedTax = Math.round(price * rate);
+    document.getElementById('property-tax').value = estimatedTax;
+    document.getElementById('tax-source-hint').textContent = `~ Estimated using ${county || 'Michigan'} County millage rate`;
+    document.getElementById('chip-tax').className = 'pf-chip';
+    document.getElementById('chip-tax').textContent = '~$' + estimatedTax.toLocaleString() + '/yr (est.)';
+  } else {
+    document.getElementById('property-tax').placeholder = 'Enter annual tax amount';
+    document.getElementById('chip-tax').className = 'pf-chip';
+    document.getElementById('chip-tax').textContent = 'Enter price to estimate taxes';
+    document.getElementById('tax-source-hint').textContent = '~ Will estimate when you enter purchase price';
+  }
+}
+
+// ─── PRICE/DOWN CHANGE HANDLERS ───────────────────────────────────────
+function onPriceChange() {
+  const price = parseFloat(document.getElementById('purchase-price').value) || 0;
+  const pct = parseFloat(document.getElementById('down-pct').value) || 0;
+  if (price > 0 && pct >= 0) {
+    document.getElementById('down-dollar-hint').textContent = '$' + Math.round(price * pct / 100).toLocaleString() + ' down';
+  }
+  // If no tax found yet and we have a county, estimate
+  const taxField = document.getElementById('property-tax');
+  if (!foundTaxAmount && foundCounty && price > 0 && !taxField.value) {
+    useFallbackTax(foundCounty);
+  }
+}
+
+function onDownChange() {
+  const price = parseFloat(document.getElementById('purchase-price').value) || 0;
+  const pct = parseFloat(document.getElementById('down-pct').value) || 0;
+  if (price > 0) {
+    document.getElementById('down-dollar-hint').textContent = '$' + Math.round(price * pct / 100).toLocaleString() + ' down';
+  }
+}
+
+function onLoanTypeChange() {
+  const lt = document.getElementById('loan-type').value;
+  if (lt === 'va' || lt === 'usda') {
+    document.getElementById('down-pct').value = 0;
+    document.getElementById('down-pct').disabled = true;
+    document.getElementById('down-dollar-hint').textContent = 'No down payment required';
+  } else {
+    document.getElementById('down-pct').disabled = false;
+    if (lt === 'fha' && (parseFloat(document.getElementById('down-pct').value) || 0) < 3.5) {
+      document.getElementById('down-pct').value = 3.5;
+    }
+  }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────
+function fmt(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+function calcPI(loan, annualRate, years = 30) {
+  const r = (annualRate / 100) / 12;
+  const n = years * 12;
+  if (r === 0) return loan / n;
+  return loan * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+function calcLenderTitle(loan) {
+  if (loan <= 100000) return 350;
+  if (loan <= 200000) return 475;
+  if (loan <= 300000) return 600;
+  if (loan <= 400000) return 725;
+  if (loan <= 500000) return 875;
+  return 875 + (loan - 500000) * 0.0015;
+}
+
+// ─── CALCULATE PAYMENT ────────────────────────────────────────────────
 function calculatePayment() {
   const price = parseFloat(document.getElementById('purchase-price').value);
-  const downPct = parseFloat(document.getElementById('down-pct').value) || 5;
   const loanType = document.getElementById('loan-type').value;
-  const county = document.getElementById('county').value;
+  const address = document.getElementById('address-input').value;
 
-  if(!price || price < 50000) {
+  if (!price || price < 50000) {
     alert('Please enter a valid purchase price.');
     return;
   }
 
-  let downPctFinal = downPct;
-  if(loanType === 'va' || loanType === 'usda') downPctFinal = 0;
-  if(loanType === 'fha' && downPctFinal < 3.5) downPctFinal = 3.5;
-  if(loanType === 'conv' && downPctFinal < 3) downPctFinal = 3;
+  // Down payment
+  let downPct = parseFloat(document.getElementById('down-pct').value) || 5;
+  if (loanType === 'va' || loanType === 'usda') downPct = 0;
+  if (loanType === 'fha' && downPct < 3.5) downPct = 3.5;
+  if (loanType === 'conv' && downPct < 3) downPct = 3;
+  const downDollars = price * downPct / 100;
 
-  const downDollars = price * downPctFinal / 100;
+  // Loan amount
   let baseLoan = price - downDollars;
-
-  // FHA: add UFMIP to loan
   let ufmipAmount = 0;
-  if(loanType === 'fha') {
-    ufmipAmount = baseLoan * FHA_UFMIP;
+  if (loanType === 'fha') {
+    ufmipAmount = baseLoan * 0.0175;
     baseLoan += ufmipAmount;
   }
 
-  // Rate (use current benchmark, Tommy typically within 0.25%)
+  // Rate & P&I
   const rate = CURRENT_RATE_30;
-  const pi = calcPI(baseLoan, rate, 30);
+  const pi = calcPI(baseLoan, rate);
 
-  // Property tax (monthly)
-  const taxRate = COUNTY_TAX_RATES[county];
-  const annualTax = price * taxRate;
+  // Property tax — use found value or entered value
+  let annualTax = parseFloat(document.getElementById('property-tax').value) || 0;
+  let taxSource = 'Public records';
+  let taxSourceLabel = '';
+  if (!annualTax || annualTax < 100) {
+    // Fall back to county rate
+    const cRate = COUNTY_TAX_RATES[foundCounty] || COUNTY_TAX_RATES.default;
+    annualTax = price * cRate;
+    taxSource = 'estimated';
+    taxSourceLabel = '~ Est. from county millage';
+  } else {
+    taxSourceLabel = foundTaxAmount ? '✅ From public records' : 'Entered manually';
+  }
   const monthlyTax = annualTax / 12;
 
-  // Insurance (monthly)
-  const annualIns = price * INSURANCE_RATE;
+  // Insurance — county-aware Michigan rates
+  const insRate = COUNTY_INS_RATES[foundCounty] || COUNTY_INS_RATES.default;
+  // Scale with home value (higher-value homes cost more but rate compresses)
+  let adjustedInsRate = insRate;
+  if (price > 500000) adjustedInsRate = insRate * 0.85;
+  if (price > 750000) adjustedInsRate = insRate * 0.75;
+  const annualIns = price * adjustedInsRate;
   const monthlyIns = annualIns / 12;
+  const insLabel = foundCounty
+    ? (foundCounty + ' County avg')
+    : 'Michigan avg';
 
   // PMI/MIP
   let monthlyPMI = 0;
-  let pmiLabel = '';
-  if(loanType === 'conv' && downPctFinal < 20) {
-    let pmiKey = downPctFinal < 5 ? 'conv5' : downPctFinal < 10 ? 'conv5' : downPctFinal < 15 ? 'conv10' : 'conv15';
-    monthlyPMI = baseLoan * PMI_RATES[pmiKey] / 12;
-    pmiLabel = ' + PMI';
-  } else if(loanType === 'fha') {
-    monthlyPMI = (baseLoan - ufmipAmount) * FHA_ANNUAL_MIP / 12;
-    pmiLabel = ' + MIP';
+  let pmiNote = '';
+  if (loanType === 'conv' && downPct < 20) {
+    const pmiRate = downPct < 5 ? 0.0085 : downPct < 10 ? 0.0070 : downPct < 15 ? 0.0055 : 0.0040;
+    monthlyPMI = baseLoan * pmiRate / 12;
+    pmiNote = `Drops off when you reach 20% equity`;
+    document.getElementById('pmi-label').textContent = 'PMI';
+  } else if (loanType === 'fha') {
+    monthlyPMI = (baseLoan - ufmipAmount) * 0.0055 / 12;
+    pmiNote = 'FHA Annual MIP';
+    document.getElementById('pmi-label').textContent = 'MIP (FHA)';
+  } else if (loanType === 'va') {
+    document.getElementById('pmi-label').textContent = 'PMI';
+    pmiNote = 'No PMI — VA loan benefit';
   }
+  document.getElementById('pmi-sublabel').textContent = pmiNote;
+  document.getElementById('pmi-item').style.display = (loanType === 'va' && downPct === 0) ? 'none' : 'flex';
 
-  const totalMonthly = pi + monthlyTax + monthlyIns + monthlyPMI;
+  const total = pi + monthlyTax + monthlyIns + monthlyPMI;
 
   // Closing costs
-  const origFee = baseLoan * 0.01;
+  const origFee = baseLoan * 0.0090; // 0.9% midpoint
   const lenderTitle = calcLenderTitle(baseLoan);
-  const ownerTitle = calcOwnerTitle(price);
-  const prepaidInterest = baseLoan * (rate/100/365) * 15;
+  const ownerTitle = price * 0.004;
+  const prepaidInt = baseLoan * (rate / 100 / 365) * 15;
   const escrowSetup = (monthlyTax + monthlyIns) * 2.5;
-  const baseCCFixed = 680 + 40 + 75; // appraisal mid + credit + recording mid
-  const totalCC = origFee + lenderTitle + prepaidInterest + escrowSetup + baseCCFixed;
-  // (owner title typically seller-paid in MI)
+  const otherFixed = 725 + 40 + 88; // appraisal + credit + recording
+  const totalCC = origFee + lenderTitle + prepaidInt + escrowSetup + otherFixed;
+  const ctc = downDollars + totalCC;
 
-  const cashToClose = downDollars + totalCC;
+  // MSHDA eligibility
+  const showMSHDA = downPct <= 5 && (loanType === 'conv' || loanType === 'fha') && price <= 450000;
 
-  // MSHDA eligibility hint
-  const showMSHDA = (downPctFinal <= 5) && (loanType === 'conv' || loanType === 'fha') && price <= 450000;
+  // ── UPDATE DOM ──
+  document.getElementById('res-address-line').textContent = address || '';
+  document.getElementById('res-total-monthly').textContent = fmt(total) + '/mo';
+  document.getElementById('res-payment-note').textContent =
+    'P&I + Taxes + Insurance' + (monthlyPMI > 0 ? ' + ' + document.getElementById('pmi-label').textContent : '');
 
-  // ── SET DOM ──
-  document.getElementById('res-total-monthly').textContent = fmt(totalMonthly) + '/mo';
   document.getElementById('res-pi').textContent = fmt(pi) + '/mo';
+  document.getElementById('res-rate-sublabel').textContent = rate.toFixed(2) + '% · 30-yr fixed';
   document.getElementById('res-tax').textContent = fmt(monthlyTax) + '/mo';
+  document.getElementById('res-tax-source').textContent = taxSourceLabel;
   document.getElementById('res-ins').textContent = fmt(monthlyIns) + '/mo';
+  document.getElementById('res-ins-sublabel').textContent = insLabel + ' · ' + (adjustedInsRate * 100).toFixed(2) + '% of value';
   document.getElementById('res-pmi').textContent = monthlyPMI > 0 ? fmt(monthlyPMI) + '/mo' : 'None';
-  document.getElementById('res-pmi-note').textContent = pmiLabel;
 
-  if(loanType === 'fha') {
-    document.getElementById('ufmip-item').style.display = 'flex';
-    document.getElementById('res-ufmip').textContent = fmt(ufmipAmount) + ' financed';
-    document.getElementById('ufmip-closing-row').style.display = 'flex';
-    document.getElementById('cc-ufmip').textContent = fmt(ufmipAmount);
-  } else {
-    document.getElementById('ufmip-item').style.display = 'none';
-    document.getElementById('ufmip-closing-row').style.display = 'none';
-  }
+  // FHA UFMIP
+  document.getElementById('ufmip-row').style.display = loanType === 'fha' ? 'flex' : 'none';
+  if (loanType === 'fha') document.getElementById('cc-ufmip').textContent = fmt(ufmipAmount) + ' financed';
 
   document.getElementById('cc-origination').textContent = fmt(origFee);
   document.getElementById('cc-title-lender').textContent = fmt(lenderTitle);
   document.getElementById('cc-title-owner').textContent = fmt(ownerTitle) + ' *';
-  document.getElementById('cc-prepaid-interest').textContent = fmt(prepaidInterest);
+  document.getElementById('cc-prepaid-interest').textContent = fmt(prepaidInt);
   document.getElementById('cc-escrow').textContent = fmt(escrowSetup);
   document.getElementById('cc-total').textContent = fmt(totalCC);
-  document.getElementById('res-cash-to-close').textContent = fmt(cashToClose);
-
-  // MSHDA
+  document.getElementById('res-ctc').textContent = fmt(ctc);
   document.getElementById('mshda-callout').style.display = showMSHDA ? 'flex' : 'none';
 
-  // Rate scenarios
-  buildScenarios(baseLoan, rate);
+  // Scenarios
+  buildScenarios(baseLoan);
 
   document.getElementById('calc-results').classList.add('visible');
-  document.getElementById('calc-results').scrollIntoView({behavior:'smooth', block:'start'});
+  setTimeout(() => {
+    document.getElementById('calc-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
-function buildScenarios(loanAmt, currentRate) {
+function buildScenarios(loan) {
+  const base = CURRENT_RATE_30;
   const rates = [
-    {label: 'If rates drop', rate: currentRate - 0.5, featured: false},
-    {label: 'Today\'s Rate', rate: currentRate, featured: true},
-    {label: 'If rates rise', rate: currentRate + 0.5, featured: false}
+    { label: 'If rates drop', rate: base - 0.5, featured: false },
+    { label: "Today's Rate", rate: base, featured: true },
+    { label: 'If rates rise', rate: base + 0.5, featured: false }
   ];
   const grid = document.getElementById('scenario-grid');
   grid.innerHTML = '';
   rates.forEach(s => {
-    const pi = calcPI(loanAmt, s.rate, 30);
+    const pi = calcPI(loan, s.rate);
     const el = document.createElement('div');
     el.className = 'scenario-card' + (s.featured ? ' featured' : '');
     el.innerHTML = `<div class="sc-label">${s.label}</div>
@@ -1180,22 +944,17 @@ function buildScenarios(loanAmt, currentRate) {
 // ─── LE COMPARISON ──────────────────────────────────────────────────
 let uploadedFile = null;
 
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.add('drag-over');
-}
-function handleDragLeave(e) {
-  document.getElementById('upload-zone').classList.remove('drag-over');
-}
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('drag-over'); }
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('upload-zone').classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
-  if(file) processUploadedFile(file);
+  if (file) processUploadedFile(file);
 }
 function handleFileSelect(e) {
   const file = e.target.files[0];
-  if(file) processUploadedFile(file);
+  if (file) processUploadedFile(file);
 }
 
 function processUploadedFile(file) {
@@ -1203,23 +962,18 @@ function processUploadedFile(file) {
   document.getElementById('upload-zone').innerHTML = `
     <div class="upload-icon">✅</div>
     <div class="upload-title">${file.name}</div>
-    <div class="upload-sub" style="color:var(--success)">File ready — fill in any missing fields below or click Analyze</div>
+    <div class="upload-sub" style="color:var(--success)">File ready — AI is extracting your loan details...</div>
   `;
-
-  // Use Claude API to extract LE data
   const reader = new FileReader();
   reader.onload = async (ev) => {
     const base64 = ev.target.result.split(',')[1];
     const mediaType = file.type === 'application/pdf' ? 'application/pdf' : 'image/jpeg';
-    await extractLEWithAI(base64, mediaType, file.name);
+    await extractLEWithAI(base64, mediaType);
   };
   reader.readAsDataURL(file);
 }
 
-async function extractLEWithAI(base64Data, mediaType, filename) {
-  // Show subtle loading state
-  document.getElementById('upload-zone').style.opacity = '0.7';
-
+async function extractLEWithAI(base64Data, mediaType) {
   try {
     const contentBlock = mediaType === 'application/pdf'
       ? { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64Data } }
@@ -1235,23 +989,7 @@ async function extractLEWithAI(base64Data, mediaType, filename) {
           role: 'user',
           content: [
             contentBlock,
-            {
-              type: 'text',
-              text: `This is a mortgage Loan Estimate document. Extract these exact fields and return ONLY valid JSON, no other text:
-{
-  "lenderName": "string",
-  "loanAmount": number,
-  "interestRate": number,
-  "apr": number,
-  "monthlyPI": number,
-  "lenderFees": number,
-  "totalClosingCosts": number,
-  "cashToClose": number,
-  "loanTerm": number,
-  "loanType": "string"
-}
-Use null for any field you cannot find. Numbers should be plain numbers without $ or %.`
-            }
+            { type: 'text', text: 'This is a mortgage Loan Estimate. Extract: lenderName, loanAmount, interestRate, apr, monthlyPI, totalClosingCosts, cashToClose, loanTerm, loanType. Return ONLY valid JSON, no other text. Numbers without $ or %.' }
           ]
         }]
       })
@@ -1259,29 +997,22 @@ Use null for any field you cannot find. Numbers should be plain numbers without 
 
     const data = await response.json();
     const text = data.content?.find(b => b.type === 'text')?.text || '';
+    const match = text.replace(/```json|```/g, '').trim().match(/\{[\s\S]*\}/);
+    if (match) {
+      const extracted = JSON.parse(match[0]);
+      if (extracted.lenderName) document.getElementById('le-lender').value = extracted.lenderName;
+      if (extracted.loanAmount) document.getElementById('le-loan-amount').value = extracted.loanAmount;
+      if (extracted.interestRate) document.getElementById('le-rate').value = extracted.interestRate;
+      if (extracted.apr) document.getElementById('le-apr').value = extracted.apr;
+      if (extracted.monthlyPI) document.getElementById('le-monthly').value = extracted.monthlyPI;
+      if (extracted.totalClosingCosts) document.getElementById('le-closing').value = extracted.totalClosingCosts;
+      if (extracted.cashToClose) document.getElementById('le-ctc').value = extracted.cashToClose;
 
-    try {
-      const clean = text.replace(/```json|```/g, '').trim();
-      const extracted = JSON.parse(clean);
-      populateLEFields(extracted);
-    } catch(e) {
-      console.log('Could not parse AI extraction, using manual entry');
+      document.getElementById('upload-zone').querySelector('.upload-sub').textContent = '✅ Loan details extracted — review below and click Analyze';
     }
   } catch(e) {
     console.log('AI extraction failed, manual entry available');
   }
-
-  document.getElementById('upload-zone').style.opacity = '1';
-}
-
-function populateLEFields(data) {
-  if(data.lenderName) document.getElementById('le-lender').value = data.lenderName;
-  if(data.loanAmount) document.getElementById('le-loan-amount').value = data.loanAmount;
-  if(data.interestRate) document.getElementById('le-rate').value = data.interestRate;
-  if(data.apr) document.getElementById('le-apr').value = data.apr;
-  if(data.monthlyPI) document.getElementById('le-monthly').value = data.monthlyPI;
-  if(data.totalClosingCosts) document.getElementById('le-closing').value = data.totalClosingCosts;
-  if(data.cashToClose) document.getElementById('le-ctc').value = data.cashToClose;
 }
 
 async function analyzeLE() {
@@ -1291,94 +1022,74 @@ async function analyzeLE() {
   const theirAPR = parseFloat(document.getElementById('le-apr').value);
   const theirMonthly = parseFloat(document.getElementById('le-monthly').value);
   const theirClosing = parseFloat(document.getElementById('le-closing').value) || 0;
-  const theirCTC = parseFloat(document.getElementById('le-ctc').value) || 0;
 
-  if(!loanAmt || !theirRate) {
+  if (!loanAmt || !theirRate) {
     alert('Please enter at least the loan amount and their interest rate.');
     return;
   }
 
-  // Tommy's estimated numbers
-  // Tommy typically can compete within 0.125-0.25% and often beats on fees
   const tommyRate = Math.max(theirRate - 0.125, CURRENT_RATE_30 - 0.25);
-  const tommyPI = calcPI(loanAmt, tommyRate, 30);
-  const theirPICalc = theirMonthly || calcPI(loanAmt, theirRate, 30);
+  const tommyPI = calcPI(loanAmt, tommyRate);
+  const theirPICalc = theirMonthly || calcPI(loanAmt, theirRate);
+  const tommyClosing = loanAmt * 0.0075 + calcLenderTitle(loanAmt) + 795;
 
-  // Estimated Tommy fees (Rocket Mortgage is competitive on fees)
-  const tommyOrigination = loanAmt * 0.0075; // ~0.75% vs typical 1%
-  const tommyTitle = calcLenderTitle(loanAmt);
-  const tommyOtherFixed = 680 + 40 + 75;
-  const tommyClosing = tommyOrigination + tommyTitle + tommyOtherFixed;
-
-  // Monthly savings
   const monthlyDiff = theirPICalc - tommyPI;
   const lifetimeDiff = monthlyDiff * 360;
-  const closingDiff = theirClosing - tommyClosing;
+  const closingDiff = (theirClosing || loanAmt * 0.01) - tommyClosing;
   const totalSavings = lifetimeDiff + closingDiff;
 
-  // Set comparison header
   document.getElementById('cmp-their-lender').textContent = lender;
   document.getElementById('cmp-their-rate').textContent = theirRate.toFixed(3) + '%';
   document.getElementById('cmp-their-payment').textContent = fmt(theirPICalc) + '/mo P&I';
   document.getElementById('cmp-our-rate').textContent = tommyRate.toFixed(3) + '%*';
   document.getElementById('cmp-our-payment').textContent = fmt(tommyPI) + '/mo P&I*';
 
-  // Build table
   const rows = [
-    ['Interest Rate', theirRate.toFixed(3) + '%', tommyRate.toFixed(3) + '%*', theirRate - tommyRate],
-    ['Monthly P&I', fmt(theirPICalc), fmt(tommyPI) + '*', theirPICalc - tommyPI],
-    ['Lender Fees (est.)', fmt(theirClosing || loanAmt*0.01), fmt(tommyClosing) + '*', (theirClosing||loanAmt*0.01) - tommyClosing],
-    ['30-yr Interest Cost', fmt(theirPICalc*360 - loanAmt), fmt(tommyPI*360 - loanAmt) + '*', (theirPICalc - tommyPI)*360],
+    ['Interest Rate', theirRate.toFixed(3) + '%', tommyRate.toFixed(3) + '%*', theirRate - tommyRate, true],
+    ['Monthly P&I', fmt(theirPICalc), fmt(tommyPI) + '*', theirPICalc - tommyPI, false],
+    ['Est. Lender Fees', fmt(theirClosing || loanAmt * 0.01), fmt(tommyClosing) + '*', (theirClosing || loanAmt * 0.01) - tommyClosing, false],
+    ['30-yr Interest', fmt(theirPICalc * 360 - loanAmt), fmt(tommyPI * 360 - loanAmt) + '*', (theirPICalc - tommyPI) * 360, false],
   ];
 
   const tbody = document.getElementById('cmp-table-body');
   tbody.innerHTML = '';
-  rows.forEach((row, i) => {
-    const isRate = i === 0;
+  rows.forEach(row => {
     const diff = row[3];
-    const isGood = isRate ? diff > 0 : diff > 0;
-    const diffDisplay = isRate
-      ? (diff > 0 ? '+' : '') + diff.toFixed(3) + '%'
-      : (diff > 0 ? '+' : '') + fmt(Math.abs(diff)) + (diff > 0 ? ' saved' : ' more');
-    const badge = isGood && diff !== 0
+    const isRate = row[4];
+    const good = diff > 0;
+    const badge = good && diff !== 0
       ? `<span class="savings-badge">${isRate ? '-' + diff.toFixed(3) + '%' : fmt(Math.abs(diff)) + ' saved'}</span>`
-      : (diff < 0 ? `<span class="savings-badge negative-badge">Higher</span>` : '');
+      : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${badge}</td>`;
     tbody.appendChild(tr);
   });
 
-  // Savings box
-  if(totalSavings > 0) {
+  const box = document.getElementById('cmp-savings-box');
+  if (totalSavings > 0) {
     document.getElementById('cmp-savings-label').textContent = '💰 Estimated Savings with Tommy';
     document.getElementById('cmp-savings-val').textContent = fmt(totalSavings);
-    document.getElementById('cmp-savings-sub').textContent = 'Lower rate + fees over 30 years';
-    document.getElementById('cmp-savings-box').style.background = 'linear-gradient(135deg, #f0f9f4 0%, #e8f5ee 100%)';
-    document.getElementById('cmp-savings-box').style.border = '1.5px solid #86efac';
+    document.getElementById('cmp-savings-sub').textContent = 'Lower rate + fees over 30 years (estimated)';
   } else {
-    document.getElementById('cmp-savings-label').textContent = '📊 Competitive Market';
+    document.getElementById('cmp-savings-label').textContent = '📊 Competitive Quote';
     document.getElementById('cmp-savings-val').textContent = 'Close';
     document.getElementById('cmp-savings-sub').textContent = 'Tommy will review and submit his best offer';
-    document.getElementById('cmp-savings-box').style.background = '#f8f8f6';
-    document.getElementById('cmp-savings-box').style.border = '1.5px solid #d4d0c8';
   }
 
-  // If we have an uploaded file, use AI to add analysis
-  if(uploadedFile) {
+  // AI analysis of the LE
+  if (uploadedFile) {
     await generateLEAnalysis(lender, theirRate, theirAPR, theirClosing, loanAmt);
   }
 
   document.getElementById('le-comparison').classList.add('visible');
-  document.getElementById('le-comparison').scrollIntoView({behavior:'smooth'});
+  document.getElementById('le-comparison').scrollIntoView({ behavior: 'smooth' });
 }
 
 async function generateLEAnalysis(lender, rate, apr, closing, loanAmt) {
   const aiBox = document.getElementById('le-ai-analysis');
   const aiText = document.getElementById('le-ai-text');
   aiBox.style.display = 'block';
-  aiText.textContent = 'Analyzing your Loan Estimate...';
-
-  const rateSpread = apr && rate ? (apr - rate).toFixed(3) : null;
+  aiText.innerHTML = '<span style="color:var(--text-light)">Analyzing your Loan Estimate...</span>';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1386,27 +1097,22 @@ async function generateLEAnalysis(lender, rate, apr, closing, loanAmt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 800,
         messages: [{
           role: 'user',
-          content: `You are Tommy Lower, an expert Michigan mortgage loan originator (NMLS #31194, Rocket Mortgage). A buyer has shared a Loan Estimate from ${lender}.
+          content: `You are an expert mortgage advisor reviewing a Loan Estimate from ${lender} for a Michigan buyer.
 
-Key numbers:
-- Interest Rate: ${rate}%
-- APR: ${apr || 'not provided'}%  
-- Rate/APR spread: ${rateSpread ? rateSpread + '%' : 'unknown'} (higher spread = more fees baked in)
-- Lender fees/closing: $${closing || 'unknown'}
-- Loan amount: $${loanAmt}
-- Current market 30-yr rate (Freddie Mac 3/26/26): 6.38%
+Key numbers: Rate: ${rate}%, APR: ${apr || 'unknown'}%, Fees: $${closing || 'unknown'}, Loan: $${loanAmt}
+Current market 30-yr rate (Freddie Mac 3/26/2026): 6.38%
 
-Write 3-4 short, plain-language bullet points about what stands out in this LE. Be specific and helpful — not salesy. Flag if the rate looks above market, if the APR spread is wide (suggests hidden fees), or if anything looks unusual. End with one sentence about what Tommy would look at to compete. Write as bullet points using • symbol. Keep each bullet under 25 words.`
+Write 3-4 short bullet points about what stands out. Be specific and helpful. Flag if rate is above market, if APR spread is wide (suggests baked-in points/fees), or if anything looks unusual. End with one sentence about what you'd look at to compete. Use • for bullets. Under 25 words per bullet. Plain language, no fluff.`
         }]
       })
     });
 
     const data = await response.json();
     const text = data.content?.find(b => b.type === 'text')?.text || '';
-    aiText.innerHTML = text.replace(/•/g, '<br>•').replace(/\n/g, '<br>');
+    aiText.innerHTML = text.replace(/•/g, '<br><br>•').replace(/^\n+/, '').replace(/\n/g, '<br>');
   } catch(e) {
     aiBox.style.display = 'none';
   }
