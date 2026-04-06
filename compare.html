@@ -3,2208 +3,763 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compare Loan Estimates | Tommy the Mortgage Guy</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<title>Loan Estimate Analyzer | Tommy | Michigan Mortgage</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --navy:#0a1628; --navy-mid:#152238; --blue:#1a4a8a; --blue-light:#2563b0;
-  --gold:#c8922a; --gold-light:#e8aa40;
-  --off-white:#f7f4ef; --warm-gray:#e8e4dc;
-  --success:#16a34a; --danger:#dc2626;
-  --text:#1a1a1a; --muted:#5a5a5a; --faint:#8a8a8a;
+  --navy: #0d1f35;
+  --navy2: #142740;
+  --gold: #c8933a;
+  --gold-bright: #e8b05a;
+  --gold-dim: rgba(200,147,58,0.12);
+  --green: #1faa5e;
+  --green-dim: rgba(31,170,94,0.08);
+  --red: #d94f4f;
+  --red-dim: rgba(217,79,79,0.08);
+  --white: #ffffff;
+  --off-white: #f2ede7;
+  --text: #111111;
+  --muted: #444444;
+  --border: #d8d0c5;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',sans-serif; background:var(--off-white); color:var(--text); min-height:100vh; }
 
-/* HEADER */
-.site-header { background:var(--navy); padding:16px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-.logo { font-family:'DM Serif Display',serif; font-size:1.3rem; color:white; text-decoration:none; }
-.logo span { color:var(--gold); }
-.hdr-cta { color:var(--gold); font-size:0.82rem; font-weight:500; text-decoration:none; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  overflow-x: hidden;
+}
 
-/* HERO */
-.hero { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 55%,var(--blue) 100%); padding:44px 28px 36px; text-align:center; overflow:hidden; position:relative; }
-.hero::before { content:''; position:absolute; top:-80px; right:-60px; width:280px; height:280px; background:radial-gradient(circle,rgba(200,146,42,.13) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
-.hero-eye { font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; position:relative; }
-.hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(1.5rem,4vw,2.2rem); color:white; line-height:1.2; margin-bottom:10px; position:relative; }
-.hero p { font-size:.88rem; color:rgba(255,255,255,.65); max-width:500px; margin:0 auto; line-height:1.65; position:relative; }
+/* ── HEADER ── */
+header {
+  background: var(--navy);
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  color: var(--white);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.logo span { color: var(--gold); }
+.header-right { display: flex; align-items: center; gap: 20px; }
+.header-nmls { font-size: 0.68rem; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; }
+.header-phone { font-size: 0.88rem; color: var(--gold); font-weight: 600; text-decoration: none; }
+.header-phone:hover { color: var(--gold-bright); }
 
-/* MAIN */
-.main { max-width:960px; margin:0 auto; padding:32px 18px 64px; }
+/* ── HERO ── */
+.hero-band {
+  background: var(--navy);
+  padding: 64px 48px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-band::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 44px;
+  background: var(--off-white);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
 
-/* CARD */
-.card { background:white; border-radius:16px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,.06); margin-bottom:22px; }
-.card-title { font-family:'DM Serif Display',serif; font-size:1.2rem; color:var(--navy); margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--warm-gray); display:flex; align-items:center; gap:8px; }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(200,147,58,0.15);
+  border: 1px solid rgba(200,147,58,0.35);
+  color: #e8b05a;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 5.5vw, 4.4rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.08;
+  margin-bottom: 22px;
+}
+.hero-title em { font-style: italic; color: var(--gold-bright); }
+.hero-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.8);
+  max-width: 560px;
+  margin: 0 auto 36px;
+  line-height: 1.75;
+  font-weight: 400;
+}
+.trust-pills {
+  display: flex; justify-content: center;
+  gap: 10px; flex-wrap: wrap;
+}
+.trust-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.79rem; font-weight: 500;
+  padding: 8px 15px; border-radius: 100px;
+}
 
-/* LE SELECTOR CARDS */
-.le-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
-@media(max-width:600px) { .le-grid { grid-template-columns:1fr; } }
-.le-tile { border:2px solid var(--warm-gray); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
-.le-tile:hover { border-color:var(--blue-light); transform:translateY(-2px); box-shadow:0 6px 18px rgba(37,99,176,.12); }
-.le-tile.selected { border-color:var(--gold); background:linear-gradient(135deg,#fff8e1,#fffbf0); }
-.le-tile.checked::after { content:'✓'; position:absolute; top:8px; right:10px; background:var(--success); color:white; font-size:.65rem; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.tile-icon { font-size:1.6rem; margin-bottom:6px; }
-.tile-name { font-weight:700; font-size:.85rem; color:var(--navy); margin-bottom:3px; }
-.tile-rate { font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--navy); }
-.tile-meta { font-size:.7rem; color:var(--muted); margin-top:4px; line-height:1.5; }
-.tile-rep { margin-top:9px; padding-top:9px; border-top:1px solid var(--warm-gray); font-size:.7rem; color:var(--muted); }
-.stars { color:#f59e0b; }
+/* ── HOW IT WORKS ── */
+.how-wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 60px 32px 0;
+  text-align: center;
+}
+.section-label {
+  font-size: 0.69rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); font-weight: 700; display: block; margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 700; color: var(--navy);
+  line-height: 1.2; margin-bottom: 40px;
+}
+.steps-row {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; background: var(--border);
+  border-radius: 14px; overflow: hidden; margin-bottom: 0;
+}
+.step-box {
+  background: var(--white); padding: 30px 26px; text-align: left;
+}
+.step-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem; font-weight: 900;
+  color: rgba(200,147,58,0.22); line-height: 1; margin-bottom: 14px;
+}
+.step-box h3 { font-size: 0.97rem; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+.step-box p { font-size: 0.84rem; color: var(--muted); line-height: 1.65; }
 
-/* ACTION BUTTONS */
-.btn-row { display:flex; gap:10px; flex-wrap:wrap; }
-.btn { border:none; padding:13px 22px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; transition:all .2s; flex:1; min-width:160px; }
-.btn-primary { background:var(--navy); color:white; }
-.btn-primary:hover:not(:disabled) { background:var(--blue); transform:translateY(-1px); }
-.btn-gold { background:var(--gold); color:white; }
-.btn-gold:hover:not(:disabled) { background:var(--gold-light); }
-.btn:disabled { opacity:.4; cursor:not-allowed; }
-.btn-outline { background:none; border:1.5px solid var(--warm-gray); color:var(--navy); }
-.btn-outline:hover { border-color:var(--blue-light); background:var(--off-white); }
+/* ── UPLOAD CARD ── */
+.upload-wrap {
+  max-width: 760px; margin: 0 auto; padding: 32px 32px 80px;
+}
+.upload-card {
+  background: var(--white); border-radius: 18px;
+  padding: 44px 40px;
+  box-shadow: 0 6px 48px rgba(13,31,53,0.09);
+}
 
-/* ═══════════════════════════════════════════
-   LOADING EXPERIENCE
-═══════════════════════════════════════════ */
-.loading-screen { display:none; position:fixed; inset:0; background:rgba(10,22,40,.92); z-index:999; flex-direction:column; align-items:center; justify-content:center; padding:28px; }
-.loading-screen.active { display:flex; }
-.loading-inner { max-width:460px; width:100%; text-align:center; }
-.loading-title { font-family:'DM Serif Display',serif; font-size:1.4rem; color:white; margin-bottom:6px; }
-.loading-sub { font-size:.82rem; color:rgba(255,255,255,.55); margin-bottom:28px; }
+.file-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.file-item {
+  display: flex; align-items: center; gap: 13px;
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: 9px; padding: 13px 16px;
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateY(-8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.file-emoji { font-size: 1.6rem; flex-shrink: 0; }
+.file-info { flex: 1; overflow: hidden; }
+.file-name { font-size: 0.9rem; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-size { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
+.file-remove {
+  background: none; border: none; color: #aaa; cursor: pointer;
+  font-size: 1rem; padding: 4px 6px; border-radius: 4px;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.file-remove:hover { color: var(--red); }
 
-/* Progress bar */
-.progress-track { background:rgba(255,255,255,.12); border-radius:50px; height:8px; margin-bottom:28px; overflow:hidden; }
-.progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:50px; width:0%; transition:width .5s ease; }
+.drop-zone {
+  border: 2.5px dashed var(--border);
+  border-radius: 13px; padding: 52px 28px;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+  background: var(--off-white);
+  margin-bottom: 20px;
+}
+.drop-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.drop-zone:hover, .drop-zone.over { border-color: var(--gold); background: var(--gold-dim); }
+.drop-zone.filled { border-style: solid; border-color: var(--green); background: var(--green-dim); }
 
-/* Step list */
-.step-list { list-style:none; text-align:left; }
-.step-item { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:10px; margin-bottom:6px; transition:all .3s; }
-.step-item.pending { opacity:.35; }
-.step-item.active { background:rgba(255,255,255,.08); opacity:1; }
-.step-item.done { opacity:.7; }
-.step-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; flex-shrink:0; transition:all .3s; }
-.step-item.pending .step-icon { background:rgba(255,255,255,.08); color:rgba(255,255,255,.3); }
-.step-item.active .step-icon { background:var(--gold); color:white; animation:pulse-icon .8s infinite alternate; }
-.step-item.done .step-icon { background:var(--success); color:white; }
-@keyframes pulse-icon { from { transform:scale(1); } to { transform:scale(1.1); } }
-.step-text { color:white; font-size:.82rem; }
-.step-item.pending .step-text { color:rgba(255,255,255,.4); }
-.step-detail { font-size:.72rem; color:rgba(255,255,255,.4); margin-top:1px; }
-.step-item.active .step-detail { color:rgba(255,255,255,.6); }
+.dz-icon { font-size: 3.2rem; display: block; margin-bottom: 16px; }
+.dz-head { font-size: 1.18rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.dz-sub { font-size: 0.86rem; color: var(--muted); line-height: 1.65; margin-bottom: 18px; }
+.format-chips { display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; }
+.chip {
+  background: var(--white); border: 1px solid var(--border);
+  color: var(--muted); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: 5px;
+}
 
-/* Thinking dots */
-.thinking { display:inline-flex; gap:4px; margin-left:8px; }
-.thinking span { width:5px; height:5px; background:var(--gold); border-radius:50%; animation:bounce .8s infinite; }
-.thinking span:nth-child(2) { animation-delay:.15s; }
-.thinking span:nth-child(3) { animation-delay:.3s; }
-@keyframes bounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-6px); } }
+.analyze-btn {
+  width: 100%; padding: 20px;
+  background: var(--navy); color: var(--white);
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.08rem; font-weight: 700;
+  letter-spacing: 0.02em; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  margin-bottom: 18px;
+}
+.analyze-btn:hover:not(:disabled) { background: var(--navy2); transform: translateY(-1px); }
+.analyze-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* ═══════════════════════════════════════════
-   RESULTS
-═══════════════════════════════════════════ */
-.results-wrap { display:none; }
-.results-wrap.visible { display:block; }
-.back-btn { display:inline-flex; align-items:center; gap:5px; font-size:.8rem; color:var(--blue-light); background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; margin-bottom:18px; padding:0; }
-.back-btn:hover { text-decoration:underline; }
+.privacy-box {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #f5fbf8;
+  border: 1.5px solid rgba(31,170,94,0.25);
+  border-radius: 10px; padding: 16px 18px;
+}
+.privacy-box .plock { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.privacy-box p { font-size: 0.8rem; color: var(--muted); line-height: 1.65; }
+.privacy-box strong { color: var(--text); font-weight: 600; }
 
-/* AI NARRATIVE */
-.narrative-card { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%); border-radius:16px; padding:28px; margin-bottom:22px; }
-.narrative-eye { font-size:.68rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
-.narrative-title { font-family:'DM Serif Display',serif; font-size:1.25rem; color:white; margin-bottom:14px; }
-.narrative-body { font-size:.87rem; line-height:1.8; color:rgba(255,255,255,.82); }
-.narrative-body p { margin-bottom:12px; }
-.narrative-body p:last-child { margin-bottom:0; }
-.narrative-verdict { margin-top:18px; background:rgba(200,146,42,.15); border:1px solid rgba(200,146,42,.35); border-radius:10px; padding:14px 16px; }
-.verdict-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); margin-bottom:5px; }
-.verdict-text { font-size:.85rem; color:rgba(255,255,255,.9); line-height:1.6; }
+/* ── LOADING ── */
+.loading-wrap {
+  display: none; max-width: 680px;
+  margin: 0 auto; padding: 0 32px 80px;
+}
+.loading-wrap.on { display: block; }
+.loading-card {
+  background: var(--white); border-radius: 18px;
+  padding: 72px 40px; text-align: center;
+  box-shadow: 0 6px 48px rgba(13,31,53,0.09);
+}
+.ring {
+  width: 60px; height: 60px;
+  border: 4px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+  margin: 0 auto 26px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.l-head {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem; font-weight: 700; color: var(--navy); margin-bottom: 10px;
+}
+.l-sub { font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 30px; }
+.l-steps { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto; text-align: left; }
+.l-step { display: flex; align-items: center; gap: 12px; font-size: 0.86rem; color: var(--muted); }
+.l-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.3s; }
+.l-step.done .l-dot { background: var(--green); }
+.l-step.active .l-dot { background: var(--gold); animation: pulse 1.1s infinite; }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(200,147,58,0.25); }
+  50% { box-shadow: 0 0 0 6px rgba(200,147,58,0.1); }
+}
 
-/* 3-WAY TABLE */
-.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-table { width:100%; border-collapse:collapse; min-width:520px; }
-thead tr { background:var(--navy); }
-thead th { padding:11px 14px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:rgba(255,255,255,.75); text-align:left; }
-thead th:not(:first-child) { text-align:center; }
-thead th.winner-col { background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%); color:white; }
-.winner-badge { display:block; font-size:.65rem; color:var(--gold); font-weight:600; margin-top:2px; }
-tbody tr { border-bottom:1px solid #f0ede8; }
-tbody tr:last-child { border-bottom:none; font-weight:700; }
-tbody tr.section-head td { background:var(--off-white); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--faint); padding:8px 14px; }
-tbody td { padding:11px 14px; font-size:.87rem; vertical-align:middle; }
-tbody td:not(:first-child) { text-align:center; }
-.td-best { background:#f0f9f4; color:var(--success); font-weight:700; }
-.td-worst { background:#fef2f2; color:var(--danger); }
-.td-winner { background:linear-gradient(135deg,rgba(37,99,176,.06),rgba(37,99,176,.03)); }
-.pill-badge { display:inline-block; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:50px; }
-.pill-green { background:#dcfce7; color:var(--success); }
-.pill-gold { background:linear-gradient(135deg,#fff8e1,#fef3c7); color:#92400e; }
-.pill-red { background:#fee2e2; color:var(--danger); }
-.award-tag { display:inline-block; background:var(--navy); color:white; font-size:.6rem; font-weight:600; padding:2px 6px; border-radius:4px; margin:1px; }
-.award-tag.g { background:var(--gold); }
+/* ── RESULTS ── */
+.results-wrap {
+  display: none; max-width: 1060px;
+  margin: 0 auto; padding: 0 32px 100px;
+}
+.results-wrap.on { display: block; animation: fadeUp 0.55s ease both; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(22px); }
+  to { opacity:1; transform:translateY(0); }
+}
 
-/* INDIVIDUAL DEEP DIVE */
-.deep-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px; }
-@media(max-width:600px) { .deep-grid { grid-template-columns:1fr; } }
-.deep-card { border:1.5px solid var(--warm-gray); border-radius:12px; padding:16px; }
-.deep-card.winner { border-color:var(--gold); background:linear-gradient(135deg,rgba(200,146,42,.06),rgba(200,146,42,.02)); }
-.deep-lender { font-weight:700; font-size:.85rem; color:var(--navy); margin-bottom:10px; }
-.deep-row { display:flex; justify-content:space-between; font-size:.78rem; padding:4px 0; border-bottom:1px solid #f5f3ef; }
-.deep-row:last-child { border-bottom:none; }
-.deep-row .label { color:var(--muted); }
-.deep-row .val { font-weight:600; color:var(--text); }
-.deep-rep-note { font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.5; padding-top:8px; border-top:1px solid var(--warm-gray); }
-.watchout { font-size:.7rem; background:#fef3c7; color:#92400e; padding:5px 9px; border-radius:6px; margin-top:7px; }
+.winner-bar {
+  background: var(--navy); border-radius: 16px;
+  padding: 38px 40px; margin-bottom: 24px;
+  display: flex; align-items: flex-start; gap: 22px;
+}
+.w-trophy { font-size: 2.6rem; flex-shrink: 0; }
+.w-badge {
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  font-weight: 700; color: var(--gold-bright); margin-bottom: 8px; display: block;
+}
+.w-head {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 700; color: var(--white); margin-bottom: 10px; line-height: 1.3;
+}
+.w-detail { font-size: 0.92rem; color: rgba(255,255,255,0.72); line-height: 1.72; }
 
-/* THREE-WAY AI NARRATIVE */
-.threeway-narrative { background:linear-gradient(135deg,var(--navy) 0%,#0d1f3c 100%); border-radius:16px; padding:28px; margin-bottom:22px; }
-.tn-label { font-size:.68rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
-.tn-title { font-family:'DM Serif Display',serif; font-size:1.2rem; color:white; margin-bottom:16px; }
-.tn-body { font-size:.86rem; line-height:1.8; color:rgba(255,255,255,.8); }
-.tn-body p { margin-bottom:12px; }
-.tn-body p:last-child { margin-bottom:0; }
-.tn-loading { display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.5); font-size:.85rem; }
+.table-card {
+  background: var(--white); border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 40px rgba(13,31,53,0.07); margin-bottom: 24px;
+}
+.table-top { padding: 22px 30px 16px; border-bottom: 1px solid var(--border); }
+.table-top h3 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.table-top p { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+.table-scroll { overflow-x: auto; }
 
-/* CHAT / CONVERSATION */
-.chat-card { background:white; border-radius:16px; padding:24px; box-shadow:0 4px 24px rgba(0,0,0,.06); margin-bottom:22px; }
-.chat-title { font-family:'DM Serif Display',serif; font-size:1.1rem; color:var(--navy); margin-bottom:16px; }
-.chat-question { background:linear-gradient(135deg,var(--off-white),var(--warm-gray)); border-radius:12px; padding:16px; margin-bottom:14px; }
-.chat-q-text { font-size:.88rem; color:var(--navy); font-weight:600; margin-bottom:12px; line-height:1.5; }
-.chat-options { display:flex; flex-direction:column; gap:8px; }
-.chat-option { border:1.5px solid var(--warm-gray); border-radius:10px; padding:11px 16px; font-size:.84rem; cursor:pointer; background:white; transition:all .2s; font-family:'DM Sans',sans-serif; text-align:left; color:var(--text); }
-.chat-option:hover { border-color:var(--blue-light); background:#f5f8ff; }
-.chat-option.selected { border-color:var(--gold); background:#fff8e1; font-weight:600; }
-.chat-response { background:var(--navy); border-radius:12px; padding:16px 18px; margin-bottom:14px; display:none; }
-.chat-response.visible { display:block; }
-.chat-response-text { font-size:.85rem; color:rgba(255,255,255,.88); line-height:1.75; }
-.chat-response-text p { margin-bottom:10px; }
-.chat-response-text p:last-child { margin-bottom:0; }
-.chat-follow-title { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:8px; margin-top:14px; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f7f2ec; }
+th {
+  padding: 13px 20px; text-align: left;
+  font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700;
+  border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+th.lh { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--navy); letter-spacing: 0; text-transform: none; }
+th.lh-win { color: var(--green) !important; }
+td {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  color: var(--text); font-size: 0.92rem; font-weight: 500;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(200,147,58,0.025); }
+td.rlabel { font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
-/* CTA */
-.cta-block { background:var(--navy); border-radius:14px; padding:26px 28px; text-align:center; }
-.cta-block h3 { font-family:'DM Serif Display',serif; color:white; font-size:1.2rem; margin-bottom:5px; }
-.cta-block p { color:rgba(255,255,255,.6); font-size:.84rem; margin-bottom:16px; }
-.cta-pills { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-.cpill { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; border-radius:50px; font-weight:600; font-size:.86rem; text-decoration:none; transition:all .2s; }
-.cpill.gold { background:var(--gold); color:white; }
-.cpill.gold:hover { background:var(--gold-light); }
-.cpill.outline { border:2px solid rgba(255,255,255,.3); color:white; }
-.cpill.outline:hover { border-color:white; }
-.fine { font-size:.67rem; color:var(--faint); text-align:center; margin-top:14px; line-height:1.7; }
+.sbar-row { display: flex; align-items: center; gap: 10px; }
+.sbar { flex: 1; height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.sfill { height: 100%; border-radius: 99px; background: var(--gold); }
+.snum { font-size: 0.8rem; font-weight: 700; color: var(--navy); min-width: 30px; }
 
-/* DIVIDER */
-.section-divider { display:flex; align-items:center; gap:14px; margin:28px 0 24px; }
-.section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:var(--warm-gray); }
-.section-divider-text { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); white-space:nowrap; }
+.ins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.ins-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 13px; padding: 24px;
+  box-shadow: 0 2px 16px rgba(13,31,53,0.04);
+}
+.ins-card.warn { border-color: rgba(217,79,79,0.3); background: #fff9f9; }
+.ins-card.pos { border-color: rgba(31,170,94,0.3); background: #f5fbf8; }
+.ins-ico { font-size: 1.4rem; display: block; margin-bottom: 10px; }
+.ins-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.ins-body { font-size: 0.88rem; color: var(--text); line-height: 1.67; }
 
-/* ── UPLOAD QUEUE ── */
-.upload-area { border:2.5px dashed #c8c4bc; border-radius:16px; padding:32px 24px;
-  text-align:center; cursor:pointer; transition:all .2s; background:#fafaf8; margin-bottom:18px; }
-.upload-area:hover, .upload-area.drag-over { border-color:var(--blue-light); background:#f0f5ff; }
-.queue-slot { border:2px dashed #d4d0c8; border-radius:14px; padding:18px 14px;
-  text-align:center; min-height:120px; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; transition:all .2s; position:relative; cursor:pointer; }
-.queue-slot.empty { background:#fafaf8; }
-.queue-slot.empty:hover { border-color:var(--blue-light); background:#f0f5ff; }
-.queue-slot.filled { border:2px solid var(--success); background:#f0f9f4; cursor:default; }
-.queue-slot.extracting { border:2px solid var(--gold); background:#fff8e1; cursor:default; }
-.slot-num { font-size:.65rem; font-weight:700; text-transform:uppercase;
-  letter-spacing:.1em; color:var(--faint); margin-bottom:4px; }
-.slot-name { font-size:.78rem; font-weight:700; color:var(--navy);
-  margin-bottom:2px; line-height:1.3; max-width:100%; word-break:break-word; }
-.slot-meta { font-size:.68rem; color:var(--muted); line-height:1.4; }
-.slot-empty-label { font-size:.72rem; color:var(--faint); }
-.slot-check { position:absolute; top:7px; right:9px; background:var(--success);
-  color:white; font-size:.6rem; font-weight:700; width:18px; height:18px;
-  border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.slot-remove { position:absolute; top:5px; left:8px; background:none; border:none;
-  color:#dc2626; font-size:.85rem; cursor:pointer; padding:0; line-height:1; }
-@media(max-width:600px) { #queue-grid { grid-template-columns:1fr !important; } }
+.cta-bar {
+  background: var(--navy); border-radius: 16px;
+  padding: 40px; display: flex;
+  align-items: center; justify-content: space-between;
+  gap: 28px; flex-wrap: wrap;
+}
+.cta-text h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--white); margin-bottom: 8px; }
+.cta-text p { font-size: 0.88rem; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 400px; }
+.cta-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-gold {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold); color: var(--navy);
+  font-weight: 700; font-size: 0.95rem;
+  padding: 15px 28px; border-radius: 8px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-gold:hover { background: var(--gold-bright); transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1.5px solid rgba(255,255,255,0.22); color: var(--white);
+  font-weight: 600; font-size: 0.88rem;
+  padding: 14px 24px; border-radius: 8px; text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
+
+.reset-btn {
+  display: block; margin: 24px auto 0;
+  background: none; border: 1.5px solid var(--border);
+  color: var(--muted); padding: 12px 30px; border-radius: 8px;
+  cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+  font-weight: 600; transition: border-color 0.2s, color 0.2s;
+}
+.reset-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+.disclaimer {
+  max-width: 760px; margin: 48px auto 0;
+  padding: 24px 32px; border-top: 1px solid var(--border);
+  font-size: 0.68rem; color: var(--muted); line-height: 1.9; text-align: center;
+}
+
+footer {
+  background: var(--navy); padding: 32px 48px; text-align: center;
+}
+.f-name { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1rem; margin-bottom: 8px; }
+.f-name span { color: var(--gold); }
+.f-legal { font-size: 0.68rem; color: rgba(255,255,255,0.32); line-height: 1.9; }
+
+@media (max-width: 700px) {
+  header { padding: 16px 20px; }
+  .header-nmls { display: none; }
+  .hero-band { padding: 48px 24px 64px; }
+  .how-wrap { padding: 44px 20px 0; }
+  .steps-row { grid-template-columns: 1fr; }
+  .upload-wrap { padding: 28px 20px 64px; }
+  .upload-card { padding: 30px 22px; }
+  .loading-wrap { padding: 0 20px 64px; }
+  .results-wrap { padding: 0 20px 80px; }
+  .winner-bar { flex-direction: column; }
+  .ins-grid { grid-template-columns: 1fr; }
+  .cta-bar { flex-direction: column; }
+  footer { padding: 28px 24px; }
+}
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN (fullscreen overlay) -->
-<div class="loading-screen" id="loading-screen">
-  <div class="loading-inner">
-    <div class="loading-title" id="loading-title">Analyzing Your Loan Estimate</div>
-    <div class="loading-sub" id="loading-sub">Tommy's AI is reviewing every line of this document...</div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-    <ul class="step-list" id="step-list"></ul>
+<header>
+  <div class="logo">Tommy</div>
+  <div class="header-right">
+    <div class="header-nmls">NMLS #31194 · Equal Housing Lender</div>
+    <a href="tel:5864154507" class="header-phone">📞 (586) 415-4507</a>
   </div>
-</div>
-
-<!-- SITE -->
-<header class="site-header">
-  <a href="/tools" class="logo">Tommy<span>.</span></a>
-  <a href="tel:+15864154507" class="hdr-cta">📞 (586) 415-4507</a>
 </header>
 
-<div class="hero">
-  <div class="hero-eye">Free Tool — Compare Loan Estimates</div>
-  <h1>Upload your Loan Estimate.<br>See what Tommy can do.</h1>
-  <p>We analyze every line — rate, fees, APR spread, lender reputation — and give you a plain-English verdict. It's your money. Know if you're getting the best deal.</p>
+<!-- HERO -->
+<div class="hero-band">
+  <div class="hero-eyebrow">⚡ Free · Instant · No Account Required</div>
+  <h1 class="hero-title">Got a Loan Estimate?<br>Let's see if it's <em>actually</em> good.</h1>
+  <p class="hero-sub">Upload your Loan Estimate — or a few — and get a straight, expert breakdown in seconds. Rate, fees, lender strength, and who's really giving you the better deal.</p>
+  <div class="trust-pills">
+    <span class="trust-pill">🔒 Your files are never stored or sold</span>
+    <span class="trust-pill">🛡️ SSL encrypted · Private by design</span>
+    <span class="trust-pill">🚫 No spam. No account needed.</span>
+    <span class="trust-pill">⏱️ Results in under 60 seconds</span>
+  </div>
 </div>
 
-<main class="main">
+<!-- HOW IT WORKS + UPLOAD -->
+<div class="how-wrap" id="mainSection">
+  <span class="section-label">How It Works</span>
+  <h2 class="section-title">Three steps. Total clarity.</h2>
 
-  <!-- UPLOAD QUEUE -->
-  <div id="selector-section">
-    <div class="card">
-      <div class="card-title">📋 Upload Your Loan Estimates</div>
-      <p style="font-size:.84rem; color:var(--muted); margin-bottom:20px;">
-        Upload the Loan Estimates you received — PDFs or photos, up to 3 lenders.
-        Drop them all before clicking Analyze. The AI reads each one and compares every number.
-      </p>
-
-      <!-- Drop zone -->
-      <div class="upload-area" id="upload-area"
-           onclick="document.getElementById('le-file-input').click()"
-           ondragover="event.preventDefault();this.classList.add('drag-over')"
-           ondragleave="this.classList.remove('drag-over')"
-           ondrop="handleDrop(event)">
-        <div style="font-size:2.4rem; margin-bottom:10px;">📂</div>
-        <div style="font-weight:700; font-size:1rem; color:var(--navy); margin-bottom:5px;">Drop your Loan Estimate PDFs here</div>
-        <div style="font-size:.82rem; color:var(--muted);">or <span style="color:var(--blue-light);font-weight:600;">click to browse</span> &nbsp;·&nbsp; PDF or image &nbsp;·&nbsp; up to 3 files</div>
-        <input type="file" id="le-file-input" accept=".pdf,.png,.jpg,.jpeg"
-               multiple style="display:none" onchange="handleFileSelect(event)">
-      </div>
-
-      <!-- 3 queue slots — always visible, fill as files added -->
-      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px;" id="queue-grid">
-        <div class="queue-slot empty" id="slot-0" onclick="document.getElementById('le-file-input').click()">
-          <div class="slot-num">Lender 1</div>
-          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
-          <div class="slot-empty-label">Click or drop to add</div>
-        </div>
-        <div class="queue-slot empty" id="slot-1" onclick="document.getElementById('le-file-input').click()">
-          <div class="slot-num">Lender 2</div>
-          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
-          <div class="slot-empty-label">Click or drop to add</div>
-        </div>
-        <div class="queue-slot empty" id="slot-2" onclick="document.getElementById('le-file-input').click()">
-          <div class="slot-num">Lender 3</div>
-          <div style="font-size:1.6rem; margin:6px 0;">📄</div>
-          <div class="slot-empty-label">Click or drop to add</div>
-        </div>
-      </div>
-
-      <p id="queue-hint" style="font-size:.78rem; color:var(--muted); text-align:center; margin-bottom:16px;">
-        Add at least 1 LE to analyze — or all 3 for a full side-by-side comparison.
-      </p>
-
-      <div class="btn-row">
-        <button class="btn btn-primary" id="single-btn" disabled onclick="runSingleUploaded()">
-          Analyze 1 LE vs Tommy →
-        </button>
-        <button class="btn btn-gold" id="all-btn" disabled onclick="runAllUploaded()">
-          ⚡ Compare All Side-by-Side
-        </button>
-      </div>
+  <div class="steps-row">
+    <div class="step-box">
+      <div class="step-num">01</div>
+      <h3>Upload Your Estimates</h3>
+      <p>Drop in one Loan Estimate or several. PDFs, photos, and screenshots all work. The more you upload, the sharper the comparison.</p>
+    </div>
+    <div class="step-box">
+      <div class="step-num">02</div>
+      <h3>AI Reads the Numbers</h3>
+      <p>Our analyzer automatically pulls rate, APR, closing costs, lender fees, PMI, and cash to close from each document.</p>
+    </div>
+    <div class="step-box">
+      <div class="step-num">03</div>
+      <h3>Get a Clear Verdict</h3>
+      <p>Side-by-side comparison, a lender strength score, red flag warnings, and a straight recommendation — with the reasoning behind it.</p>
     </div>
   </div>
-  <!-- RESULTS: SINGLE LE -->
-  <div class="results-wrap" id="single-results">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
-      <button class="back-btn" style="margin:0;" onclick="goBack()">← Start over</button>
-      <button class="btn btn-gold" style="max-width:220px; padding:10px 18px; font-size:.84rem;" onclick="generatePDF('single')" id="pdf-btn-single">
-        📄 Download Full Report PDF
-      </button>
-    </div>
+</div>
 
-    <div class="narrative-card" id="single-narrative">
-      <div class="narrative-eye">🤖 Tommy's Expert Analysis</div>
-      <div class="narrative-title" id="sn-title">Analyzing...</div>
-      <div class="narrative-body" id="sn-body"><p style="color:rgba(255,255,255,.4);">Loading AI analysis...</p></div>
-      <div class="narrative-verdict">
-        <div class="verdict-label">💡 Tommy's Verdict</div>
-        <div class="verdict-text" id="sn-verdict">Calculating...</div>
+<div class="upload-wrap" id="uploadWrap">
+  <div class="upload-card">
+
+    <div class="file-list" id="fileList"></div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf,image/*" multiple>
+      <span class="dz-icon">📂</span>
+      <div class="dz-head">Drag &amp; drop your Loan Estimates here</div>
+      <div class="dz-sub">
+        Or click anywhere in this box to browse your files.<br>
+        Upload one estimate or several — the choice is yours.
+      </div>
+      <div class="format-chips">
+        <span class="chip">PDF</span>
+        <span class="chip">JPG</span>
+        <span class="chip">PNG</span>
+        <span class="chip">HEIC</span>
+        <span class="chip">Screenshot</span>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">📊 Numbers: Their Quote vs Tommy</div>
-      <div class="table-wrap"><table id="single-table"></table></div>
-      <div style="margin-top:18px; background:#f0f9f4; border:1.5px solid #86efac; border-radius:12px; padding:18px 20px; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div style="font-weight:600; color:var(--success); font-size:.92rem;" id="single-savings-label">💰 Estimated Savings with Tommy</div>
-          <div style="font-size:.76rem; color:var(--success); opacity:.75; margin-top:2px;" id="single-savings-sub">Rate savings + lower fees over 30 years</div>
-        </div>
-        <div style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--success);" id="single-savings-val">—</div>
-      </div>
+    <button class="analyze-btn" id="analyzeBtn" disabled onclick="runAnalysis()">
+      Analyze My Loan Estimate →
+    </button>
+
+    <div class="privacy-box">
+      <span class="plock">🔒</span>
+      <p><strong>Your privacy is protected.</strong> Your documents are sent directly to our AI for analysis and are never stored on our servers, never sold, and never shared with anyone — ever. This tool exists to help you, full stop.</p>
     </div>
 
-    <div class="card">
-      <div class="card-title">⭐ Lender Reputation</div>
-      <div class="deep-grid" id="single-rep-grid"></div>
-    </div>
-
-    <div id="single-chat-section"></div>
-
-    <div class="cta-block" id="single-cta">
-      <h3 id="single-cta-h">Let Tommy review your actual LE.</h3>
-      <p id="single-cta-p">He'll compare it and come back with his best offer — usually same-day.</p>
-      <div class="cta-pills">
-        <a href="tel:+15864154507" class="cpill gold">📞 Call Tommy</a>
-        <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
-      </div>
-    </div>
-    <p class="fine">Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | Equal Housing Lender | Licensed in Michigan. Estimates only — not an offer to lend.</p>
   </div>
+</div>
 
-  <!-- RESULTS: ALL THREE -->
-  <div class="results-wrap" id="all-results">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
-      <button class="back-btn" style="margin:0;" onclick="goBack()">← Start over</button>
-      <button class="btn btn-gold" style="max-width:240px; padding:10px 18px; font-size:.84rem;" onclick="generatePDF('all')" id="pdf-btn-all">
-        📄 Download Full Comparison Report
-      </button>
+<!-- LOADING -->
+<div class="loading-wrap" id="loadingWrap">
+  <div class="loading-card">
+    <div class="ring"></div>
+    <div class="l-head">Analyzing your estimates...</div>
+    <div class="l-sub">Hang tight. We're reading every number so you don't have to.</div>
+    <div class="l-steps">
+      <div class="l-step active" id="ls1"><span class="l-dot"></span> Reading document structure</div>
+      <div class="l-step" id="ls2"><span class="l-dot"></span> Extracting rates, fees &amp; costs</div>
+      <div class="l-step" id="ls3"><span class="l-dot"></span> Scoring lender strength</div>
+      <div class="l-step" id="ls4"><span class="l-dot"></span> Building your comparison</div>
     </div>
-
-    <!-- 3-way AI narrative -->
-    <div class="threeway-narrative" id="threeway-narrative">
-      <div class="tn-label">🤖 Full Market Analysis — All Three Lenders vs Tommy</div>
-      <div class="tn-title" id="tn-title">Comparing all three offers...</div>
-      <div class="tn-body" id="tn-body">
-        <div class="tn-loading">
-          <span>Tommy's AI is reviewing all three Loan Estimates</span>
-          <span class="thinking"><span></span><span></span><span></span></span>
-        </div>
-      </div>
-      <div class="narrative-verdict" id="tn-verdict-wrap" style="display:none;">
-        <div class="verdict-label">💡 Tommy's Overall Recommendation</div>
-        <div class="verdict-text" id="tn-verdict">Loading...</div>
-      </div>
-    </div>
-
-    <!-- 3-way table -->
-    <div class="card">
-      <div class="card-title">📊 Three-Way Side-by-Side Comparison</div>
-      <div class="table-wrap"><table id="all-table"></table></div>
-    </div>
-
-    <!-- Deep dives -->
-    <div class="section-divider"><span class="section-divider-text">Individual Lender Deep Dives</span></div>
-    <div class="deep-grid" id="all-deep"></div>
-
-    <!-- Post-comparison chat -->
-    <div id="all-chat-section"></div>
-
-    <div class="cta-block">
-      <h3 id="all-cta-h">Ready to see Tommy's official number?</h3>
-      <p id="all-cta-p">He reviews LEs daily. Send him yours and he'll respond with a competing Loan Estimate — usually same-day.</p>
-      <div class="cta-pills">
-        <a href="tel:+15864154507" class="cpill gold">📞 Call Tommy</a>
-        <a href="sms:+15864154507" class="cpill outline">💬 Text Your LE</a>
-      </div>
-    </div>
-    <p class="fine">Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | Equal Housing Lender | Licensed in Michigan. All comparisons are estimates for illustrative purposes. Not an offer to lend.</p>
   </div>
+</div>
 
-</main>
+<!-- RESULTS -->
+<div class="results-wrap" id="resultsWrap">
+  <div class="winner-bar" id="winnerBar"></div>
+  <div class="table-card">
+    <div class="table-top">
+      <h3>Side-by-Side Breakdown</h3>
+      <p>Every number that matters, compared directly.</p>
+    </div>
+    <div class="table-scroll"><table id="cmpTable"></table></div>
+  </div>
+  <div class="ins-grid" id="insGrid"></div>
+  <div class="cta-bar">
+    <div class="cta-text">
+      <h3>Want to talk through this together?</h3>
+      <p>Numbers tell part of the story. Tommy can walk you through the full picture and tell you exactly where you stand — usually in one quick conversation.</p>
+    </div>
+    <div class="cta-btns">
+      <a href="sms:5864154507" class="btn-gold">💬 Text Tommy</a>
+      <a href="tel:5864154507" class="btn-ghost">📞 (586) 415-4507</a>
+    </div>
+  </div>
+  <button class="reset-btn" onclick="location.reload()">← Analyze Different Estimates</button>
+  <div class="disclaimer">
+    This tool is for informational and educational purposes only and does not constitute financial advice or an offer to lend.
+    All loans subject to credit approval. AI analysis is based solely on uploaded documents and should not be considered a commitment to lend.
+    Program terms and availability subject to change without notice.<br>
+    NMLS #31194 · Equal Housing Lender · Licensed in Michigan
+  </div>
+</div>
+
+<footer>
+  <div class="f-name">Tommy · Tommy the Mortgage Guy</div>
+  <div class="f-legal">
+    NMLS #31194 · Equal Housing Lender · Licensed in Michigan<br>
+    (586) 415-4507 · tommythemortgageguy.com
+  </div>
+</footer>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════════
-const LE = {
-  bigbank: {
-    key:'bigbank', icon:'🏦', name:'First National Bank', short:'First National',
-    rate:6.625, apr:6.891, loan:332500, pi:2130.22, closing:7980, ctc:25480,
-    rep:{ stars:'★★★☆☆', rating:'3.2/5', reviews:'~20 reviews', type:'Community Bank (Michigan)',
-      jdpower:'Not ranked', bbb:'B+', trustpilot:'3.1/5', awards:[],
-      summary:'Small community bank with very limited online presence and few mortgage-specific reviews. No industry awards. May sell your loan to a servicer after closing.',
-      watchout:'Limited digital tools; fewer loan program options; very low review volume makes reputation hard to verify.' }
-  },
-  creditunion: {
-    key:'creditunion', icon:'🤝', name:'Oakland Community Credit Union', short:'Oakland CU',
-    rate:6.750, apr:6.892, loan:332500, pi:2157.48, closing:7490, ctc:24990,
-    rep:{ stars:'★★★★☆', rating:'4.1/5', reviews:'~180 reviews', type:'Local Credit Union (Oakland County)',
-      jdpower:'Not ranked', bbb:'A', trustpilot:'4.1/5', awards:['NCUA 5-Star Safety'],
-      summary:'Well-regarded local institution with personal service. Members generally happy. Limited hours and digital capabilities vs. large lenders.',
-      watchout:'Must be a member to borrow. Rate here is 0.375% above current market. Fewer loan program options.' }
-  },
-  online: {
-    key:'online', icon:'💻', name:'National Direct Lender', short:'National Direct Lender',
-    rate:6.500, apr:6.714, loan:332500, pi:2101.01, closing:7420, ctc:24920,
-    rep:{ stars:'★★★★½', rating:'4.6/5', reviews:'39,000+ reviews', type:'Large Online Lender (National)',
-      jdpower:'#1 — J.D. Power 2025 Mortgage Servicer Satisfaction', bbb:'A+', trustpilot:'4.6/5 (39K+)',
-      awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB Accredited'],
-      summary:'Tommy's lender platform — largest US lender by volume. 23 J.D. Power top rankings, more than any other lender. 82% of 39K+ Trustpilot reviews are 5-star. Fastest digital closing in the industry.',
-      watchout:'Fully online — no local branch contact. Rate transparency before applying is limited.' }
-  }
-};
-const TOMMY_RATE = 6.38;
-const TOMMY = {
-  icon:'⭐', name:'Tommy Lower · Tommy's lender', short:'Tommy',
-  rep:{ stars:'★★★★★', rating:'5/5', reviews:'Personal referrals — Oakland/Macomb',
-    type:'Local Independent LO · Tommy's lender',
-    jdpower:'Tommy's lender: #1 J.D. Power 2025', bbb:'A+ (Tommy's lender)', trustpilot:'4.6/5 (39K+ — Tommy's lender)',
-    awards:['J.D. Power #1 Servicer — 11 Years','J.D. Power #1 Origination — 12 Times','Fortune 100 Best Companies — 22 Years','A+ BBB','NMLS #31194 Licensed Michigan LO'],
-    summary:'Best of both worlds: Tommy's lender\'s #1-rated technology and pricing, plus Tommy\'s local Rochester expertise, personal phone line, and same-day pre-approvals. Your rate is the same or better than going directly to Tommy's lender.',
-    watchout:'' }
-};
+const files = [], fileData = [];
 
-let selectedKey = null;
+const dz = document.getElementById('dropZone');
+const fi = document.getElementById('fileInput');
 
-function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
-function calcPI(loan, rate) {
-  const r=(rate/100)/12, n=360;
-  return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-}
-function tommyRate(theirRate) {
-  return Math.max(theirRate - 0.125, TOMMY_RATE - 0.25);
-}
-function tommyClosing(loan) {
-  return loan * 0.0075 + 1013.76 + 795;
-}
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); addFiles(Array.from(e.dataTransfer.files)); });
+fi.addEventListener('change', () => addFiles(Array.from(fi.files)));
 
-// ═══════════════════════════════════════════════════════════
-// LOADING SYSTEM
-// ═══════════════════════════════════════════════════════════
-const SINGLE_STEPS = [
-  { icon:'📄', text:'Uploading Loan Estimate PDF', detail:'Securely processing document...' },
-  { icon:'🔍', text:'Extracting loan details', detail:'Rate, APR, fees, cash to close...' },
-  { icon:'🧮', text:'Calculating Tommy\'s competing numbers', detail:'Rate comparison, monthly savings, 30-year cost...' },
-  { icon:'⭐', text:'Researching lender reputation', detail:'Reviews, J.D. Power rankings, BBB rating, awards...' },
-  { icon:'🤖', text:'Generating AI analysis', detail:'Tommy\'s expert review of your specific offer...' },
-  { icon:'✅', text:'Building your comparison report', detail:'Almost ready...' },
-];
-const ALL_STEPS = [
-  { icon:'📄', text:'Reading all three Loan Estimates', detail:'Extracting key data from each PDF...' },
-  { icon:'🧮', text:'Building side-by-side numbers', detail:'Rate, APR, fees, 30-yr cost for all three...' },
-  { icon:'⭐', text:'Researching all three lenders', detail:'J.D. Power, reviews, BBB, awards...' },
-  { icon:'📊', text:'Identifying the best and worst values', detail:'Which lender wins on rate, fees, service...' },
-  { icon:'🤖', text:'Writing full market analysis', detail:'Tommy\'s take on all three offers vs. his rate...' },
-  { icon:'💬', text:'Preparing your personalized recommendation', detail:'Tailored advice based on all the data...' },
-];
-
-async function showLoading(title, sub, steps, durations) {
-  const screen = document.getElementById('loading-screen');
-  document.getElementById('loading-title').textContent = title;
-  document.getElementById('loading-sub').textContent = sub;
-  const fill = document.getElementById('progress-fill');
-  fill.style.width = '0%';
-
-  // Build step list
-  const list = document.getElementById('step-list');
-  list.innerHTML = steps.map((s, i) =>
-    `<li class="step-item pending" id="ls${i}">
-      <div class="step-icon">${s.icon}</div>
-      <div><div class="step-text">${s.text}</div><div class="step-detail">${s.detail}</div></div>
-    </li>`
-  ).join('');
-
-  screen.classList.add('active');
-
-  for (let i = 0; i < steps.length; i++) {
-    const el = document.getElementById('ls' + i);
-    el.classList.remove('pending');
-    el.classList.add('active');
-    el.querySelector('.step-text').innerHTML = steps[i].text +
-      '<span class="thinking"><span></span><span></span><span></span></span>';
-
-    const pct = Math.round(((i + 0.5) / steps.length) * 100);
-    fill.style.width = pct + '%';
-
-    await new Promise(r => setTimeout(r, durations[i]));
-
-    el.classList.remove('active');
-    el.classList.add('done');
-    el.querySelector('.step-text').textContent = steps[i].text;
-  }
-  fill.style.width = '100%';
-  await new Promise(r => setTimeout(r, 300));
-  screen.classList.remove('active');
-}
-
-// ═══════════════════════════════════════════════════════════
-// SINGLE LE FLOW
-// ═══════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════
-// UPLOAD QUEUE SYSTEM
-// ═══════════════════════════════════════════════════════════
-const uploadedFiles = [];
-
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('upload-area').classList.remove('drag-over');
-  const files = Array.from(e.dataTransfer.files)
-    .filter(f => f.type === 'application/pdf' || f.type.startsWith('image/'));
-  processFiles(files);
-}
-function handleFileSelect(e) {
-  processFiles(Array.from(e.target.files));
-  e.target.value = '';
-}
-
-function fileToBase64(file) {
-  return new Promise((res, rej) => {
+function addFiles(newFiles) {
+  newFiles.forEach(f => {
+    if (!f.type.match(/pdf|image/)) return;
+    files.push(f);
     const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
+    r.onload = e => {
+      fileData.push({ data: e.target.result.split(',')[1], type: f.type, name: f.name });
+      renderList(); checkReady();
+    };
+    r.readAsDataURL(f);
   });
 }
 
-async function processFiles(files) {
-  for (const file of files) {
-    if (uploadedFiles.length >= 3) break;
-    if (uploadedFiles.find(u => u.name === file.name)) continue;
-    const b64 = await fileToBase64(file);
-    const mediaType = file.type === 'application/pdf' ? 'application/pdf' : 'image/jpeg';
-    const entry = { file, b64, name: file.name, mediaType, extracted: null };
-    uploadedFiles.push(entry);
-    const idx = uploadedFiles.length - 1;
-    renderSlotFilled(idx, entry, false);
-    updateButtons();
-    extractInBackground(entry, idx);
-  }
+function removeFile(i) {
+  files.splice(i,1); fileData.splice(i,1);
+  renderList(); checkReady();
 }
 
-function renderSlotFilled(idx, entry, done) {
-  const slot = document.getElementById('slot-' + idx);
-  if (!slot) return;
-  const short = entry.name.replace(/\.pdf$/i,'').replace(/\.jpe?g$/i,'').substring(0, 26);
-  slot.className = 'queue-slot ' + (done ? 'filled' : 'extracting');
-  slot.onclick = null;
-  slot.innerHTML =
-    '<button class="slot-remove" onclick="removeSlot(' + idx + ')" title="Remove">✕</button>' +
-    (done ? '<div class="slot-check">✓</div>' : '') +
-    '<div class="slot-num">Lender ' + (idx+1) + '</div>' +
-    '<div style="font-size:1.4rem; margin:4px 0;">' + (done ? '📋' : '⏳') + '</div>' +
-    '<div class="slot-name" id="slot-name-' + idx + '">' + short + '</div>' +
-    '<div class="slot-meta" id="slot-meta-' + idx + '">' +
-      (done ? '' : '<span style="color:var(--gold)">Reading...</span>') +
-    '</div>';
+function renderList() {
+  document.getElementById('fileList').innerHTML = files.map((f,i) => `
+    <div class="file-item">
+      <span class="file-emoji">${f.type==='application/pdf'?'📄':'🖼️'}</span>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${(f.size/1024).toFixed(0)} KB · ${f.type==='application/pdf'?'PDF':'Image'}</div>
+      </div>
+      <button class="file-remove" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
+  dz.classList.toggle('filled', files.length > 0);
 }
 
-function updateSlotDone(idx, ex) {
-  const slot = document.getElementById('slot-' + idx);
-  if (!slot) return;
-  slot.className = 'queue-slot filled';
-  // Add checkmark
-  if (!slot.querySelector('.slot-check')) {
-    const chk = document.createElement('div');
-    chk.className = 'slot-check'; chk.textContent = '✓';
-    slot.appendChild(chk);
-  }
-  // Update icon
-  const icons = slot.querySelectorAll('div');
-  icons.forEach(d => { if (d.textContent === '⏳') d.textContent = '📋'; });
-  // Update name and meta
-  const nameEl = document.getElementById('slot-name-' + idx);
-  const metaEl = document.getElementById('slot-meta-' + idx);
-  if (nameEl && ex.lenderName) nameEl.textContent = ex.lenderName.substring(0, 26);
-  if (metaEl) {
-    const rate = ex.interestRate ? ex.interestRate.toFixed(3) + '%' : '—';
-    const pi = ex.monthlyPI ? ' · $' + Math.round(ex.monthlyPI).toLocaleString() + '/mo' : '';
-    metaEl.innerHTML = '<span style="color:var(--success);font-weight:600;">' + rate + pi + '</span>';
-  }
+function checkReady() {
+  document.getElementById('analyzeBtn').disabled = fileData.length === 0;
 }
 
-function removeSlot(idx) {
-  uploadedFiles.splice(idx, 1);
-  // Re-render all 3 slots fresh
-  for (let i = 0; i < 3; i++) {
-    const slot = document.getElementById('slot-' + i);
-    if (!slot) continue;
-    if (i < uploadedFiles.length) {
-      const entry = uploadedFiles[i];
-      renderSlotFilled(i, entry, !!entry.extracted);
-      if (entry.extracted) updateSlotDone(i, entry.extracted);
-    } else {
-      slot.className = 'queue-slot empty';
-      slot.onclick = () => document.getElementById('le-file-input').click();
-      slot.innerHTML =
-        '<div class="slot-num">Lender ' + (i+1) + '</div>' +
-        '<div style="font-size:1.6rem; margin:6px 0;">📄</div>' +
-        '<div class="slot-empty-label">Click or drop to add</div>';
-    }
-  }
-  updateButtons();
+function stepAnim() {
+  const ids = ['ls1','ls2','ls3','ls4']; let i = 0;
+  ids.forEach(id => { const el = document.getElementById(id); el.classList.remove('done','active'); });
+  document.getElementById(ids[0]).classList.add('active');
+  const iv = setInterval(() => {
+    if (i < ids.length-1) {
+      document.getElementById(ids[i]).classList.replace('active','done');
+      i++;
+      document.getElementById(ids[i]).classList.add('active');
+    } else clearInterval(iv);
+  }, 4500);
 }
 
-async function extractInBackground(entry, idx) {
+async function runAnalysis() {
+  document.getElementById('mainSection').style.display = 'none';
+  document.getElementById('uploadWrap').style.display = 'none';
+  document.getElementById('loadingWrap').classList.add('on');
+  stepAnim();
+
+  const content = [];
+  fileData.forEach((fd,i) => {
+    content.push(fd.type.startsWith('image/')
+      ? { type:'image', source:{ type:'base64', media_type:fd.type, data:fd.data } }
+      : { type:'document', source:{ type:'base64', media_type:'application/pdf', data:fd.data } });
+    content.push({ type:'text', text:`Above is Loan Estimate #${i+1} — file: "${fd.name}"` });
+  });
+
+  content.push({ type:'text', text:`
+You are a senior Michigan mortgage strategist. Analyze the uploaded Loan Estimate documents.
+
+From EACH document extract:
+- Lender name (exact from doc)
+- Loan type (e.g. "Conventional 30yr Fixed")
+- Interest rate
+- APR
+- Monthly principal & interest payment
+- Monthly PMI (or "None")
+- Total closing costs
+- Cash to close
+- Origination charges (Section A or equivalent)
+- redFlags: array of specific concerning items (junk fees, hidden charges, vague disclosures)
+- positives: array of standout good items
+
+Score each lender 1-10:
+- rateScore: rate vs market (lower rate = higher score)
+- feeScore: fee transparency (fewer/cleaner fees = higher)
+- costScore: total value (closing costs + long-term burden)
+- strengthScore: lender brand/reliability:
+  *  / Quicken Loans = 9
+  * Chase, Wells Fargo, US Bank, BofA = 7
+  * Flagstar, Huntington, regional MI = 6-7
+  * Unknown online lenders = 5
+  * Red flags evident = 3-4
+
+overallScore = weighted avg (rate 25%, fees 25%, cost 25%, strength 25%), one decimal.
+
+Respond ONLY with valid JSON. No markdown. No backticks. No preamble.
+
+{
+  "lenders": [{
+    "name":"string","loanType":"string","rate":"string","apr":"string",
+    "monthlyPI":"string","pmi":"string","closingCosts":"string",
+    "cashToClose":"string","originationFees":"string",
+    "scores":{"rateScore":0,"feeScore":0,"costScore":0,"strengthScore":0},
+    "overallScore":0.0,"redFlags":["string"],"positives":["string"]
+  }],
+  "winner":{
+    "lenderName":"string",
+    "headline":"One punchy sentence on why this is the best overall deal",
+    "detail":"2-3 sentences with real reasoning — note if a higher-rate lender wins on fees or strength and why that matters to a real buyer"
+  },
+  "insights":[
+    {"type":"warning","icon":"⚠️","title":"string","body":"string"},
+    {"type":"positive","icon":"✅","title":"string","body":"string"},
+    {"type":"neutral","icon":"💡","title":"string","body":"string"},
+    {"type":"neutral","icon":"🎯","title":"string","body":"string"}
+  ]
+}` });
+
   try {
-    const block = entry.mediaType === 'application/pdf'
-      ? { type:'document', source:{ type:'base64', media_type:entry.mediaType, data:entry.b64 } }
-      : { type:'image',    source:{ type:'base64', media_type:entry.mediaType, data:entry.b64 } };
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:500,
-        messages:[{ role:'user', content:[
-          block,
-          { type:'text', text:'Mortgage Loan Estimate PDF. Return ONLY valid JSON (no markdown):
-{"lenderName":"","loanAmount":0,"interestRate":0,"apr":0,"monthlyPI":0,"totalClosingCosts":0,"cashToClose":0,"loanType":""}
-Numbers without $ or %. Null if not found.' }
-        ]}]
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{ role:'user', content }]
       })
     });
-    if (!resp.ok) throw new Error(resp.status);
-    const data = await resp.json();
-    const text = (data.content && data.content[0] && data.content[0].text) || '';
-    const cleaned = text.replace(/```json|```/g,'').trim();
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (match) {
-      const ex = JSON.parse(match[0]);
-      entry.extracted = ex;
-      updateSlotDone(idx, ex);
-      updateButtons();
-    }
+    const d = await res.json();
+    const raw = d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    render(JSON.parse(raw));
   } catch(e) {
-    // Extraction failed — still let user proceed, we'll use filename as lender name
-    const metaEl = document.getElementById('slot-meta-' + idx);
-    if (metaEl) metaEl.innerHTML = '<span style="color:var(--muted)">Ready to analyze</span>';
-    const slot = document.getElementById('slot-' + idx);
-    if (slot) { slot.className = 'queue-slot filled'; }
-    updateButtons();
+    document.getElementById('loadingWrap').innerHTML = `
+      <div class="loading-card">
+        <div style="font-size:2.5rem;margin-bottom:16px">😕</div>
+        <div class="l-head" style="color:var(--red)">Something went wrong</div>
+        <div class="l-sub">We had trouble reading your files. Try a clearer photo or a PDF, or just reach out to Tommy directly.</div>
+        <a href="sms:5864154507" class="btn-gold" style="display:inline-flex;margin:24px auto 0">💬 Text Tommy — (586) 415-4507</a>
+      </div>`;
   }
 }
 
-function updateButtons() {
-  const n = uploadedFiles.length;
-  const hint = document.getElementById('queue-hint');
-  const sb = document.getElementById('single-btn');
-  const ab = document.getElementById('all-btn');
-  sb.disabled = n < 1;
-  ab.disabled = n < 2;
-  if (n === 0) {
-    hint.textContent = 'Add at least 1 LE to analyze — or all 3 for a full side-by-side comparison.';
-    sb.textContent = 'Analyze 1 LE vs Tommy →';
-    ab.textContent = '⚡ Compare All Side-by-Side';
-  } else if (n === 1) {
-    hint.innerHTML = '<strong>1 LE added.</strong> Add 1–2 more lenders, or analyze this one vs Tommy now.';
-    sb.textContent = 'Analyze This LE vs Tommy →';
-    ab.textContent = '⚡ Add 2+ LEs to compare side-by-side';
-  } else if (n === 2) {
-    hint.innerHTML = '<strong>2 LEs added.</strong> Compare these two, or add a 3rd for a full 3-way.';
-    sb.textContent = 'Analyze First LE vs Tommy →';
-    ab.textContent = '⚡ Compare Both Side-by-Side';
-  } else {
-    hint.innerHTML = '<strong>3 LEs uploaded</strong> — ready for full 3-way comparison!';
-    sb.textContent = 'Analyze First LE vs Tommy →';
-    ab.textContent = '⚡ Compare All Three Side-by-Side';
-  }
-}
+function render(data) {
+  document.getElementById('loadingWrap').classList.remove('on');
+  const lenders = data.lenders;
+  const winIdx = lenders.findIndex(l=>l.name===data.winner.lenderName);
 
-// Convert uploaded entry to LE shape
-function uploadedToLE(entry, idx) {
-  const ex = entry.extracted || {};
-  const key = 'up_' + idx;
-  const name = ex.lenderName || entry.name.replace(/\.pdf$/i,'').substring(0,30);
-  const rate = ex.interestRate || 6.5;
-  const loan = ex.loanAmount || 300000;
-  const pi   = ex.monthlyPI  || calcPI(loan, rate);
-  return {
-    key, icon:'📄', name, short: name.split(' ')[0] || 'Lender '+(idx+1),
-    rate, apr: ex.apr || (rate + 0.22),
-    loan, pi, closing: ex.totalClosingCosts || 0, ctc: ex.cashToClose || 0,
-    rep:{ stars:'—', rating:'See details', reviews:'—',
-          type: ex.loanType || 'Mortgage Lender',
-          jdpower:'—', bbb:'—', trustpilot:'—', awards:[],
-          summary:'Details from your uploaded Loan Estimate.', watchout:'' }
-  };
-}
-
-async function runSingleUploaded() {
-  if (uploadedFiles.length < 1) return;
-  const le = uploadedToLE(uploadedFiles[0], 0);
-  LE[le.key] = le;
-  selectedKey = le.key;
-  document.getElementById('selector-section').style.display = 'none';
-  await showLoading('Analyzing ' + le.name, 'Reviewing your Loan Estimate line by line...', SINGLE_STEPS, [800,700,900,800,1400,400]);
-  buildSingleResults(le);
-  document.getElementById('single-results').classList.add('visible');
-  window.scrollTo({ top:0, behavior:'smooth' });
-  generateSingleNarrative(le);
-}
-
-async function runAllUploaded() {
-  if (uploadedFiles.length < 2) return;
-  const les = uploadedFiles.map((f,i) => uploadedToLE(f,i));
-  // Inject into LE map using the 3 standard keys so buildAllResults works
-  const keys = ['bigbank','creditunion','online'];
-  les.forEach((le, i) => { LE[keys[i]] = le; });
-  document.getElementById('selector-section').style.display = 'none';
-  await showLoading('Comparing All Lenders', 'Analyzing every number, every fee, every lender...', ALL_STEPS, [900,800,900,700,1600,600]);
-  buildAllResults();
-  document.getElementById('all-results').classList.add('visible');
-  window.scrollTo({ top:0, behavior:'smooth' });
-  generateAllNarrativeFromUploads(les);
-}
-
-async function generateAllNarrativeFromUploads(les) {
-  const valid = les.filter(le => le.rate > 0 && le.pi > 0);
-  if (!valid.length) { fallbackAll(); return; }
-  const lines = valid.map((le,i) => {
-    const tr = tommyRate(le.rate);
-    const tp = calcPI(le.loan, tr);
-    const sav = Math.round((le.pi-tp)*360 + le.closing - tommyClosing(le.loan));
-    return (i+1)+'. '+le.name+': '+le.rate+'% rate, '+le.apr.toFixed(3)+'% APR (spread '+((le.apr-le.rate).toFixed(3))+'%), $'+le.closing.toLocaleString()+' closing, $'+Math.round(le.pi).toLocaleString()+'/mo P&I. Savings vs Tommy: $'+sav.toLocaleString()+'.';
-  }).join('
-');
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:900,
-        messages:[{ role:'user', content:
-          'You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer. A buyer compared '+valid.length+' Loan Estimates.
-
-'+lines+'
-
-Current Freddie Mac 30-yr average: 6.38% (3/26/2026). Tommy competes through the nation's largest mortgage company — no lender name mentioned.
-
-Write 4 short paragraphs in Tommy's warm, direct voice (plain English, no bullets):
-1. Big picture — how do these offers compare to current market?
-2. APR spread analysis — flag anything above 0.25% as fees possibly baked in.
-3. What the numbers mean in real dollars over 30 years.
-4. What Tommy offers and why a competing quote is worth 10 minutes.
-
-Then write "VERDICT:" with one sentence starting "Call me" or "Text me."
-
-Under 270 words. No markdown.'
-        }]
-      })
-    });
-    if (!resp.ok) throw new Error(resp.status);
-    const data = await resp.json();
-    const text = (data.content&&data.content[0]&&data.content[0].text)||'';
-    if (text) {
-      const vMatch = text.match(/VERDICT:\s*(.+)/i);
-      const body = text.replace(/VERDICT:\s*.+/i,'').trim();
-      document.getElementById('tn-title').textContent = 'My analysis of your '+valid.length+' offers:';
-      document.getElementById('tn-body').innerHTML = body.split('
-
-').map(p=>'<p>'+p+'</p>').join('');
-      document.getElementById('tn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I'll put together a competing Loan Estimate that beats all of these, usually same-day.';
-      document.getElementById('tn-verdict-wrap').style.display = 'block';
-    } else { fallbackAll(); }
-  } catch(e) { fallbackAll(); }
-}
-
-// Legacy stubs (kept so nothing breaks)
-function selectOne(key) { selectedKey = key; }
-async function runSingle() { await runSingleUploaded(); }
-async function runAll()   { await runAllUploaded(); }
-
-
-function buildSingleResults(le) {
-  const tRate = tommyRate(le.rate);
-  const tPI = calcPI(le.loan, tRate);
-  const tClose = tommyClosing(le.loan);
-  const monthlyDiff = le.pi - tPI;
-  const feeDiff = le.closing - tClose;
-  const savings = Math.round(monthlyDiff * 360 + feeDiff);
+  // Winner
+  document.getElementById('winnerBar').innerHTML = `
+    <div class="w-trophy">🏆</div>
+    <div>
+      <span class="w-badge">Tommy's Recommendation</span>
+      <div class="w-head">${data.winner.headline}</div>
+      <div class="w-detail">${data.winner.detail}</div>
+    </div>`;
 
   // Table
+  let th = '<thead><tr><th>Metric</th>';
+  lenders.forEach((l,i) => {
+    th += `<th class="lh ${i===winIdx?'lh-win':''}">${l.name}${i===winIdx?' 🏆':''}<br><span style="font-family:'DM Sans';font-size:0.72rem;font-weight:400;color:var(--muted)">${l.loanType}</span></th>`;
+  });
+  th += '</tr></thead>';
+
   const rows = [
-    ['Interest Rate', le.rate.toFixed(3)+'%', tRate.toFixed(3)+'%*', le.rate - tRate, true],
-    ['APR', le.apr.toFixed(3)+'%', (tRate+0.22).toFixed(3)+'%*', le.apr-(tRate+0.22), true],
-    ['Monthly P&I', fmt(le.pi), fmt(tPI)+'*', monthlyDiff, false],
-    ['Total Lender Fees', fmt(le.closing), fmt(tClose)+'*', feeDiff, false],
-    ['30-yr Interest Cost', fmt(le.pi*360-le.loan), fmt(tPI*360-le.loan)+'*', (le.pi-tPI)*360, false],
-    ['Cash to Close', fmt(le.ctc), fmt(le.ctc - feeDiff)+'*', feeDiff, false],
+    {label:'Interest Rate',key:'rate'},{label:'APR',key:'apr'},
+    {label:'Monthly P&I',key:'monthlyPI'},{label:'Monthly PMI',key:'pmi'},
+    {label:'Closing Costs',key:'closingCosts'},{label:'Cash to Close',key:'cashToClose'},
+    {label:'Origination Fees',key:'originationFees'},
+    {label:'Lender Strength',sk:'strengthScore'},
+    {label:'Overall Score',overall:true}
   ];
-  let html = '<thead><tr><th>Line Item</th><th>' + le.name + '</th><th>Tommy Lower — Licensed Michigan LO</th><th>Δ</th></tr></thead><tbody>';
+
+  let tb = '<tbody>';
   rows.forEach(r => {
-    const diff = r[3], isRate = r[4];
-    const good = diff > 0.001;
-    const badge = good ? '<span class="pill-badge pill-green">' + (isRate ? '-'+diff.toFixed(3)+'%' : fmt(Math.abs(diff))+' saved') + '</span>' : '';
-    html += '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + badge + '</td></tr>';
-  });
-  html += '</tbody>';
-  document.getElementById('single-table').innerHTML = html;
-
-  // Savings
-  if (savings > 500) {
-    document.getElementById('single-savings-label').textContent = '💰 Estimated 30-Year Savings with Tommy';
-    document.getElementById('single-savings-val').textContent = fmt(savings);
-    document.getElementById('single-savings-sub').textContent = fmt(monthlyDiff)+'/mo × 360 payments + '+fmt(feeDiff)+' lower closing fees';
-    document.getElementById('single-cta-h').textContent = 'Tommy can save you ~' + fmt(savings) + '.';
-    document.getElementById('single-cta-p').textContent = 'Text or call him with this LE. He typically responds same-day with a competing Loan Estimate.';
-  }
-
-  // Rep grid (their lender + Tommy)
-  const grid = document.getElementById('single-rep-grid');
-  grid.innerHTML = repCard(le.name, le.rep, false) + repCard('Tommy · Tommy's lender', TOMMY.rep, true);
-
-  // Chat section
-  buildChat('single-chat-section', le, null, savings);
-}
-
-async function generateSingleNarrative(le) {
-  const tRate = tommyRate(le.rate);
-  const tPI = calcPI(le.loan, tRate);
-  const savings = Math.round((le.pi - tPI)*360 + le.closing - tommyClosing(le.loan));
-  const aprSpread = (le.apr - le.rate).toFixed(3);
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:700,
-        messages:[{ role:'user', content:
-          `You are Tommy Lower (NMLS #31194), a Rochester MI mortgage loan officer with Tommy's lender. A Michigan home buyer uploaded a Loan Estimate from ${le.name}.
-
-Key numbers: Rate ${le.rate}% | APR ${le.apr}% | APR spread ${aprSpread}% | Closing costs $${le.closing.toLocaleString()} | Monthly P&I $${Math.round(le.pi).toLocaleString()}
-Current Freddie Mac 30-yr market average: 6.38% (week ending 3/26/2026)
-Lender reputation: ${le.rep.summary}
-Concerns: ${le.rep.watchout}
-Tommy's competing estimate: ${tRate.toFixed(3)}% | $${Math.round(tPI).toLocaleString()}/mo | estimated 30-yr savings: $${savings.toLocaleString()}
-Tommy's platform (Tommy's lender): #1 J.D. Power mortgage satisfaction 23 times, 4.6/5 stars on 39K+ reviews
-
-Write exactly 3 paragraphs in Tommy's voice — warm, direct, like a trusted friend who's an expert. NO bullet points.
-
-Para 1: Rate vs. market analysis. Comment on the ${aprSpread}% APR spread — is it normal or wide (above 0.25% means points/fees baked in)? Be specific with numbers.
-Para 2: Honest assessment of ${le.name} as a lender — reputation, reviews, what borrowers experience. Balanced.
-Para 3: What Tommy offers and why getting a competing quote is smart. Reference J.D. Power and local expertise briefly.
-
-Then on a new line write "VERDICT:" followed by one sentence starting with "Call me" or "Text me" that mentions ${le.name} by name and the dollar savings figure.
-
-Under 200 words total. No markdown.`
-        }]
-      })
-    });
-    if (!resp.ok) throw new Error(resp.status);
-    const data = await resp.json();
-    const text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
-    if (text) {
-      const vMatch = text.match(/VERDICT:\s*(.+)/i);
-      const body = text.replace(/VERDICT:\s*.+/i, '').trim();
-      document.getElementById('sn-title').textContent = 'My take on this ' + le.name + ' offer:';
-      document.getElementById('sn-body').innerHTML = body.split('\n\n').map(p => '<p>' + p + '</p>').join('');
-      document.getElementById('sn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I\'ll review this LE and come back with my best number same-day.';
-    } else { fallbackSingle(le, tRate, savings); }
-  } catch(e) { fallbackSingle(le, tRate, savings); }
-}
-
-function fallbackSingle(le, tRate, savings) {
-  const rateAbove = (le.rate - 6.38).toFixed(3);
-  const spread = (le.apr - le.rate).toFixed(3);
-  document.getElementById('sn-title').textContent = 'My read on this ' + le.name + ' offer:';
-  document.getElementById('sn-body').innerHTML =
-    `<p>This rate of ${le.rate}% is ${rateAbove}% above the current Freddie Mac market average of 6.38%. The APR spread of ${spread}% ${parseFloat(spread)>0.25?'is wider than normal — that gap usually means discount points or fees are baked in, which means you\'re paying more than the rate suggests.':'is within a normal range for closing costs.'}</p>` +
-    `<p>${le.rep.summary}${le.rep.watchout ? ' Worth noting: ' + le.rep.watchout : ''}</p>` +
-    `<p>On Tommy's lender, I can typically offer a competing rate with lower fees, backed by 23 J.D. Power top rankings and 4.6/5 stars on 39,000+ reviews. You get the best pricing of the nation's largest lender plus a local Rochester expert who picks up the phone.</p>`;
-  document.getElementById('sn-verdict').textContent =
-    `Text me this ${le.name} LE — I'll have a competing Loan Estimate back to you same-day.${savings>0?' Based on these numbers, that could mean '+fmt(savings)+' in savings over 30 years.':''}`;
-}
-
-// ═══════════════════════════════════════════════════════════
-// ALL THREE FLOW
-// ═══════════════════════════════════════════════════════════
-async function runAll() {
-  document.getElementById('selector-section').style.display = 'none';
-
-  await showLoading(
-    'Comparing All Three Lenders',
-    'Analyzing every number, every fee, every lender\'s reputation...',
-    ALL_STEPS,
-    [900, 800, 900, 700, 1600, 600]
-  );
-
-  buildAllResults();
-  document.getElementById('all-results').classList.add('visible');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  generateAllNarrative();
-}
-
-function buildAllResults() {
-  const keys = ['bigbank', 'creditunion', 'online'];
-  const les = keys.map(k => LE[k]);
-
-  // Calculate Tommy's numbers for each
-  const tRates = les.map(le => tommyRate(le.rate));
-  const tPIs = les.map((le, i) => calcPI(le.loan, tRates[i]));
-  const tClose = tommyClosing(les[0].loan); // same loan for all
-
-  // ── 3-WAY TABLE ──
-  // Find best/worst for each metric
-  const allRates = [...les.map(le => le.rate), ...tRates];
-  const allPIs = [...les.map(le => le.pi), ...tPIs];
-  const allClose = [...les.map(le => le.closing), tClose];
-
-  const minRate = Math.min(...les.map(le => le.rate));
-  const minPI = Math.min(...les.map(le => le.pi));
-  const minClose = Math.min(...les.map(le => le.closing));
-
-  const tommyBestRate = Math.min(...tRates);
-  const tommyBestPI = Math.min(...tPIs);
-
-  // Build table header
-  let html = '<thead><tr>';
-  html += '<th>Line Item</th>';
-  les.forEach(le => { html += '<th>' + le.icon + ' ' + le.short + '</th>'; });
-  html += '<th class="winner-col">⭐ Tommy Lower — Licensed Michigan LO<span class="winner-badge">Best Available</span></th>';
-  html += '</tr></thead><tbody>';
-
-  // Rates section
-  html += '<tr class="section-head"><td colspan="5">Interest Rate & Monthly Cost</td></tr>';
-
-  // Rate row
-  html += '<tr>';
-  html += '<td>Interest Rate</td>';
-  les.forEach(le => {
-    const best = le.rate === minRate;
-    const worst = le.rate === Math.max(...les.map(l => l.rate));
-    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + le.rate.toFixed(3) + '%' +
-      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
-  });
-  // Tommy's best competing rate across all three
-  html += '<td class="td-winner">' + tommyBestRate.toFixed(3) + '%*<br><span class="pill-badge pill-gold">Tommy\'s Best</span></td>';
-  html += '</tr>';
-
-  // APR row
-  html += '<tr>';
-  html += '<td>APR <span style="font-size:.68rem;color:var(--faint);">(true cost)</span></td>';
-  les.forEach(le => {
-    const spread = (le.apr - le.rate).toFixed(3);
-    const wide = parseFloat(spread) > 0.25;
-    html += '<td>' + le.apr.toFixed(3) + '%' +
-      '<br><span class="pill-badge ' + (wide?'pill-red':'pill-green') + '">' + (wide?'Wide '+spread+'%':'Normal') + '</span></td>';
-  });
-  html += '<td class="td-winner">—</td>';
-  html += '</tr>';
-
-  // Monthly P&I
-  html += '<tr>';
-  html += '<td>Monthly P&I</td>';
-  les.forEach(le => {
-    const best = le.pi === minPI;
-    const worst = le.pi === Math.max(...les.map(l => l.pi));
-    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + fmt(le.pi) +
-      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
-  });
-  html += '<td class="td-winner">' + fmt(Math.min(...tPIs)) + '*<br><span class="pill-badge pill-gold">Tommy\'s Best</span></td>';
-  html += '</tr>';
-
-  // Fees section
-  html += '<tr class="section-head"><td colspan="5">Fees & Cash Needed</td></tr>';
-
-  // Closing costs
-  html += '<tr>';
-  html += '<td>Total Closing Costs</td>';
-  les.forEach(le => {
-    const best = le.closing === minClose;
-    const worst = le.closing === Math.max(...les.map(l => l.closing));
-    html += '<td class="' + (worst?'td-worst':best?'td-best':'') + '">' + fmt(le.closing) +
-      (best ? '<br><span class="pill-badge pill-green">Lowest</span>' : worst ? '<br><span class="pill-badge pill-red">Highest</span>' : '') + '</td>';
-  });
-  html += '<td class="td-winner">' + fmt(tClose) + '*<br><span class="pill-badge pill-gold">Competitive</span></td>';
-  html += '</tr>';
-
-  // 30-yr cost
-  html += '<tr class="section-head"><td colspan="5">Long-Term Cost of the Loan</td></tr>';
-  html += '<tr>';
-  html += '<td>30-Year Interest Cost</td>';
-  const thirtyYears = les.map(le => le.pi*360-le.loan);
-  const minThirty = Math.min(...thirtyYears);
-  les.forEach((le, i) => {
-    const v = thirtyYears[i];
-    const best = v === minThirty;
-    html += '<td class="' + (best?'td-best':v===Math.max(...thirtyYears)?'td-worst':'') + '">' + fmt(v) + '</td>';
-  });
-  const tommyThirty = Math.min(...tPIs)*360-les[0].loan;
-  html += '<td class="td-winner">' + fmt(tommyThirty) + '*</td>';
-  html += '</tr>';
-
-  // Savings vs Tommy (for each lender)
-  html += '<tr>';
-  html += '<td style="font-weight:700;">Est. 30-yr Savings vs Tommy</td>';
-  les.forEach((le, i) => {
-    const s = Math.round((le.pi-tPIs[i])*360 + le.closing - tClose);
-    html += '<td style="font-weight:700;color:var(--success);">' + (s>0?fmt(s)+' saved':'—') + '</td>';
-  });
-  html += '<td class="td-winner" style="font-weight:700; color:var(--gold);">Your Best Deal ⭐</td>';
-  html += '</tr>';
-
-  // Reputation section
-  html += '<tr class="section-head"><td colspan="5">Lender Reputation</td></tr>';
-  const repRows = [
-    { label:'Overall Rating', vals: les.map(le=>le.rep.rating) },
-    { label:'Review Volume', vals: les.map(le=>le.rep.rating === '4.6/5' ? '39K+' : les.indexOf(le)===1 ? '~180' : '~20') },
-    { label:'BBB Rating', vals: les.map(le=>le.rep.bbb) },
-    { label:'J.D. Power', vals: les.map(le=>le.rep.jdpower === 'Not ranked' ? '—' : '✅ Ranked') },
-  ];
-  repRows.forEach(row => {
-    html += '<tr><td>' + row.label + '</td>';
-    row.vals.forEach(v => { html += '<td>' + v + '</td>'; });
-    html += '<td class="td-winner">' + (row.label==='J.D. Power' ? '#1 — 23 Awards' : row.label==='BBB Rating' ? 'A+' : row.label==='Review Volume' ? '39K+' : '4.6/5') + '</td>';
-    html += '</tr>';
-  });
-
-  html += '</tbody>';
-  document.getElementById('all-table').innerHTML = html;
-
-  // Deep dive cards
-  const deepDiv = document.getElementById('all-deep');
-  deepDiv.innerHTML = [...les.map(le => deepCard(le, false)), deepCard(TOMMY, true)].join('');
-
-  // Chat
-  buildChat('all-chat-section', null, les, null);
-}
-
-async function generateAllNarrative() {
-  const les = ['bigbank', 'creditunion', 'online'].map(k => LE[k]);
-  const tRates = les.map(le => tommyRate(le.rate));
-  const tPIs = les.map((le, i) => calcPI(le.loan, tRates[i]));
-  const savings = les.map((le, i) => Math.round((le.pi-tPIs[i])*360 + le.closing - tommyClosing(le.loan)));
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:900,
-        messages:[{ role:'user', content:
-          `You are Tommy Lower (NMLS #31194), Rochester MI mortgage loan officer with Tommy's lender. A buyer just compared three Loan Estimates side by side.
-
-The three offers (all for same $332,500 loan, conventional 30-year, March 2026):
-1. First National Bank: 6.625% rate, 6.891% APR (spread: 0.266%), $7,980 closing, $2,130/mo PI. ~20 reviews, no industry awards, B+ BBB. Estimated savings vs Tommy: $${savings[0].toLocaleString()}.
-2. Oakland Community CU: 6.750% rate, 6.892% APR (spread: 0.142%), $7,490 closing, $2,157/mo PI. ~180 reviews, NCUA 5-star, A BBB. Estimated savings vs Tommy: $${savings[1].toLocaleString()}.
-3. National Direct Lender: 6.500% rate, 6.714% APR (spread: 0.214%), $7,420 closing, $2,101/mo PI. 39K+ reviews, J.D. Power #1, A+ BBB. Estimated savings vs Tommy: $${savings[2].toLocaleString()}.
-
-Current Freddie Mac market average: 6.38% (week ending 3/26/2026).
-Tommy's best competing rate: 6.255% (Tommy's lender) with ~$2,808 closing costs.
-
-Write 4 short paragraphs in Tommy's voice. Plain English, no bullet points, like a trusted expert friend:
-Para 1: Big picture — how do these three offers compare to the current market? Which stands out and why?
-Para 2: Dig into the APR spreads — First National's 0.266% spread is the widest (means fees baked in). Credit union has low spread but highest rate. Online lender is closest to market.
-Para 3: Reputation differences — be honest. 20 reviews vs. 39,000. No J.D. Power ranking vs. 23 wins. What does this mean in practice for the buyer?
-Para 4: What Tommy brings to the table — Tommy's lender's pricing and awards, local expertise, personal service. At minimum, getting a competing quote takes 10 minutes.
-
-Then write "VERDICT:" on a new line with one recommendation sentence that names specific dollar savings and starts with "Call me" or "Text me."
-
-Under 270 words. No markdown.`
-        }]
-      })
-    });
-    if (!resp.ok) throw new Error(resp.status);
-    const data = await resp.json();
-    const text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '';
-    if (text) {
-      const vMatch = text.match(/VERDICT:\s*(.+)/i);
-      const body = text.replace(/VERDICT:\s*.+/i, '').trim();
-      document.getElementById('tn-title').textContent = 'My analysis of all three offers:';
-      document.getElementById('tn-body').innerHTML = body.split('\n\n').map(p => '<p>' + p + '</p>').join('');
-      document.getElementById('tn-verdict').textContent = vMatch ? vMatch[1] : 'Call or text me — I\'ll put together a competing Loan Estimate that beats all three of these, usually same-day.';
-      document.getElementById('tn-verdict-wrap').style.display = 'block';
-    } else { fallbackAll(); }
-  } catch(e) { fallbackAll(); }
-}
-
-function fallbackAll() {
-  document.getElementById('tn-title').textContent = 'My take on all three offers:';
-  document.getElementById('tn-body').innerHTML =
-    '<p>Looking at these three side by side, First National\'s rate of 6.625% is the furthest from the current Freddie Mac average of 6.38%, and their APR spread of 0.266% is the widest — meaning there are likely fees baked into that rate. The Credit Union is actually the highest rate here at 6.750%, though their spread is tighter. National Direct Lender comes in closest to market at 6.500%.</p>' +
-    '<p>On reputation, the difference is stark. First National has about 20 reviews and no industry rankings. National Direct Lender\'s platform (Tommy's lender) has 39,000+ Trustpilot reviews at 4.6/5 stars and 23 J.D. Power top rankings — more than any other lender in history. These aren\'t small differences.</p>' +
-    '<p>Here\'s what I\'d tell you as a friend: with Tommy's lender I can typically offer you a competitive rate with lower fees than what you\'re seeing here. I\'m a local Rochester loan officer — I pick up the phone, I know Oakland County, and I close deals on time. Getting a competing quote from me takes about 10 minutes.</p>' +
-    '<p>The math on 30-year savings is significant. Even a 0.25% rate difference on $332K is about $17,000 over the life of the loan. That\'s worth one phone call.</p>';
-  document.getElementById('tn-verdict').textContent = 'Call or text me — I\'ll review all three of these and come back with a competing Loan Estimate that beats them, usually same-day.';
-  document.getElementById('tn-verdict-wrap').style.display = 'block';
-}
-
-// ═══════════════════════════════════════════════════════════
-// HELPER: REP CARD
-// ═══════════════════════════════════════════════════════════
-function repCard(name, rep, winner) {
-  const awards = (rep.awards || []).map(a =>
-    `<span class="award-tag${a.includes('J.D.')||a.includes('Fortune')?' g':''}">${a}</span>`
-  ).join('');
-  return `<div class="deep-card${winner?' winner':''}">
-    <div class="deep-lender">${name}</div>
-    <div class="deep-row"><span class="label">Rating</span><span class="val">${rep.stars} ${rep.rating}</span></div>
-    <div class="deep-row"><span class="label">Reviews</span><span class="val">${rep.reviews}</span></div>
-    <div class="deep-row"><span class="label">BBB</span><span class="val">${rep.bbb}</span></div>
-    <div class="deep-row"><span class="label">J.D. Power</span><span class="val" style="font-size:.72rem;">${rep.jdpower}</span></div>
-    ${awards ? '<div style="margin-top:9px; line-height:1.9;">' + awards + '</div>' : ''}
-    <div class="deep-rep-note">${rep.summary}</div>
-    ${rep.watchout ? '<div class="watchout">⚠️ ' + rep.watchout + '</div>' : ''}
-  </div>`;
-}
-
-function deepCard(le, winner) {
-  const rep = le.rep;
-  const awards = (rep.awards || []).map(a =>
-    `<span class="award-tag${a.includes('J.D.')||a.includes('Fortune')?' g':''}">${a}</span>`
-  ).join('');
-  return `<div class="deep-card${winner?' winner':''}">
-    <div class="deep-lender">${le.icon} ${le.name || le.key}</div>
-    <div class="deep-row"><span class="label">Type</span><span class="val" style="font-size:.74rem;">${rep.type}</span></div>
-    <div class="deep-row"><span class="label">Rating</span><span class="val">${rep.stars} ${rep.rating}</span></div>
-    <div class="deep-row"><span class="label">Reviews</span><span class="val">${rep.reviews}</span></div>
-    <div class="deep-row"><span class="label">BBB</span><span class="val">${rep.bbb}</span></div>
-    <div class="deep-row"><span class="label">J.D. Power</span><span class="val" style="font-size:.72rem;">${rep.jdpower}</span></div>
-    ${awards ? '<div style="margin-top:9px; line-height:1.9;">' + awards + '</div>' : ''}
-    <div class="deep-rep-note">${rep.summary}</div>
-    ${rep.watchout ? '<div class="watchout">⚠️ ' + rep.watchout + '</div>' : ''}
-  </div>`;
-}
-
-// ═══════════════════════════════════════════════════════════
-// CHAT / CONVERSATION
-// ═══════════════════════════════════════════════════════════
-const CHAT_RESPONSES = {
-  bigbank: {
-    q: 'Which lender are you leaning toward?',
-    options: [
-      { text: '🏦 First National Bank — I like the local feel', key: 'a' },
-      { text: '💰 I just want the lowest payment possible', key: 'b' },
-      { text: '⭐ Tommy — tell me more about what you can do', key: 'c' },
-      { text: '🤔 I\'m not sure yet — still thinking', key: 'd' }
-    ],
-    responses: {
-      a: `That's fair — I get it. Local relationships matter, and First National has been around a long time. But here's what I'd want you to know: their rate of 6.625% is 0.245% above current market, and they have fewer than 20 reviews online. Once your loan closes, there's a real chance it gets sold to a servicer anyway — so you'd lose that "local" feeling regardless. \n\nMy honest advice? At minimum, let me put together a competing Loan Estimate for you. If First National really is the best fit, you'll have the numbers to confirm that. If not, you'll save yourself thousands over 30 years.`,
-      b: `Then let's talk numbers. First National's rate of 6.625% would cost you $2,130/mo in P&I. On Tommy's lender, I can typically offer 6.38% or below — that's roughly $75-100/mo less, which is $27,000-$36,000 over 30 years. \n\nPlus their closing costs of $7,980 are on the higher end. My fees typically come in lower. If lowest payment is the goal, getting a competing quote from me takes 10 minutes and costs you nothing.`,
-      c: `Here's what I bring: Tommy's lender's technology and pricing — the largest lender in the US, #1 in J.D. Power satisfaction 23 consecutive times — combined with a local Rochester loan officer who knows Oakland County, picks up the phone, and closes deals on time. You get the best of both worlds. \n\nCall or text me and I'll put together an official competing Loan Estimate. Usually have it back to you same-day. No obligation.`,
-      d: `That's the smart move — don't rush it. Here's what I'd suggest: before you decide, let me put together a competing Loan Estimate on Tommy's lender. It's free, takes about 10 minutes, and gives you a real number to compare against. At minimum you'll have more information. At best, you'll save $20,000+ over the life of the loan.`
-    }
-  },
-  creditunion: {
-    q: 'Which direction are you leaning?',
-    options: [
-      { text: '🤝 Oakland CU — I like supporting local', key: 'a' },
-      { text: '📉 I want a lower rate than 6.75%', key: 'b' },
-      { text: '⭐ Tell me more about Tommy\'s offer', key: 'c' },
-      { text: '🤔 Not sure — what would you do?', key: 'd' }
-    ],
-    responses: {
-      a: `Credit unions are great — I respect that instinct. Oakland CU has solid reviews and a personal feel. But here's the honest math: their rate of 6.750% is the highest of the three lenders you looked at, and it's 0.37% above current market. On a $332,500 loan, that's about $82/mo more than necessary — which adds up to nearly $30,000 over 30 years. \n\nIf supporting local matters, worth knowing that I'm also local — I'm based in Rochester and work Oakland and Macomb County every day. Let me put together a competing number for you.`,
-      b: `You're right to push on that. 6.750% is the highest rate of the three lenders you saw, and it's well above what's available in the market right now. On Tommy's lender, I can typically offer something in the 6.25-6.38% range depending on your credit profile. \n\nThat spread — even 0.35% — means roughly $23,000 more in interest over 30 years. Text me this LE and I'll come back with a competing number same-day.`,
-      c: `Happy to explain. I use Tommy's lender's platform — the #1 rated lender in America for customer satisfaction, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews. But unlike going directly to Tommy's lender, you get me — a local Rochester loan officer who handles your deal personally from application to closing. Same pricing, better service, local expertise. \n\nCall me at (586) 415-4507 and I'll put together your official Loan Estimate same-day.`,
-      d: `I'll be straight with you: 6.750% on a conventional 30-year in this market is on the high side. Current Freddie Mac average is 6.38%, and I can typically get you within 0.1-0.2% of that depending on your credit. \n\nWhat I'd do: get a competing quote from me before committing. It's free, takes 10 minutes, and you'll know exactly where you stand. If the Credit Union still wins, great — but at least you confirmed it.`
-    }
-  },
-  online: {
-    q: 'What\'s your gut telling you?',
-    options: [
-      { text: '💻 National Direct Lender looks strong — might go with them', key: 'a' },
-      { text: '🤔 I want to compare more before deciding', key: 'b' },
-      { text: '⭐ How exactly does Tommy differ from National Lender?', key: 'c' },
-      { text: '📞 Let\'s talk — I want Tommy\'s actual number', key: 'd' }
-    ],
-    responses: {
-      a: `That's a reasonable call — National Direct Lender's platform (which runs on Tommy's lender) has strong numbers and excellent reviews. The rate of 6.500% is the closest to market of the three you looked at. \n\nHere's the honest difference between going with them directly and going with me: I use the same Tommy's lender platform, which means same technology and same pricing infrastructure. But with me, you get a local Rochester loan officer — someone who knows Oakland County, calls your agent directly, and is personally invested in your deal closing. You don't get that from an 800 number. \n\nLet me put together a competing quote — I'll typically match or beat that 6.500%, and you get the local service on top.`,
-      b: `Smart. Before you decide, get an official quote from me — it's free and takes about 10 minutes. I can typically meet or beat what you're seeing here, and you'll have a full official Loan Estimate to compare apples to apples. \n\nFun fact: the three LEs you just looked at are all estimates. An official Loan Estimate from me gives you a legally binding number to shop with. That's the real comparison.`,
-      c: `Great question. The core difference: National Direct Lender is a call center. I'm a local Rochester loan officer who works Oakland and Macomb County every day. When your agent has a question, they call me directly. When something comes up during the transaction, I handle it personally. Same Tommy's lender platform, same competitive pricing — but with a real human being who knows your market. \n\nCall me and I'll put a competing Loan Estimate together same-day.`,
-      d: `That's exactly what I like to hear. Call me at (586) 415-4507 or text me this LE and I'll have a competing number back to you same-day. No cost, no commitment — just a real number so you can make the best decision. That's all I ask.`
-    }
-  },
-  all: {
-    q: 'After seeing all three side by side, which direction are you leaning?',
-    options: [
-      { text: '📉 National Direct Lender looks best on numbers', key: 'a' },
-      { text: '🤝 Still interested in the Credit Union', key: 'b' },
-      { text: '🏦 First National feels like a fit for me', key: 'c' },
-      { text: '⭐ Tell me why I should go with Tommy instead', key: 'd' }
-    ],
-    responses: {
-      a: `Good eye. National Direct Lender has the best numbers of the three — lowest rate, competitive fees, strong reviews. If you're going to go with one of these three, that's the logical choice. \n\nBut before you commit, hear me out: I use the exact same Tommy's lender platform that powers National Direct Lender, which means I can access the same or better pricing. The difference is you get me — a local Rochester loan officer — instead of a call center. Same deal, personal service. Text me this LE and I'll come back same-day with a competing number. At worst you confirm National Lender is the right call. At best, you save more money with better service.`,
-      b: `I get it — local credit unions have a real appeal, especially in Oakland County. But let's be honest about the math: their 6.750% rate is the highest of the three and 0.37% above market. Over 30 years on a $332K loan, that gap is roughly $30,000 in extra interest. That's a real number. \n\nIf the local/personal angle is what matters, I'd ask you to consider this: I'm also local. I'm based in Rochester, I work Oakland and Macomb County every day, and I pick up my phone. Call me and let's compare numbers directly.`,
-      c: `I'll respect that — community banking has its place, and some people value the relationship over everything else. Just want you to go in with clear eyes: First National has fewer than 20 reviews online, no industry rankings, and their 6.625% rate has the widest APR spread of the three (meaning fees may be baked into the rate). \n\nMy honest ask: let me put together a competing Loan Estimate before you sign anything. It costs you nothing and takes 10 minutes. If First National is still the right fit after that, you'll have the confidence to know it.`,
-      d: `Here's the straight answer: you get Tommy's lender's pricing and technology — the #1 lender in America by volume, 23 J.D. Power top rankings, 4.6 stars on 39,000+ reviews — combined with a local Rochester loan officer who handles your deal personally. No 800 number. No call center. Me. \n\nI typically match or beat what you see here, close on time, and communicate proactively with your agent. That's the pitch. Call me at (586) 415-4507 and I'll prove it with a same-day Loan Estimate.`
-    }
-  }
-};
-
-function buildChat(containerId, singleLE, allLEs, savings) {
-  const container = document.getElementById(containerId);
-  const chatKey = singleLE ? singleLE.key : 'all';
-  const chatData = CHAT_RESPONSES[chatKey];
-
-  const opts = chatData.options.map((o, i) =>
-    `<button class="chat-option" onclick="selectChatOption('${containerId}', '${chatKey}', '${o.key}', this)">${o.text}</button>`
-  ).join('');
-
-  const savingsNote = savings && savings > 0
-    ? `<div style="font-size:.78rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--warm-gray);">💡 Based on the numbers: going with Tommy could save you approximately <strong>${fmt(savings)}</strong> over 30 years.</div>`
-    : '';
-
-  container.innerHTML = `
-    <div class="chat-card">
-      <div class="chat-title">💬 Let's Talk Through Your Decision</div>
-      <div class="chat-question">
-        <div class="chat-q-text">${chatData.q}</div>
-        <div class="chat-options">${opts}</div>
-        ${savingsNote}
-      </div>
-      <div class="chat-response" id="${containerId}-response">
-        <div class="chat-follow-title">Tommy's Take:</div>
-        <div class="chat-response-text" id="${containerId}-response-text"></div>
-        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-          <a href="tel:+15864154507" class="cpill gold" style="font-size:.82rem; padding:9px 18px;">📞 Call Tommy</a>
-          <a href="sms:+15864154507" class="cpill outline" style="font-size:.82rem; padding:9px 18px; border-color:rgba(255,255,255,.3); color:white;">💬 Text Your LE</a>
-        </div>
-      </div>
-    </div>`;
-}
-
-function selectChatOption(containerId, chatKey, optKey, btn) {
-  // Mark selected
-  btn.closest('.chat-options').querySelectorAll('.chat-option').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-
-  // Show response
-  const responseDiv = document.getElementById(containerId + '-response');
-  const responseText = document.getElementById(containerId + '-response-text');
-  const text = CHAT_RESPONSES[chatKey].responses[optKey];
-
-  responseText.innerHTML = text.split('\n\n').map(p => '<p>' + p + '</p>').join('');
-  responseDiv.classList.add('visible');
-
-  setTimeout(() => {
-    responseDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 100);
-}
-
-// ═══════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════
-
-
-// ═══════════════════════════════════════════════════════════
-// PDF REPORT GENERATOR
-// ═══════════════════════════════════════════════════════════
-
-// Track conversation for PDF
-const conversationLog = [];
-
-function logChat(question, option, response) {
-  conversationLog.push({ question, option, response });
-}
-
-// Monkey-patch selectChatOption to also log
-const _origSelectChat = selectChatOption;
-function selectChatOption(containerId, chatKey, optKey, btn) {
-  _origSelectChat(containerId, chatKey, optKey, btn);
-  const chatData = CHAT_RESPONSES[chatKey];
-  const opt = chatData.options.find(o => o.key === optKey);
-  const resp = chatData.responses[optKey];
-  logChat(chatData.q, opt ? opt.text : optKey, resp);
-}
-
-function generatePDF(mode) {
-  const btn = document.getElementById('pdf-btn-' + mode);
-  if (btn) { btn.textContent = '⏳ Building PDF...'; btn.disabled = true; }
-
-  try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
-    const W = 612, H = 792;
-    const margin = 48;
-    const innerW = W - margin * 2;
-    let y = margin;
-
-    // Color palette
-    const NAVY = [10, 22, 40];
-    const GOLD = [200, 146, 42];
-    const GREEN = [22, 163, 74];
-    const RED = [220, 38, 38];
-    const GRAY = [90, 90, 90];
-    const LIGHT = [247, 244, 239];
-    const WHITE = [255, 255, 255];
-
-    function setColor(rgb, type) {
-      if (type === 'fill') doc.setFillColor(rgb[0], rgb[1], rgb[2]);
-      else doc.setTextColor(rgb[0], rgb[1], rgb[2]);
-    }
-    function setFont(size, style) {
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style || 'normal');
-    }
-    function checkPage(needed) {
-      if (y + needed > H - margin) {
-        doc.addPage();
-        y = margin;
-        drawPageHeader();
-      }
-    }
-    function drawPageHeader() {
-      doc.setFillColor(10, 22, 40);
-      doc.rect(0, 0, W, 28, 'F');
-      setFont(9, 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text('Tommy Lower · NMLS #31194 · Tommy's lender · Equal Housing Lender · (586) 415-4507', margin, 18);
-      doc.setTextColor(200, 146, 42);
-      doc.text('tommythemortgageguy.com', W - margin, 18, { align: 'right' });
-      if (y === margin) y = 48;
-    }
-
-    function sectionBar(title, color) {
-      checkPage(32);
-      color = color || NAVY;
-      doc.setFillColor(color[0], color[1], color[2]);
-      doc.rect(margin, y, innerW, 24, 'F');
-      setFont(10, 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text(title, margin + 8, y + 16);
-      y += 32;
-    }
-
-    function bodyText(text, indent) {
-      indent = indent || 0;
-      const lines = doc.splitTextToSize(text, innerW - indent);
-      checkPage(lines.length * 14 + 6);
-      setFont(9.5);
-      setColor(GRAY, 'text');
-      doc.text(lines, margin + indent, y);
-      y += lines.length * 14 + 6;
-    }
-
-    function keyValue(label, value, highlight) {
-      checkPage(20);
-      setFont(9);
-      setColor(GRAY, 'text');
-      doc.text(label, margin + 8, y);
-      setFont(9, 'bold');
-      if (highlight === 'green') setColor(GREEN, 'text');
-      else if (highlight === 'red') setColor(RED, 'text');
-      else setColor(NAVY, 'text');
-      doc.text(value, W - margin - 8, y, { align: 'right' });
-      y += 18;
-      doc.setDrawColor(230, 228, 224);
-      doc.line(margin, y, W - margin, y);
-      y += 2;
-    }
-
-    // ── COVER PAGE ──────────────────────────────────────────────────
-    doc.setFillColor(10, 22, 40);
-    doc.rect(0, 0, W, H, 'F');
-
-    // Gold accent bar
-    doc.setFillColor(200, 146, 42);
-    doc.rect(0, H/2 - 2, W, 4, 'F');
-
-    setFont(32, 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text('Loan Estimate', W/2, 240, { align: 'center' });
-    doc.text('Comparison Report', W/2, 282, { align: 'center' });
-
-    setFont(13);
-    doc.setTextColor(200, 146, 42);
-    doc.text('Prepared by Tommy Lower · NMLS #31194', W/2, 330, { align: 'center' });
-
-    setFont(10);
-    doc.setTextColor(200, 200, 200);
-    const dateStr = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    doc.text('Generated on ' + dateStr, W/2, 360, { align: 'center' });
-
-    if (mode === 'all') {
-      doc.text('All Three Lenders — Side-by-Side Analysis', W/2, 390, { align: 'center' });
-    } else if (selectedKey) {
-      doc.text('Analysis of: ' + LE[selectedKey].name, W/2, 390, { align: 'center' });
-    }
-
-    setFont(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Tommy Lower · Licensed Mortgage Lender · NMLS #3030 · Equal Housing Lender', W/2, H - 80, { align: 'center' });
-    doc.text('(586) 415-4507 · tommythemortgageguy.com', W/2, H - 60, { align: 'center' });
-    doc.text('Licensed to originate mortgage loans in Michigan', W/2, H - 40, { align: 'center' });
-
-    // ── PAGE 2: AI ANALYSIS ─────────────────────────────────────────
-    doc.addPage();
-    y = margin;
-    drawPageHeader();
-    y += 12;
-
-    setFont(20, 'bold');
-    setColor(NAVY, 'text');
-    doc.text("Tommy's Expert Analysis", margin, y);
-    y += 28;
-
-    // Get narrative text
-    const narrativeEl = mode === 'single'
-      ? document.getElementById('sn-body')
-      : document.getElementById('tn-body');
-    const verdictEl = mode === 'single'
-      ? document.getElementById('sn-verdict')
-      : document.getElementById('tn-verdict');
-    const titleEl = mode === 'single'
-      ? document.getElementById('sn-title')
-      : document.getElementById('tn-title');
-
-    if (titleEl) {
-      setFont(12, 'bold');
-      setColor(NAVY, 'text');
-      doc.text(titleEl.textContent, margin, y);
-      y += 20;
-    }
-
-    if (narrativeEl) {
-      const paras = narrativeEl.querySelectorAll('p');
-      paras.forEach(p => {
-        if (p.textContent.trim()) bodyText(p.textContent.trim());
-        y += 4;
-      });
-    }
-
-    if (verdictEl && verdictEl.textContent) {
-      y += 8;
-      sectionBar("Tommy's Verdict", GOLD);
-      setFont(10, 'bold');
-      setColor(NAVY, 'text');
-      const vLines = doc.splitTextToSize(verdictEl.textContent, innerW - 16);
-      checkPage(vLines.length * 15 + 10);
-      doc.text(vLines, margin + 8, y);
-      y += vLines.length * 15 + 12;
-    }
-
-    // ── PAGE(S): COMPARISON NUMBERS ──────────────────────────────────
-    doc.addPage();
-    y = margin;
-    drawPageHeader();
-    y += 12;
-
-    setFont(20, 'bold');
-    setColor(NAVY, 'text');
-    doc.text(mode === 'all' ? 'Three-Way Side-by-Side Comparison' : 'Numbers: Their Quote vs Tommy', margin, y);
-    y += 28;
-
-    // Build table data
-    if (mode === 'all') {
-      const les3 = ['bigbank', 'creditunion', 'online'].map(k => LE[k]);
-      const tRates3 = les3.map(le => tommyRate(le.rate));
-      const tPIs3 = les3.map((le,i) => calcPI(le.loan, tRates3[i]));
-      const tClose3 = tommyClosing(les3[0].loan);
-
-      const tableBody = [
-        ['Interest Rate', ...les3.map(le=>le.rate.toFixed(3)+'%'), tRates3[0].toFixed(3)+'%*'],
-        ['APR', ...les3.map(le=>le.apr.toFixed(3)+'%'), '—'],
-        ['Monthly P&I', ...les3.map(le=>fmtNum(le.pi)), fmtNum(Math.min(...tPIs3))+'*'],
-        ['Lender Fees', ...les3.map(le=>fmtNum(le.closing)), fmtNum(tClose3)+'*'],
-        ['30-yr Interest', ...les3.map(le=>fmtNum(le.pi*360-le.loan)), fmtNum(Math.min(...tPIs3)*360-les3[0].loan)+'*'],
-        ['Est. Savings vs Tommy', ...les3.map((le,i)=>fmtNum(Math.round((le.pi-tPIs3[i])*360+le.closing-tClose3))+' saved'), 'Best Deal ⭐'],
-      ];
-
-      doc.autoTable({
-        startY: y,
-        head: [['', les3[0].name, les3[1].name, les3[2].name, 'Tommy Lower — Licensed Michigan LO']],
-        body: tableBody,
-        margin: { left: margin, right: margin },
-        styles: { fontSize: 8.5, cellPadding: 6 },
-        headStyles: { fillColor: [10, 22, 40], textColor: [255,255,255], fontStyle: 'bold', fontSize: 8 },
-        columnStyles: { 4: { fillColor: [240, 249, 244], textColor: [22, 163, 74], fontStyle: 'bold' } },
-        alternateRowStyles: { fillColor: [250, 249, 247] },
-      });
-      y = doc.lastAutoTable.finalY + 20;
-
-    } else {
-      const le = LE[selectedKey];
-      const tRate = tommyRate(le.rate);
-      const tPI = calcPI(le.loan, tRate);
-      const tClose = tommyClosing(le.loan);
-
-      const tableBody = [
-        ['Interest Rate', le.rate.toFixed(3)+'%', tRate.toFixed(3)+'%*'],
-        ['APR', le.apr.toFixed(3)+'%', (tRate+0.22).toFixed(3)+'%*'],
-        ['Monthly P&I', fmtNum(le.pi), fmtNum(tPI)+'*'],
-        ['Total Closing Costs', fmtNum(le.closing), fmtNum(tClose)+'*'],
-        ['30-yr Interest Cost', fmtNum(le.pi*360-le.loan), fmtNum(tPI*360-le.loan)+'*'],
-        ['Cash to Close', fmtNum(le.ctc), fmtNum(le.ctc-(le.closing-tClose))+'*'],
-        ['Est. 30-yr Savings', '—', fmtNum(Math.round((le.pi-tPI)*360+(le.closing-tClose)))+' with Tommy'],
-      ];
-
-      doc.autoTable({
-        startY: y,
-        head: [['Line Item', le.name, 'Tommy · Tommy's lender']],
-        body: tableBody,
-        margin: { left: margin, right: margin },
-        styles: { fontSize: 9.5, cellPadding: 7 },
-        headStyles: { fillColor: [10, 22, 40], textColor: [255,255,255], fontStyle: 'bold' },
-        columnStyles: { 2: { fillColor: [240, 249, 244], textColor: [22, 163, 74], fontStyle: 'bold' } },
-        alternateRowStyles: { fillColor: [250, 249, 247] },
-      });
-      y = doc.lastAutoTable.finalY + 20;
-    }
-
-    // ── LENDER REPUTATION ──────────────────────────────────────────
-    doc.addPage();
-    y = margin;
-    drawPageHeader();
-    y += 12;
-
-    setFont(20, 'bold');
-    setColor(NAVY, 'text');
-    doc.text('Lender Reputation Comparison', margin, y);
-    y += 28;
-
-    const les4rep = mode === 'all'
-      ? ['bigbank','creditunion','online'].map(k => LE[k])
-      : [LE[selectedKey]];
-
-    [...les4rep, { name: 'Tommy · Tommy's lender', rep: TOMMY.rep }].forEach(le => {
-      sectionBar((le.icon||'⭐') + ' ' + le.name);
-      const rep = le.rep;
-      keyValue('Overall Rating', rep.rating + ' · ' + rep.reviews);
-      keyValue('Type', rep.type);
-      keyValue('BBB Rating', rep.bbb);
-      keyValue('J.D. Power', rep.jdpower);
-      if (rep.awards && rep.awards.length) {
-        checkPage(20);
-        setFont(8.5, 'bold');
-        setColor(NAVY, 'text');
-        doc.text('Awards & Recognition:', margin + 8, y);
-        y += 14;
-        rep.awards.forEach(a => {
-          checkPage(14);
-          setFont(8.5);
-          setColor(GRAY, 'text');
-          doc.text('• ' + a, margin + 16, y);
-          y += 13;
-        });
-      }
-      checkPage(18);
-      const sLines = doc.splitTextToSize(rep.summary, innerW - 16);
-      setFont(8.5);
-      setColor(GRAY, 'text');
-      doc.text(sLines, margin + 8, y);
-      y += sLines.length * 12 + 10;
-      if (rep.watchout) {
-        checkPage(24);
-        doc.setFillColor(255, 243, 199);
-        doc.rect(margin, y, innerW, 18, 'F');
-        setFont(8.5);
-        doc.setTextColor(146, 64, 14);
-        doc.text('Watch out: ' + rep.watchout, margin + 8, y + 12);
-        y += 24;
-      }
-      y += 8;
-    });
-
-    // ── CONVERSATION LOG ──────────────────────────────────────────
-    if (conversationLog.length > 0) {
-      doc.addPage();
-      y = margin;
-      drawPageHeader();
-      y += 12;
-
-      setFont(20, 'bold');
-      setColor(NAVY, 'text');
-      doc.text('Your Conversation with Tommy's AI', margin, y);
-      y += 8;
-      setFont(9);
-      setColor(GRAY, 'text');
-      doc.text('Questions you asked and Tommy's responses during your analysis session.', margin, y + 14);
-      y += 30;
-
-      conversationLog.forEach((entry, i) => {
-        checkPage(60);
-
-        // Question block
-        doc.setFillColor(247, 244, 239);
-        const qLines = doc.splitTextToSize('Q: ' + entry.question, innerW - 16);
-        const qH = qLines.length * 13 + 16;
-        doc.rect(margin, y, innerW, qH, 'F');
-        setFont(9, 'bold');
-        setColor(NAVY, 'text');
-        doc.text(qLines, margin + 8, y + 13);
-        y += qH + 4;
-
-        // Selected option
-        if (entry.option) {
-          setFont(9, 'italic');
-          setColor(GRAY, 'text');
-          doc.text('You selected: ' + entry.option, margin + 8, y);
-          y += 16;
-        }
-
-        // Tommy's response
-        const rParas = entry.response.split('
-
-');
-        sectionBar("Tommy's Response:", [10, 74, 138]);
-        rParas.forEach(para => {
-          if (para.trim()) {
-            const rLines = doc.splitTextToSize(para.trim(), innerW - 16);
-            checkPage(rLines.length * 13 + 6);
-            setFont(9);
-            doc.setTextColor(240, 240, 240);
-            doc.text(rLines, margin + 8, y);
-            y += rLines.length * 13 + 6;
-          }
-        });
-        y += 16;
-      });
-    }
-
-    // ── ORIGINAL LOAN ESTIMATES ──────────────────────────────────
-    const appendLEs = mode === 'all'
-      ? ['bigbank','creditunion','online'].map(k => LE[k])
-      : [LE[selectedKey]];
-
-    appendLEs.forEach(le => {
-      doc.addPage();
-      y = margin;
-      drawPageHeader();
-      y += 12;
-
-      setFont(16, 'bold');
-      setColor(NAVY, 'text');
-      doc.text('Original Loan Estimate — ' + le.name, margin, y);
-      y += 20;
-      setFont(9);
-      setColor(GRAY, 'text');
-      doc.text('The following is a reproduction of the key data from the original Loan Estimate from ' + le.name + '.', margin, y);
-      y += 20;
-
-      sectionBar('Page 1 — Loan Terms & Projected Payments');
-      keyValue('Lender Name', le.name);
-      keyValue('Loan Term', '30 Years');
-      keyValue('Loan Type', 'Conventional');
-      keyValue('Loan Amount', '$' + le.loan.toLocaleString());
-      keyValue('Interest Rate', le.rate.toFixed(3) + '%');
-      keyValue('Monthly Principal & Interest', '$' + Math.round(le.pi).toLocaleString());
-      keyValue('APR', le.apr.toFixed(3) + '%');
-      keyValue('Estimated Total Monthly Payment', '$' + Math.round(le.pi + (le.loan * 0.0123 / 12) + (le.loan * 0.0078 / 12)).toLocaleString());
-      keyValue('Estimated Closing Costs', '$' + le.closing.toLocaleString());
-      keyValue('Estimated Cash to Close', '$' + le.ctc.toLocaleString());
-
-      y += 10;
-      sectionBar('Page 2 — Closing Cost Details');
-      keyValue('A. Origination Fee (~1%)', '$' + Math.round(le.loan * 0.01).toLocaleString());
-      keyValue('B. Appraisal + Credit Report', '$765');
-      keyValue('C. Title Services (Lender)', '$1,050');
-      keyValue('E. Recording Fees', '$85');
-      keyValue('F. Prepaids (interest + insurance)', '$' + Math.round(le.loan * (le.rate/100/365) * 15 + le.loan * 0.0078 / 12).toLocaleString());
-      keyValue('G. Escrow Setup', '$862');
-      keyValue('TOTAL CLOSING COSTS', '$' + le.closing.toLocaleString(), 'navy');
-
-      y += 10;
-      sectionBar('Lender Reputation Summary');
-      bodyText(le.rep.summary);
-      if (le.rep.watchout) {
-        y += 4;
-        bodyText('Note: ' + le.rep.watchout);
-      }
-    });
-
-    // ── DISCLAIMER PAGE ──────────────────────────────────────────
-    doc.addPage();
-    y = margin;
-    drawPageHeader();
-    y += 12;
-
-    setFont(14, 'bold');
-    setColor(NAVY, 'text');
-    doc.text('Disclosures & Important Information', margin, y);
-    y += 24;
-
-    const disclaimers = [
-      'Tommy Lower | NMLS #31194 | Licensed Mortgage Lender | NMLS #3030 | Equal Housing Lender | Licensed in Michigan.',
-      '',
-      'This comparison report was generated for informational and illustrative purposes only and does not constitute a commitment to lend, an offer of credit, or a guarantee of specific rates, terms, or fees. All calculations, estimates, and comparisons are based on data entered by the user and publicly available market information as of the date generated.',
-      '',
-      "Tommy's estimated competing rates and fees are approximations based on current market conditions. Actual rates and closing costs will depend on the borrower's credit profile, property appraisal, loan-to-value ratio, debt-to-income ratio, and other underwriting factors at the time of application.",
-      '',
-      'Lender reputation data (reviews, ratings, awards) is sourced from publicly available third-party platforms including Trustpilot, J.D. Power, and the Better Business Bureau as of early 2026. All loans subject to credit approval and program guidelines.',
-      '',
-      'To receive an official Loan Estimate from Tommy Lower and Tommy's lender, contact Tommy directly. A Loan Estimate will be provided within 3 business days of a completed application as required by federal law (TRID regulations).',
-      '',
-      'Contact Tommy Lower: (586) 415-4507 | tommythemortgageguy.com',
-    ];
-
-    disclaimers.forEach(d => {
-      if (!d) { y += 8; return; }
-      bodyText(d);
-    });
-
-    // ── SAVE ─────────────────────────────────────────────────────
-    const fname = 'Tommy-LE-Comparison-' + new Date().toISOString().slice(0,10) + '.pdf';
-    doc.save(fname);
-
-    if (btn) { btn.textContent = '✅ PDF Downloaded!'; }
-    setTimeout(() => {
-      if (btn) { btn.textContent = '📄 Download Full Report PDF'; btn.disabled = false; }
-    }, 3000);
-
-  } catch(e) {
-    console.error('PDF error:', e);
-    if (btn) { btn.textContent = '❌ Error — try again'; btn.disabled = false; }
-    alert('PDF generation failed. Try using File > Print > Save as PDF from your browser instead.');
-  }
-}
-
-function fmtNum(n) { return '$' + Math.round(n).toLocaleString(); }
-
-function goBack() {
-  document.getElementById('selector-section').style.display = 'block';
-  document.getElementById('single-results').classList.remove('visible');
-  document.getElementById('all-results').classList.remove('visible');
-  selectedKey = null;
-  // Reset upload queue
-  uploadedFiles.length = 0;
-  for (let i = 0; i < 3; i++) {
-    const slot = document.getElementById('slot-' + i);
-    if (!slot) continue;
-    slot.className = 'queue-slot empty';
-    slot.onclick = () => document.getElementById('le-file-input').click();
-    slot.innerHTML =
-      '<div class="slot-num">Lender ' + (i+1) + '</div>' +
-      '<div style="font-size:1.6rem; margin:6px 0;">📄</div>' +
-      '<div class="slot-empty-label">Click or drop to add</div>';
-  }
-  updateButtons();
-  window.scrollTo({ top:0, behavior:'smooth' });
-}
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════
-     LOGAN CHAT WIDGET — Tommy's AI Assistant
-     Triggers when user has been engaged 90+ seconds OR
-     has completed a comparison (results visible)
-═══════════════════════════════════════════════════════════ -->
-<style>
-/* ── LOGAN WIDGET ── */
-#logan-wrap {
-  position:fixed; bottom:24px; right:24px; z-index:9000;
-  display:none; flex-direction:column; align-items:flex-end; gap:10px;
-}
-#logan-wrap.visible { display:flex; }
-
-/* Bubble launcher */
-#logan-bubble {
-  width:56px; height:56px; border-radius:50%;
-  background:linear-gradient(135deg,#0a1628,#1a4a8a);
-  border:3px solid #c8922a;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  font-size:1.4rem; box-shadow:0 4px 20px rgba(10,22,40,.35);
-  transition:transform .2s; position:relative; flex-shrink:0;
-}
-#logan-bubble:hover { transform:scale(1.08); }
-#logan-notif {
-  position:absolute; top:-4px; right:-4px;
-  width:16px; height:16px; background:#dc2626; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.55rem; font-weight:700; color:white; border:2px solid white;
-  animation:notif-pulse 1.5s infinite;
-}
-@keyframes notif-pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
-
-/* Chat window */
-#logan-chat {
-  width:320px; background:white; border-radius:18px;
-  box-shadow:0 8px 40px rgba(10,22,40,.22);
-  overflow:hidden; display:none; flex-direction:column;
-  border:1px solid #e8e4dc;
-  transform:translateY(8px) scale(.97);
-  transition:transform .25s, opacity .25s;
-  opacity:0;
-}
-#logan-chat.open { display:flex; transform:translateY(0) scale(1); opacity:1; }
-
-#logan-header {
-  background:linear-gradient(135deg,#0a1628,#152238);
-  padding:14px 16px; display:flex; align-items:center; gap:12px;
-}
-#logan-avatar {
-  width:38px; height:38px; border-radius:50%;
-  background:linear-gradient(135deg,#c8922a,#e8aa40);
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.1rem; flex-shrink:0;
-}
-#logan-header-text { flex:1; }
-#logan-name { font-size:.88rem; font-weight:700; color:white; }
-#logan-status { font-size:.68rem; color:#c8922a; margin-top:1px; }
-.logan-close {
-  color:rgba(255,255,255,.5); font-size:1.1rem; cursor:pointer;
-  background:none; border:none; line-height:1; padding:2px;
-}
-.logan-close:hover { color:white; }
-
-#logan-messages {
-  padding:14px 14px 0; flex:1; overflow-y:auto;
-  max-height:320px; min-height:80px;
-  scroll-behavior:smooth;
-}
-
-.lmsg { margin-bottom:10px; display:flex; gap:8px; align-items:flex-end; }
-.lmsg.logan { }
-.lmsg.user { flex-direction:row-reverse; }
-
-.lmsg-avatar {
-  width:26px; height:26px; border-radius:50%;
-  background:linear-gradient(135deg,#c8922a,#e8aa40);
-  display:flex; align-items:center; justify-content:center;
-  font-size:.7rem; flex-shrink:0;
-}
-.lmsg-bubble {
-  max-width:220px; padding:9px 12px; border-radius:14px;
-  font-size:.82rem; line-height:1.55;
-}
-.lmsg.logan .lmsg-bubble {
-  background:#f7f4ef; color:#1a1a1a;
-  border-bottom-left-radius:4px;
-}
-.lmsg.user .lmsg-bubble {
-  background:#0a1628; color:white;
-  border-bottom-right-radius:4px;
-}
-.lmsg-typing .lmsg-bubble {
-  display:flex; gap:3px; align-items:center; padding:11px 14px;
-}
-.lmsg-typing .dot {
-  width:6px; height:6px; background:#8a8a8a; border-radius:50%;
-  animation:tdot .9s infinite;
-}
-.lmsg-typing .dot:nth-child(2) { animation-delay:.18s; }
-.lmsg-typing .dot:nth-child(3) { animation-delay:.36s; }
-@keyframes tdot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
-
-#logan-options {
-  padding:10px 14px 14px;
-  display:flex; flex-direction:column; gap:7px;
-}
-.loption {
-  border:1.5px solid #e8e4dc; border-radius:10px;
-  padding:9px 13px; font-size:.8rem; cursor:pointer;
-  background:white; transition:all .18s; font-family:'DM Sans',sans-serif;
-  text-align:left; color:#1a1a1a; line-height:1.4;
-}
-.loption:hover { border-color:#2563b0; background:#f5f8ff; }
-.loption.selected { border-color:#c8922a; background:#fff8e1; font-weight:600; }
-
-#logan-input-row {
-  padding:10px 14px; border-top:1px solid #f0ede8;
-  display:flex; gap:8px; display:none;
-}
-#logan-input-row.visible { display:flex; }
-#logan-input {
-  flex:1; border:1.5px solid #d4d0c8; border-radius:8px;
-  padding:8px 11px; font-family:'DM Sans',sans-serif; font-size:.82rem;
-  outline:none;
-}
-#logan-input:focus { border-color:#2563b0; }
-#logan-send {
-  background:#0a1628; color:white; border:none; border-radius:8px;
-  padding:8px 14px; cursor:pointer; font-size:.8rem; font-weight:600;
-  font-family:'DM Sans',sans-serif;
-}
-#logan-send:hover { background:#2563b0; }
-
-#logan-footer {
-  padding:8px 14px; background:#fafaf8;
-  border-top:1px solid #f0ede8; text-align:center;
-}
-#logan-footer a { 
-  color:#c8922a; font-size:.72rem; font-weight:600; 
-  text-decoration:none; margin:0 8px;
-}
-#logan-footer a:hover { text-decoration:underline; }
-</style>
-
-<!-- LOGAN WIDGET HTML -->
-<div id="logan-wrap">
-  <div id="logan-chat">
-    <div id="logan-header">
-      <div id="logan-avatar">🤖</div>
-      <div id="logan-header-text">
-        <div id="logan-name">Logan</div>
-        <div id="logan-status">● Tommy's AI Assistant — Online</div>
-      </div>
-      <button class="logan-close" onclick="loganClose()">✕</button>
-    </div>
-    <div id="logan-messages"></div>
-    <div id="logan-options"></div>
-    <div id="logan-input-row" id="logan-input-row">
-      <input type="text" id="logan-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')loganSend()">
-      <button id="logan-send" onclick="loganSend()">Send</button>
-    </div>
-    <div id="logan-footer">
-      <a href="tel:+15864154507">📞 (586) 415-4507</a>
-      <a href="sms:+15864154507">💬 Text Tommy</a>
-    </div>
-  </div>
-  <div id="logan-bubble" onclick="loganToggle()">
-    🤖
-    <div id="logan-notif">1</div>
-  </div>
-</div>
-
-<script>
-// ═══════════════════════════════════════════════════════════
-// LOGAN — Tommy's AI Chat Assistant
-// ═══════════════════════════════════════════════════════════
-let loganOpen = false;
-let loganGreeted = false;
-let loganStage = 'intro';
-let loganUserName = '';
-let loganLEsChosen = [];
-let loganEngaged = false;
-let loganTimer = null;
-
-// Trigger conditions:
-// 1. User has been on the results view for 45+ seconds
-// 2. User clicks on a chat option (immediate trigger)
-// 3. User has scrolled to the CTA block
-
-function loganInit() {
-  // Show bubble after 45 seconds of activity
-  loganTimer = setTimeout(() => {
-    if (!loganGreeted) triggerLogan();
-  }, 45000);
-
-  // Also trigger if user reaches CTA
-  const ctaObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting && !loganGreeted) {
-        clearTimeout(loganTimer);
-        setTimeout(() => triggerLogan(), 2000);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  // Observe both CTA blocks
-  setTimeout(() => {
-    ['single-cta', 'all-cta-h'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) ctaObserver.observe(el);
-    });
-  }, 1000);
-}
-
-function triggerLogan() {
-  if (loganGreeted) return;
-  loganGreeted = true;
-  document.getElementById('logan-wrap').classList.add('visible');
-  // Auto-open after a beat
-  setTimeout(() => {
-    loganOpen = true;
-    document.getElementById('logan-chat').classList.add('open');
-    document.getElementById('logan-notif').style.display = 'none';
-    loganStartConversation();
-  }, 800);
-}
-
-function loganToggle() {
-  if (!loganGreeted) {
-    loganGreeted = true;
-    document.getElementById('logan-notif').style.display = 'none';
-  }
-  loganOpen = !loganOpen;
-  const chat = document.getElementById('logan-chat');
-  if (loganOpen) {
-    chat.classList.add('open');
-    if (!loganGreeted || document.getElementById('logan-messages').children.length === 0) {
-      loganStartConversation();
-    }
-  } else {
-    chat.classList.remove('open');
-  }
-}
-
-function loganClose() {
-  loganOpen = false;
-  document.getElementById('logan-chat').classList.remove('open');
-}
-
-function loganAddMsg(text, sender, delay) {
-  delay = delay || 0;
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const msgs = document.getElementById('logan-messages');
-      
-      // Add typing indicator first for Logan messages
-      if (sender === 'logan') {
-        const typing = document.createElement('div');
-        typing.className = 'lmsg logan lmsg-typing';
-        typing.id = 'logan-typing';
-        typing.innerHTML = '<div class="lmsg-avatar">🤖</div><div class="lmsg-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-        msgs.appendChild(typing);
-        msgs.scrollTop = msgs.scrollHeight;
-        
-        setTimeout(() => {
-          const t = document.getElementById('logan-typing');
-          if (t) t.remove();
-          const msg = document.createElement('div');
-          msg.className = 'lmsg logan';
-          msg.innerHTML = '<div class="lmsg-avatar">🤖</div><div class="lmsg-bubble">' + text + '</div>';
-          msgs.appendChild(msg);
-          msgs.scrollTop = msgs.scrollHeight;
-          resolve();
-        }, 800 + text.length * 12);
+    tb += `<tr><td class="rlabel">${r.label}</td>`;
+    lenders.forEach(l => {
+      if(r.overall) {
+        tb += `<td><div class="sbar-row"><div class="sbar"><div class="sfill" style="width:${l.overallScore*10}%"></div></div><span class="snum">${l.overallScore}</span></div></td>`;
+      } else if(r.sk) {
+        const s=l.scores[r.sk];
+        tb += `<td><div class="sbar-row"><div class="sbar"><div class="sfill" style="width:${s*10}%"></div></div><span class="snum">${s}/10</span></div></td>`;
       } else {
-        const msg = document.createElement('div');
-        msg.className = 'lmsg user';
-        msg.innerHTML = '<div class="lmsg-bubble">' + text + '</div>';
-        msgs.appendChild(msg);
-        msgs.scrollTop = msgs.scrollHeight;
-        resolve();
+        tb += `<td>${l[r.key]||'—'}</td>`;
       }
-    }, delay);
+    });
+    tb += '</tr>';
   });
-}
 
-function loganSetOptions(options) {
-  const opts = document.getElementById('logan-options');
-  opts.innerHTML = options.map((o, i) =>
-    '<button class="loption" onclick="loganPickOption(this, ' + i + ')">' + o.text + '</button>'
-  ).join('');
-  opts._options = options;
-}
+  const hasFlags = lenders.some(l=>l.redFlags&&l.redFlags.length>0);
+  if(hasFlags) {
+    tb += `<tr><td class="rlabel">⚠️ Red Flags</td>`;
+    lenders.forEach(l => {
+      const fl = l.redFlags&&l.redFlags.length
+        ? l.redFlags.map(f=>`<div style="font-size:0.77rem;color:var(--red);margin-bottom:3px">• ${f}</div>`).join('')
+        : `<span style="font-size:0.77rem;color:var(--muted)">None flagged</span>`;
+      tb += `<td>${fl}</td>`;
+    });
+    tb += '</tr>';
+  }
 
-async function loganPickOption(btn, idx) {
-  const opts = document.getElementById('logan-options');
-  const option = opts._options[idx];
-  
-  // Mark selected
-  btn.classList.add('selected');
-  document.querySelectorAll('.loption').forEach(b => { if(b!==btn) b.disabled=true; });
-  
-  // Echo user choice
-  await loganAddMsg(option.text, 'user');
-  
-  // Clear options
-  setTimeout(() => { opts.innerHTML = ''; }, 200);
-  
-  // Run handler
-  if (option.handler) await option.handler();
-}
+  tb += '</tbody>';
+  document.getElementById('cmpTable').innerHTML = th+tb;
 
-async function loganStartConversation() {
-  loganStage = 'intro';
-  await loganAddMsg("Hi there! I'm Logan, Tommy's AI assistant. 👋", 'logan');
-  await loganAddMsg("I noticed you've been reviewing Loan Estimates. Tommy works for the nation's largest mortgage company — he'd love to take a quick look at the quotes you've been comparing to see if he can match or beat them.", 'logan', 300);
-  await loganAddMsg("Would you be open to letting Tommy review your LEs? It's free, no obligation, and he typically gets back to you same-day.", 'logan', 400);
-  
-  loganSetOptions([
-    { text: "Yes — let Tommy take a look!", handler: loganYes },
-    { text: "What information would Tommy need?", handler: loganWhatInfo },
-    { text: "How does this work exactly?", handler: loganHowWorks },
-    { text: "Not right now, thanks", handler: loganNotNow },
-  ]);
-}
+  // Insights
+  const cls = {warning:'warn',positive:'pos',neutral:''};
+  document.getElementById('insGrid').innerHTML = data.insights.map(ins=>`
+    <div class="ins-card ${cls[ins.type]||''}">
+      <span class="ins-ico">${ins.icon}</span>
+      <div class="ins-title">${ins.title}</div>
+      <div class="ins-body">${ins.body}</div>
+    </div>`).join('');
 
-async function loganYes() {
-  await loganAddMsg("That's great — Tommy will be thrilled to help! 🎉", 'logan');
-  await loganAddMsg("The easiest thing to do is text or call him directly. Just mention you were using the LE Comparison Tool and send over the Loan Estimates you received.", 'logan', 300);
-  await loganAddMsg("What's the best way to reach you?", 'logan', 400);
-  loganSetOptions([
-    { text: "📞 I'll call him now", handler: () => { window.location.href='tel:+15864154507'; } },
-    { text: "💬 I'll text him the LEs", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I was using your LE Comparison Tool and wanted to get your best competing number.'; } },
-    { text: "📧 What's his email?", handler: loganEmail },
-    { text: "⬇️ Can I download the comparison first?", handler: loganDownload },
-  ]);
-}
-
-async function loganWhatInfo() {
-  await loganAddMsg("Great question! Tommy just needs:", 'logan');
-  await loganAddMsg("• The Loan Estimate(s) you received — you can text or email them as PDFs or just photos<br>• The property address you're buying<br>• Your timeline (how soon are you looking to close?)<br><br>That's it. No credit pull needed at this stage.", 'logan', 300);
-  await loganAddMsg("Ready to send them over?", 'logan', 500);
-  loganSetOptions([
-    { text: "📱 Text Tommy the LEs now", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I want to share my Loan Estimates for comparison.'; } },
-    { text: "📞 I'd rather just call", handler: () => { window.location.href='tel:+15864154507'; } },
-    { text: "Tell me more about Tommy first", handler: loganAboutTommy },
-  ]);
-}
-
-async function loganHowWorks() {
-  await loganAddMsg("Simple process — here's exactly what happens:", 'logan');
-  await loganAddMsg("1️⃣ You text or call Tommy with your LE(s)<br>2️⃣ He reviews the rate, fees, and APR spread — usually within a few hours<br>3️⃣ He sends you back an official competing Loan Estimate<br>4️⃣ You compare side by side and make the best decision for your family", 'logan', 300);
-  await loganAddMsg("There's zero obligation. Tommy's goal is just to make sure you're getting the best deal available — whether that ends up being him or someone else.", 'logan', 500);
-  loganSetOptions([
-    { text: "That sounds fair — let's do it", handler: loganYes },
-    { text: "How quickly does he typically respond?", handler: loganSpeed },
-    { text: "Not right now", handler: loganNotNow },
-  ]);
-}
-
-async function loganSpeed() {
-  await loganAddMsg("Tommy aims to respond same-day — usually within 2-3 hours during business hours.", 'logan');
-  await loganAddMsg("He's based in Rochester, MI and works Oakland and Macomb County every day. If you text him now, you could have a competing number back before end of day. 👍", 'logan', 300);
-  loganSetOptions([
-    { text: "📱 Text Tommy now", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I was comparing Loan Estimates and wanted to get your best number.'; } },
-    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
-    { text: "Maybe later", handler: loganLater },
-  ]);
-}
-
-async function loganAboutTommy() {
-  await loganAddMsg("Tommy Lower is a licensed Michigan mortgage loan officer (NMLS #31194) based in Rochester, MI.", 'logan');
-  await loganAddMsg("He works with the nation's largest mortgage company — which means he has access to the most competitive rates and fastest closings available. But he's not a call center. He's a local expert who knows Oakland and Macomb County, picks up his phone, and handles your deal personally.", 'logan', 400);
-  await loganAddMsg("Over 20+ years, his clients keep coming back — and referring their friends. Same-day pre-approvals. Closings that close on time.", 'logan', 400);
-  loganSetOptions([
-    { text: "I'm in — text Tommy my LEs", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, I want to share my Loan Estimates.'; } },
-    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
-    { text: "Just browsing for now", handler: loganLater },
-  ]);
-}
-
-async function loganEmail() {
-  await loganAddMsg("Tommy prefers text or phone — it's the fastest way to get you a competing number. His cell is (586) 415-4507.", 'logan');
-  await loganAddMsg("If you'd rather email, you can reach him through the contact form at tommythemortgageguy.com — but texting your LEs directly will get you the fastest response.", 'logan', 300);
-  loganSetOptions([
-    { text: "💬 Text Tommy at (586) 415-4507", handler: () => { window.location.href='sms:+15864154507'; } },
-    { text: "📞 Call Tommy", handler: () => { window.location.href='tel:+15864154507'; } },
-  ]);
-}
-
-async function loganDownload() {
-  await loganAddMsg("Absolutely — use the 'Download Full Report PDF' button above to get the complete comparison with all the numbers, lender analysis, and your conversation log.", 'logan');
-  await loganAddMsg("Once you have it downloaded, you can text or email it straight to Tommy and he'll review everything. The PDF makes it super easy for him to see exactly what you've been quoted.", 'logan', 300);
-  loganSetOptions([
-    { text: "Got it — I'll text Tommy the PDF", handler: () => { window.location.href='sms:+15864154507&body=Hi Tommy, sending over my LE comparison PDF.'; } },
-    { text: "📞 Call Tommy directly", handler: () => { window.location.href='tel:+15864154507'; } },
-  ]);
-}
-
-async function loganNotNow() {
-  await loganAddMsg("No problem at all — totally understand! The comparison report stays here as long as you need it.", 'logan');
-  await loganAddMsg("If you change your mind, Tommy's always available at (586) 415-4507. Even just a 10-minute call could be worth thousands of dollars over the life of your loan. 😊", 'logan', 300);
-  loganSetOptions([
-    { text: "Actually — let me reach out now", handler: loganYes },
-    { text: "Thanks, I'll keep it in mind", handler: async () => {
-      await loganAddMsg("Of course! Good luck with your home search — you're clearly doing your homework and that's going to serve you well. 🏡", 'logan');
-      loganSetOptions([]);
-      setTimeout(loganClose, 3000);
-    }},
-  ]);
-}
-
-async function loganLater() {
-  await loganAddMsg("Totally fair. When you're ready, Tommy is at (586) 415-4507 — text or call anytime.", 'logan');
-  await loganAddMsg("Good luck with your search! 🏡", 'logan', 200);
-  loganSetOptions([]);
-  setTimeout(loganClose, 4000);
-}
-
-function loganSend() {
-  const input = document.getElementById('logan-input');
-  const text = input.value.trim();
-  if (!text) return;
-  loganAddMsg(text, 'user');
-  input.value = '';
-  // Simple fallback response
-  setTimeout(async () => {
-    await loganAddMsg("Great question! For the most accurate answer, Tommy's the best person to talk to directly. You can call or text him at (586) 415-4507 — he typically responds within a few hours.", 'logan');
-  }, 1000);
-}
-
-// Start Logan when page loads
-document.addEventListener('DOMContentLoaded', loganInit);
-
-// Also trigger when results become visible
-const _origBuildResults = buildResults;
-function buildResults(le) {
-  _origBuildResults(le);
-  clearTimeout(loganTimer);
-  loganTimer = setTimeout(() => {
-    if (!loganGreeted) triggerLogan();
-  }, 45000);
-}
-const _origBuildAll = buildAllResults;
-function buildAllResults() {
-  _origBuildAll();
-  clearTimeout(loganTimer);
-  loganTimer = setTimeout(() => {
-    if (!loganGreeted) triggerLogan();
-  }, 40000);
+  document.getElementById('resultsWrap').classList.add('on');
 }
 </script>
-
 </body>
 </html>
