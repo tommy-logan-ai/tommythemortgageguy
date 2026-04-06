@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Offer Payment Calculator | Tommy | Michigan Mortgage</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0d1f35;
+  --navy2: #152e4a;
+  --gold: #c8933a;
+  --gold-bright: #e8b05a;
+  --gold-dim: rgba(200,147,58,0.1);
+  --green: #1a9e5c;
+  --green-dim: rgba(26,158,92,0.08);
+  --off-white: #f2ede7;
+  --white: #ffffff;
+  --text: #111111;
+  --muted: #444444;
+  --border: #d8d0c5;
+  --card-bg: #ffffff;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* NAV */
+header {
+  background: var(--navy);
+  padding: 20px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+}
+.logo { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.15rem; font-weight: 700; }
+.logo span { color: var(--gold); }
+.header-right { display: flex; align-items: center; gap: 20px; }
+.header-nmls { font-size: 0.68rem; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; }
+.header-phone { font-size: 0.88rem; color: var(--gold); font-weight: 600; text-decoration: none; }
+.header-phone:hover { color: var(--gold-bright); }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 60px 48px 76px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--off-white);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,147,58,0.15); border: 1px solid rgba(200,147,58,0.35);
+  color: #e8b05a; font-size: 0.73rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 100px; margin-bottom: 24px;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 900;
+  color: var(--white); line-height: 1.08; margin-bottom: 18px;
+}
+.hero-title em { font-style: italic; color: var(--gold-bright); }
+.hero-sub {
+  font-size: 1.05rem; color: rgba(255,255,255,0.8);
+  max-width: 540px; margin: 0 auto 32px;
+  line-height: 1.75; font-weight: 400;
+}
+.hero-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13);
+  color: rgba(255,255,255,0.88); font-size: 0.79rem; font-weight: 500;
+  padding: 8px 14px; border-radius: 100px;
+}
+
+/* MAIN */
+main { max-width: 960px; margin: 0 auto; padding: 52px 32px 100px; }
+
+/* FORM CARD */
+.form-card {
+  background: var(--card-bg); border-radius: 18px;
+  padding: 48px 44px;
+  box-shadow: 0 6px 48px rgba(13,31,53,0.09);
+  margin-bottom: 32px;
+}
+.form-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 6px;
+}
+.form-section-sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.field-row.one { grid-template-columns: 1fr; }
+
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label {
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.field input, .field select {
+  padding: 14px 16px;
+  border: 1.5px solid var(--border); border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.97rem;
+  color: var(--text); background: var(--white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%; appearance: none;
+}
+.field input:focus, .field select:focus {
+  outline: none; border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,147,58,0.12);
+}
+.field input::placeholder { color: #bbb; }
+
+/* Address lookup row */
+.address-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+.address-row .field { flex: 1; margin-bottom: 0; }
+.lookup-btn {
+  padding: 14px 22px; background: var(--navy); color: var(--white);
+  border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.lookup-btn:hover { background: var(--navy2); }
+.lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.lookup-result {
+  display: none; background: var(--green-dim);
+  border: 1.5px solid rgba(26,158,92,0.25);
+  border-radius: 9px; padding: 14px 18px; margin-bottom: 20px;
+  font-size: 0.85rem; color: var(--text); line-height: 1.6;
+}
+.lookup-result.show { display: block; }
+.lookup-result strong { color: var(--green); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* Loan type buttons */
+.loan-type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+.loan-btn {
+  padding: 14px 10px; border: 1.5px solid var(--border);
+  border-radius: 9px; background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+  color: var(--muted); cursor: pointer; text-align: center;
+  transition: all 0.2s; line-height: 1.3;
+}
+.loan-btn:hover { border-color: var(--gold); color: var(--navy); }
+.loan-btn.selected { border-color: var(--navy); background: var(--navy); color: var(--white); }
+.loan-btn .min-down { display: block; font-size: 0.7rem; font-weight: 400; opacity: 0.7; margin-top: 3px; }
+
+/* calc button */
+.calc-btn {
+  width: 100%; padding: 20px;
+  background: var(--gold); color: var(--navy);
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 1.08rem; font-weight: 700;
+  cursor: pointer; margin-top: 8px;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+}
+.calc-btn:hover:not(:disabled) { background: var(--gold-bright); transform: translateY(-1px); }
+.calc-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* LOADING */
+.loading-wrap { display: none; text-align: center; padding: 56px 32px; }
+.loading-wrap.on { display: block; }
+.ring {
+  width: 56px; height: 56px; border: 4px solid var(--border);
+  border-top-color: var(--gold); border-radius: 50%;
+  animation: spin 0.85s linear infinite; margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.l-head { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.l-sub { font-size: 0.9rem; color: var(--muted); }
+
+/* RESULTS */
+.results-wrap { display: none; }
+.results-wrap.on { display: block; animation: fadeUp 0.5s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* Summary bar */
+.summary-bar {
+  background: var(--navy); border-radius: 16px;
+  padding: 36px 40px; margin-bottom: 24px;
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; overflow: hidden;
+}
+.summary-item { padding: 8px 24px; border-right: 1px solid rgba(255,255,255,0.1); text-align: center; }
+.summary-item:last-child { border-right: none; }
+.summary-label { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 8px; display: block; }
+.summary-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--white); display: block; line-height: 1; }
+.summary-value.gold { color: var(--gold-bright); }
+.summary-sub { font-size: 0.73rem; color: rgba(255,255,255,0.4); margin-top: 4px; display: block; }
+
+/* Detail cards */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+.detail-card {
+  background: var(--card-bg); border-radius: 14px;
+  box-shadow: 0 3px 28px rgba(13,31,53,0.07);
+  overflow: hidden;
+}
+.card-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-icon { font-size: 1.3rem; }
+.card-head-text h3 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.card-head-text p { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+.line-items { padding: 8px 0; }
+.line-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 24px; border-bottom: 1px solid var(--border);
+}
+.line-item:last-child { border-bottom: none; }
+.line-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+.line-label small { display: block; font-size: 0.72rem; color: #999; margin-top: 2px; }
+.line-value { font-size: 0.92rem; font-weight: 700; color: var(--navy); }
+.line-item.total-row { background: #f7f2ec; }
+.line-item.total-row .line-label { font-weight: 700; color: var(--navy); font-size: 0.9rem; }
+.line-item.total-row .line-value { color: var(--gold); font-size: 1rem; }
+
+/* Assumptions */
+.assumptions-card {
+  background: var(--card-bg); border-radius: 14px;
+  padding: 28px 32px; margin-bottom: 24px;
+  box-shadow: 0 3px 28px rgba(13,31,53,0.07);
+  border-left: 4px solid var(--gold);
+}
+.assumptions-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.assumptions-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.assumption-item { font-size: 0.83rem; color: var(--text); line-height: 1.5; }
+.assumption-item strong { display: block; font-size: 0.72rem; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+
+/* CTA */
+.cta-bar {
+  background: var(--navy); border-radius: 16px;
+  padding: 38px 40px; display: flex;
+  align-items: center; justify-content: space-between;
+  gap: 28px; flex-wrap: wrap;
+}
+.cta-text h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--white); margin-bottom: 8px; }
+.cta-text p { font-size: 0.88rem; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 400px; }
+.cta-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-gold {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold); color: var(--navy);
+  font-weight: 700; font-size: 0.95rem;
+  padding: 15px 28px; border-radius: 8px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-gold:hover { background: var(--gold-bright); transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1.5px solid rgba(255,255,255,0.22); color: var(--white);
+  font-weight: 600; font-size: 0.88rem;
+  padding: 14px 24px; border-radius: 8px; text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
+
+.recalc-btn {
+  display: block; margin: 20px auto 0;
+  background: none; border: 1.5px solid var(--border);
+  color: var(--muted); padding: 12px 30px; border-radius: 8px;
+  cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+  font-weight: 600; transition: border-color 0.2s, color 0.2s;
+}
+.recalc-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+.disclaimer {
+  max-width: 760px; margin: 40px auto 0;
+  padding: 24px 0; border-top: 1px solid var(--border);
+  font-size: 0.68rem; color: var(--muted); line-height: 1.9; text-align: center;
+}
+
+footer {
+  background: var(--navy); padding: 32px 48px; text-align: center;
+}
+.f-name { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1rem; margin-bottom: 8px; }
+.f-name span { color: var(--gold); }
+.f-legal { font-size: 0.68rem; color: rgba(255,255,255,0.32); line-height: 1.9; }
+
+@media (max-width: 720px) {
+  header { padding: 16px 20px; }
+  .header-nmls { display: none; }
+  .hero { padding: 48px 24px 64px; }
+  main { padding: 40px 20px 80px; }
+  .form-card { padding: 30px 22px; }
+  .field-row, .field-row.three { grid-template-columns: 1fr; }
+  .loan-type-grid { grid-template-columns: 1fr 1fr; }
+  .summary-bar { grid-template-columns: 1fr; }
+  .summary-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 16px 0; }
+  .summary-item:last-child { border-bottom: none; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .assumptions-grid { grid-template-columns: 1fr 1fr; }
+  .cta-bar { flex-direction: column; }
+  footer { padding: 28px 24px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Tommy</div>
+  <div class="header-right">
+    <div class="header-nmls">NMLS #31194 · Equal Housing Lender</div>
+    <a href="tel:5864154507" class="header-phone">📞 (586) 415-4507</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">🏡 Pre-Offer Tool · Michigan Buyers & Agents</div>
+  <h1 class="hero-title">Know your numbers<br>before you <em>write the offer.</em></h1>
+  <p class="hero-sub">Enter the address and a few quick details. Get a full payment and closing cost breakdown — accurate enough to feel confident making an offer.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">📍 Pulls real property tax data</span>
+    <span class="hero-pill">🏦 Michigan closing costs built in</span>
+    <span class="hero-pill">⚡ Results in seconds</span>
+    <span class="hero-pill">🔒 Private — nothing stored</span>
+  </div>
+</div>
+
+<main>
+  <!-- FORM -->
+  <div class="form-card" id="formCard">
+    <div class="form-section-title">Tell me about the property</div>
+    <div class="form-section-sub">Start with the address. I'll pull tax data and pre-fill what I can.</div>
+
+    <!-- Address -->
+    <div class="address-row">
+      <div class="field">
+        <label>Property Address</label>
+        <input type="text" id="address" placeholder="123 Main St, Rochester Hills, MI 48307">
+      </div>
+      <button class="lookup-btn" id="lookupBtn" onclick="lookupProperty()">Look Up Property →</button>
+    </div>
+    <div class="lookup-result" id="lookupResult"></div>
+
+    <hr class="divider">
+    <div class="form-section-title" style="margin-bottom:6px">Purchase details</div>
+    <div class="form-section-sub">Adjust the numbers to match your offer scenario.</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Purchase Price</label>
+        <input type="number" id="purchasePrice" placeholder="350000" min="50000" max="5000000">
+      </div>
+      <div class="field">
+        <label>Down Payment ($)</label>
+        <input type="number" id="downPayment" placeholder="70000" min="0" onchange="syncDownPct()" oninput="syncDownPct()">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Down Payment (%)</label>
+        <input type="number" id="downPct" placeholder="20" min="0" max="100" step="0.5" onchange="syncDownAmt()" oninput="syncDownAmt()">
+      </div>
+      <div class="field">
+        <label>Interest Rate (%)</label>
+        <input type="number" id="rate" placeholder="6.875" min="1" max="20" step="0.125">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="form-section-title" style="margin-bottom:10px">Loan type</div>
+    <div class="loan-type-grid">
+      <button class="loan-btn" data-type="conventional" onclick="selectLoan(this)">
+        Conventional<span class="min-down">3% min down</span>
+      </button>
+      <button class="loan-btn selected" data-type="fha" onclick="selectLoan(this)">
+        FHA<span class="min-down">3.5% min down</span>
+      </button>
+      <button class="loan-btn" data-type="va" onclick="selectLoan(this)">
+        VA<span class="min-down">0% down</span>
+      </button>
+      <button class="loan-btn" data-type="usda" onclick="selectLoan(this)">
+        USDA<span class="min-down">0% down · rural</span>
+      </button>
+    </div>
+
+    <div class="field-row" style="margin-top:4px">
+      <div class="field">
+        <label>Annual Property Tax (override)</label>
+        <input type="number" id="propTax" placeholder="Auto-filled from lookup">
+      </div>
+      <div class="field">
+        <label>Annual HOA Dues (if any)</label>
+        <input type="number" id="hoa" placeholder="0">
+      </div>
+    </div>
+
+    <button class="calc-btn" id="calcBtn" onclick="calculate()">Calculate My Payment & Closing Costs →</button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="ring"></div>
+    <div class="l-head">Running your numbers...</div>
+    <div class="l-sub">Pulling property data and building your full breakdown.</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-wrap" id="resultsWrap">
+
+    <!-- Summary bar -->
+    <div class="summary-bar" id="summaryBar"></div>
+
+    <!-- Detail cards -->
+    <div class="detail-grid" id="detailGrid"></div>
+
+    <!-- Assumptions -->
+    <div class="assumptions-card" id="assumptionsCard"></div>
+
+    <!-- CTA -->
+    <div class="cta-bar">
+      <div class="cta-text">
+        <h3>Ready to make that offer?</h3>
+        <p>Tommy can get you a pre-approval letter same day — so you can write with confidence. Text or call to get started.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="sms:5864154507" class="btn-gold">💬 Text Tommy</a>
+        <a href="tel:5864154507" class="btn-ghost">📞 (586) 415-4507</a>
+      </div>
+    </div>
+
+    <button class="recalc-btn" onclick="resetCalc()">← Run a Different Scenario</button>
+
+    <div class="disclaimer">
+      These figures are estimates for informational purposes only and are not an offer to lend or a commitment to make a loan.
+      Actual payments, closing costs, taxes, and insurance will vary based on final loan terms, lender, and local conditions.
+      All loans subject to credit approval. Program availability subject to change.<br>
+      Tommy · NMLS #31194 · Equal Housing Lender · Licensed in Michigan
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="f-name">Tommy · <span>Michigan Mortgage</span></div>
+  <div class="f-legal">
+    NMLS #31194 · Equal Housing Lender · Licensed in Michigan<br>
+    (586) 415-4507 · tommythemortgageguy.com
+  </div>
+</footer>
+
+<script>
+let selectedLoan = 'fha';
+let lookedUpTax = null;
+let lookupAddress = '';
+
+function selectLoan(btn) {
+  document.querySelectorAll('.loan-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedLoan = btn.dataset.type;
+}
+
+function syncDownPct() {
+  const price = parseFloat(document.getElementById('purchasePrice').value);
+  const down = parseFloat(document.getElementById('downPayment').value);
+  if (price && down !== undefined) {
+    document.getElementById('downPct').value = ((down / price) * 100).toFixed(1);
+  }
+}
+
+function syncDownAmt() {
+  const price = parseFloat(document.getElementById('purchasePrice').value);
+  const pct = parseFloat(document.getElementById('downPct').value);
+  if (price && pct !== undefined) {
+    document.getElementById('downPayment').value = Math.round(price * pct / 100);
+  }
+}
+
+async function lookupProperty() {
+  const addr = document.getElementById('address').value.trim();
+  if (!addr) return;
+  
+  const btn = document.getElementById('lookupBtn');
+  btn.disabled = true;
+  btn.textContent = 'Looking up...';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Search for property tax information for this Michigan address: "${addr}"
+
+Search Zillow, Realtor.com, or county tax records for this property. Find:
+1. Estimated annual property taxes
+2. Assessed value if available  
+3. List price if available
+4. Property type (single family, condo, etc)
+
+Respond ONLY with valid JSON. No markdown. No preamble.
+
+{
+  "found": true,
+  "address": "full formatted address",
+  "annualTax": 4200,
+  "assessedValue": 280000,
+  "listPrice": 349000,
+  "propertyType": "Single Family",
+  "taxNote": "brief note on data source or confidence",
+  "city": "Rochester Hills"
+}`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = data.content.filter(b => b.type === 'text').map(b => b.text).join('').replace(/```json|```/g, '').trim();
+    
+    try {
+      const info = JSON.parse(raw);
+      const result = document.getElementById('lookupResult');
+      
+      if (info.found && info.annualTax) {
+        lookedUpTax = info.annualTax;
+        lookupAddress = info.address || addr;
+        document.getElementById('propTax').value = info.annualTax;
+        if (info.listPrice && !document.getElementById('purchasePrice').value) {
+          document.getElementById('purchasePrice').value = info.listPrice;
+        }
+        result.innerHTML = `<strong>✓ Property found</strong> — ${info.address || addr}<br>
+          ${info.propertyType ? info.propertyType + ' · ' : ''}
+          Annual taxes: <strong>~$${info.annualTax.toLocaleString()}/yr</strong>${info.listPrice ? ' · List price: <strong>$' + info.listPrice.toLocaleString() + '</strong>' : ''}
+          ${info.taxNote ? '<br><span style="color:#888;font-size:0.75rem;">' + info.taxNote + '</span>' : ''}`;
+        result.classList.add('show');
+      } else {
+        result.innerHTML = `<strong style="color:var(--muted)">Could not find tax data for this address.</strong> Enter the annual property tax manually below — it's usually on Zillow or the county's website.`;
+        result.classList.add('show');
+      }
+    } catch {
+      document.getElementById('lookupResult').innerHTML = `Enter annual property taxes manually — find them on Zillow or your county assessor's site.`;
+      document.getElementById('lookupResult').classList.add('show');
+    }
+  } catch {
+    document.getElementById('lookupResult').innerHTML = `Enter annual property taxes manually below.`;
+    document.getElementById('lookupResult').classList.add('show');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Look Up Property →';
+}
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function fmtPct(n) { return n.toFixed(3) + '%'; }
+
+async function calculate() {
+  const price = parseFloat(document.getElementById('purchasePrice').value);
+  const down = parseFloat(document.getElementById('downPayment').value) || 0;
+  const rate = parseFloat(document.getElementById('rate').value) || 6.875;
+  const annualTax = parseFloat(document.getElementById('propTax').value) || (price * 0.0125);
+  const hoaAnnual = parseFloat(document.getElementById('hoa').value) || 0;
+  const addr = document.getElementById('address').value || 'Michigan Property';
+
+  if (!price) { alert('Please enter a purchase price.'); return; }
+
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('loadingWrap').classList.add('on');
+
+  // Core math
+  const loanAmt = price - down;
+  const downPct = (down / price) * 100;
+  const monthlyRate = rate / 100 / 12;
+  const n = 360;
+  const pi = loanAmt * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+  const monthlyTax = annualTax / 12;
+  const hoaMonthly = hoaAnnual / 12;
+
+  // Insurance: ~0.75% of purchase price/yr (Michigan avg ~$2,368 on $300K)
+  const annualInsurance = price * 0.0079;
+  const monthlyInsurance = annualInsurance / 12;
+
+  // PMI
+  let pmiMonthly = 0;
+  let pmiNote = '';
+  if (selectedLoan === 'conventional' && downPct < 20) {
+    pmiMonthly = (loanAmt * 0.0065) / 12;
+    pmiNote = 'Removed at 80% LTV (~' + Math.round((loanAmt * 0.8 - (price * 0.8)) / (-pi * 0.7)) + ' payments)';
+  } else if (selectedLoan === 'fha') {
+    pmiMonthly = (loanAmt * 0.0055) / 12;
+    pmiNote = 'FHA MIP — required for life of loan if < 10% down';
+  } else if (selectedLoan === 'usda') {
+    pmiMonthly = (loanAmt * 0.003) / 12;
+    pmiNote = 'USDA annual fee';
+  }
+
+  // VA funding fee (upfront, not monthly)
+  let vaFundingFee = 0;
+  if (selectedLoan === 'va') {
+    vaFundingFee = loanAmt * 0.022; // 2.2% first use, no down
+    pmiNote = 'No monthly PMI — VA loan benefit';
+  }
+
+  const totalMonthly = pi + monthlyTax + monthlyInsurance + pmiMonthly + hoaMonthly;
+
+  // CLOSING COSTS — Michigan buyer side
+  // Origination: typical 0.5-1% of loan amount
+  const origination = loanAmt * 0.005; // conservative 0.5%
+  const appraisal = 475; // MI avg $350-600
+  const creditReport = 35;
+  const titleSearch = 350;
+  const lenderTitleIns = loanAmt * 0.004; // ~0.4% of loan
+  const recordingFees = 175; // MI avg
+  const floodCert = 20;
+  const taxService = 75;
+
+  // Prepaids (escrow setup)
+  const prepaidInsurance = annualInsurance; // 1 yr upfront
+  const prepaidTax = annualTax * (2/12); // 2 months escrow
+  const prepaidInterest = (pi - monthlyTax - monthlyInsurance) * 0.5; // ~15 days
+  const escrowSetup = (monthlyTax + monthlyInsurance) * 2; // initial escrow cushion
+
+  const vaFundingFeeTotal = vaFundingFee;
+  const lenderFees = origination + creditReport + taxService + floodCert;
+  const titleFees = titleSearch + lenderTitleIns + recordingFees;
+  const prepaids = prepaidInsurance + prepaidTax + prepaidInterest + escrowSetup;
+  const totalClosing = lenderFees + appraisal + titleFees + prepaids + (selectedLoan === 'va' ? vaFundingFeeTotal : 0);
+  const cashToClose = down + totalClosing;
+
+  // Use AI to contextualize
+  const aiPrompt = `You are Tommy's mortgage assistant. A Michigan home buyer is looking at a property and wants to understand their numbers. Generate a brief, helpful 2-sentence context note for each section below. Be specific, practical, and encouraging. Use real Michigan context.
+
+Property: ${addr}
+Purchase price: ${fmt(price)}
+Down payment: ${fmt(down)} (${downPct.toFixed(1)}%)
+Loan type: ${selectedLoan.toUpperCase()}
+Rate: ${rate}%
+Monthly P&I: ${fmt(pi)}
+Total monthly payment: ${fmt(totalMonthly)}
+Total closing costs: ${fmt(totalClosing)}
+Cash to close: ${fmt(cashToClose)}
+
+Respond ONLY with valid JSON:
+{
+  "paymentNote": "2 sentence note on what drives this payment and whether it looks reasonable for this market",
+  "closingNote": "2 sentence note on closing costs — what's biggest, whether seller concessions could help",
+  "readyNote": "1 encouraging sentence about being ready to write the offer"
+}`;
+
+  let aiNotes = { paymentNote: '', closingNote: '', readyNote: '' };
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: aiPrompt }]
+      })
+    });
+    const d = await res.json();
+    const raw = d.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    aiNotes = JSON.parse(raw);
+  } catch {}
+
+  renderResults({
+    price, down, downPct, loanAmt, rate, selectedLoan,
+    pi, monthlyTax, monthlyInsurance, pmiMonthly, hoaMonthly, totalMonthly,
+    pmiNote, annualTax, annualInsurance, hoaAnnual,
+    origination, appraisal, creditReport, titleSearch, lenderTitleIns,
+    recordingFees, floodCert, taxService, vaFundingFeeTotal,
+    lenderFees, titleFees, prepaidInsurance, prepaidTax, prepaidInterest,
+    escrowSetup, prepaids, totalClosing, cashToClose,
+    aiNotes, addr
+  });
+}
+
+function renderResults(d) {
+  document.getElementById('loadingWrap').classList.remove('on');
+
+  // Summary
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-item">
+      <span class="summary-label">Total Monthly Payment</span>
+      <span class="summary-value gold">${fmt(d.totalMonthly)}</span>
+      <span class="summary-sub">PITI${d.hoaMonthly > 0 ? ' + HOA' : ''}${d.pmiMonthly > 0 ? ' + PMI' : ''}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Closing Costs</span>
+      <span class="summary-value">${fmt(d.totalClosing)}</span>
+      <span class="summary-sub">${(d.totalClosing / d.price * 100).toFixed(1)}% of purchase price</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Cash to Close</span>
+      <span class="summary-value">${fmt(d.cashToClose)}</span>
+      <span class="summary-sub">Down payment + closing costs</span>
+    </div>`;
+
+  // Payment card
+  const paymentLines = [
+    { label: 'Principal & Interest', sub: `${d.rate}% · ${d.selectedLoan.toUpperCase()} 30yr`, value: fmt(d.pi) },
+    { label: 'Property Tax', sub: `${fmt(d.annualTax)}/yr estimated`, value: fmt(d.monthlyTax) },
+    { label: "Homeowner's Insurance", sub: `${fmt(d.annualInsurance)}/yr estimated (MI avg)`, value: fmt(d.monthlyInsurance) },
+  ];
+  if (d.pmiMonthly > 0) paymentLines.push({ label: 'PMI / MIP', sub: d.pmiNote, value: fmt(d.pmiMonthly) });
+  if (d.hoaMonthly > 0) paymentLines.push({ label: 'HOA Dues', sub: 'Monthly', value: fmt(d.hoaMonthly) });
+  paymentLines.push({ label: 'Total Monthly Payment', sub: 'PITI all-in', value: fmt(d.totalMonthly), total: true });
+
+  // Closing cost card
+  const closingLines = [
+    { label: 'Loan Origination Fee', sub: '0.5% of loan amount', value: fmt(d.origination) },
+    { label: 'Appraisal', sub: 'Required by lender', value: fmt(d.appraisal) },
+    { label: 'Credit Report + Other Lender', sub: 'Tax cert, flood cert', value: fmt(d.creditReport + d.taxService + d.floodCert) },
+    { label: 'Title Search', sub: 'Owner history check', value: fmt(d.titleSearch) },
+    { label: "Lender's Title Insurance", sub: 'Required on all loans', value: fmt(d.lenderTitleIns) },
+    { label: 'Recording Fees', sub: 'County/state recording', value: fmt(d.recordingFees) },
+  ];
+  if (d.selectedLoan === 'va' && d.vaFundingFeeTotal > 0) {
+    closingLines.push({ label: 'VA Funding Fee', sub: '2.2% of loan (can be financed)', value: fmt(d.vaFundingFeeTotal) });
+  }
+  closingLines.push({ label: 'Prepaid Insurance', sub: '1 year upfront at closing', value: fmt(d.prepaidInsurance) });
+  closingLines.push({ label: 'Prepaid Taxes', sub: '2 months escrow setup', value: fmt(d.prepaidTax) });
+  closingLines.push({ label: 'Prepaid Interest', sub: 'Prorated ~15 days', value: fmt(d.prepaidInterest) });
+  closingLines.push({ label: 'Escrow Cushion', sub: '2 months tax + insurance reserve', value: fmt(d.escrowSetup) });
+  closingLines.push({ label: 'Total Closing Costs', sub: '', value: fmt(d.totalClosing), total: true });
+
+  const buildLines = (lines) => lines.map(l => `
+    <div class="line-item ${l.total ? 'total-row' : ''}">
+      <div class="line-label">${l.label}${l.sub ? `<small>${l.sub}</small>` : ''}</div>
+      <div class="line-value">${l.value}</div>
+    </div>`).join('');
+
+  document.getElementById('detailGrid').innerHTML = `
+    <div class="detail-card">
+      <div class="card-head">
+        <span class="card-icon">📅</span>
+        <div class="card-head-text">
+          <h3>Monthly Payment Breakdown</h3>
+          <p>${d.aiNotes.paymentNote || 'Includes all components of your monthly obligation.'}</p>
+        </div>
+      </div>
+      <div class="line-items">${buildLines(paymentLines)}</div>
+    </div>
+    <div class="detail-card">
+      <div class="card-head">
+        <span class="card-icon">📋</span>
+        <div class="card-head-text">
+          <h3>Closing Cost Breakdown</h3>
+          <p>${d.aiNotes.closingNote || 'Michigan buyer closing costs typically run 2–5% of the purchase price.'}</p>
+        </div>
+      </div>
+      <div class="line-items">${buildLines(closingLines)}</div>
+    </div>`;
+
+  // Assumptions
+  document.getElementById('assumptionsCard').innerHTML = `
+    <div class="assumptions-title">⚙️ Assumptions used in this calculation</div>
+    <div class="assumptions-grid">
+      <div class="assumption-item"><strong>Loan Type</strong>${d.selectedLoan.toUpperCase()} 30-Year Fixed</div>
+      <div class="assumption-item"><strong>Interest Rate</strong>${d.rate}% (verify current rates)</div>
+      <div class="assumption-item"><strong>Down Payment</strong>${fmt(d.down)} (${d.downPct.toFixed(1)}%)</div>
+      <div class="assumption-item"><strong>Property Tax</strong>${fmt(d.annualTax)}/yr (from lookup or MI avg)</div>
+      <div class="assumption-item"><strong>Insurance</strong>~${fmt(d.annualInsurance)}/yr (MI average rate)</div>
+      <div class="assumption-item"><strong>Seller Concessions</strong>Not included — ask Tommy</div>
+    </div>
+    ${d.aiNotes.readyNote ? `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:0.85rem;color:var(--navy);font-weight:500;">💡 ${d.aiNotes.readyNote}</div>` : ''}`;
+
+  document.getElementById('resultsWrap').classList.add('on');
+}
+
+function resetCalc() {
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('resultsWrap').classList.remove('on');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
