@@ -3,7 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analysis · 63577 Georgetowne S, Washington Twp · REALTEAM</title>
+<title>Market Analysis · 63577 Georgetowne S, Washington Twp · Tommy Lower</title>
+<meta name="description" content="Comparative Market Analysis for 63577 Georgetowne S, Washington Twp — prepared by Tommy Lower, Michigan Mortgage Strategist." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Market Analysis · 63577 Georgetowne S, Washington Twp" />
+<meta property="og:description" content="A focused valuation by Tommy Lower — built on closed sales from your immediate neighborhood and adjusted with appraiser-grade discipline." />
+<meta property="og:url" content="https://tommythemortgageguy.com/cma/63577-georgetowne-s-washington" />
+<meta property="og:image" content="https://tommythemortgageguy.com/assets/tommy-headshot.jpg" />
+<meta property="og:image:alt" content="Tommy Lower — Michigan Mortgage Strategist" />
+<meta property="og:site_name" content="Tommy Lower · Michigan Mortgage Strategist" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Market Analysis · 63577 Georgetowne S, Washington Twp" />
+<meta name="twitter:description" content="A focused valuation by Tommy Lower — built on closed sales from your immediate neighborhood and adjusted with appraiser-grade discipline." />
+<meta name="twitter:image" content="https://tommythemortgageguy.com/assets/tommy-headshot.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -39,7 +51,7 @@
   .hero {
     background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 100%);
     color: var(--paper);
-    padding: 70px 40px 60px;
+    padding: 130px 40px 60px;
     position: relative;
     overflow: hidden;
   }
@@ -495,9 +507,254 @@
     color: rgba(255, 255, 255, 0.45);
   }
 
+  /* TTMG NAV */
+  nav.ttmg-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(15, 27, 51, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(197, 165, 90, 0.2);
+  }
+  nav.ttmg-nav .nav-logo {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--paper);
+    letter-spacing: 0.01em;
+    font-weight: 600;
+  }
+  nav.ttmg-nav .nav-logo span { color: var(--gold); }
+  nav.ttmg-nav ul {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+  nav.ttmg-nav a {
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    border-bottom: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav.ttmg-nav a:hover { color: var(--gold); }
+  nav.ttmg-nav a.nav-cta {
+    background: var(--gold);
+    color: var(--navy) !important;
+    padding: 10px 20px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  nav.ttmg-nav a.nav-cta:hover { background: #d8b96f; color: var(--navy) !important; }
+
+  /* MEET TOMMY (note panel with headshot) */
+  .note-panel {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 0;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    align-items: stretch;
+  }
+  .note-portrait {
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--paper);
+  }
+  .note-portrait img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3);
+    display: block;
+    margin-bottom: 18px;
+  }
+  .note-portrait .name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--paper);
+    line-height: 1.2;
+  }
+  .note-portrait .title-tag {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 6px;
+    margin-bottom: 18px;
+  }
+  .note-portrait .contact-line {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 4px;
+  }
+  .note-portrait .contact-line a {
+    color: var(--gold);
+    border-bottom: 1px solid rgba(197, 165, 90, 0.4);
+    font-weight: 500;
+  }
+  .note-body {
+    padding: 36px 40px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  .note-body p + p { margin-top: 16px; }
+  .note-signature {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  /* MORE FROM TOMMY (article cards) */
+  .more-from-tommy { background: var(--paper); border-top: 1px solid var(--line); }
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 12px;
+  }
+  .article-card {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 28px 26px;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px -16px rgba(15, 27, 51, 0.18);
+    border-color: var(--gold);
+  }
+  .article-card .tag {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .article-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    line-height: 1.25;
+    color: var(--navy);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .article-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+    flex-grow: 1;
+  }
+  .article-card .read-more {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .article-card .read-more::after { content: ' →'; color: var(--gold); }
+
+  /* TTMG FOOTER */
+  footer.ttmg-footer {
+    background: var(--navy-deep);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 50px 40px 40px;
+    margin-top: 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  footer.ttmg-footer .footer-inner { max-width: 1100px; margin: 0 auto; }
+  footer.ttmg-footer .footer-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(197, 165, 90, 0.18);
+  }
+  footer.ttmg-footer .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--paper);
+    font-weight: 600;
+  }
+  footer.ttmg-footer .footer-brand span { color: var(--gold); }
+  footer.ttmg-footer .footer-nav { display: flex; gap: 56px; }
+  footer.ttmg-footer .footer-nav-col h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  footer.ttmg-footer .footer-nav-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+  }
+  footer.ttmg-footer .footer-nav-col a {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    border-bottom: 0;
+    transition: color 0.2s;
+  }
+  footer.ttmg-footer .footer-nav-col a:hover { color: var(--gold); }
+  footer.ttmg-footer .footer-disclaimer {
+    font-size: 11px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.42);
+  }
+  footer.ttmg-footer .footer-disclaimer p + p { margin-top: 8px; }
+
   /* MOBILE */
   @media (max-width: 768px) {
-    .hero { padding: 50px 24px 40px; }
+    .hero { padding: 110px 24px 40px; }
+    nav.ttmg-nav { padding: 14px 20px; }
+    nav.ttmg-nav ul { gap: 0; }
+    nav.ttmg-nav ul li:not(:last-child) { display: none; }
+    nav.ttmg-nav a.nav-cta { padding: 8px 16px; font-size: 11px; }
+    .note-panel { grid-template-columns: 1fr; }
+    .note-portrait { padding: 30px 20px; }
+    .note-portrait img { width: 120px; height: 120px; }
+    .note-body { padding: 28px 24px; }
+    .articles-grid { grid-template-columns: 1fr; gap: 16px; }
+    footer.ttmg-footer { padding: 40px 24px 30px; }
+    footer.ttmg-footer .footer-top { flex-direction: column; gap: 24px; }
+    footer.ttmg-footer .footer-nav { flex-direction: column; gap: 24px; }
     .section { padding: 50px 24px; }
     .price-block { padding: 30px 20px; margin-top: -30px; }
     .price-block-grid { grid-template-columns: 1fr; }
@@ -521,6 +778,18 @@
 </style>
 </head>
 <body>
+
+<!-- TTMG NAV -->
+<nav class="ttmg-nav">
+  <div class="nav-logo">Tommy<span>.</span></div>
+  <ul>
+    <li><a href="https://tommythemortgageguy.com/#buyers">For Buyers</a></li>
+    <li><a href="https://tommythemortgageguy.com/#agents">For Agents</a></li>
+    <li><a href="https://tommythemortgageguy.com/#insights">Insights</a></li>
+    <li><a href="https://tommythemortgageguy.com/tools">Calculators</a></li>
+    <li><a href="tel:+15863154507" class="nav-cta">Call Tommy</a></li>
+  </ul>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
@@ -922,46 +1191,87 @@
 <!-- AGENT NOTES -->
 <section class="section" style="padding-top: 0;">
   <div class="section-header">
-    <div class="section-num">07 · Notes from Tommy</div>
+    <div class="section-num">07 · A Note from Tommy</div>
     <div class="section-title serif">For Neal &amp; Silvia</div>
   </div>
 
-  <div style="background: var(--paper); border: 1px solid var(--line); padding: 36px 40px; font-size: 16px; line-height: 1.8; color: var(--ink);">
-    <p style="margin-bottom: 16px;">Neal, Silvia — this is a curiosity CMA, no pressure to do anything with it. But if you want my honest take after running the numbers:</p>
-    <p style="margin-bottom: 16px;">Your home is worth around <strong style="color: var(--navy);">$735K</strong> right now, in current condition. The unfinished walk-out basement is your biggest hidden asset — finishing it well is probably a 1.5x–2x return at sale time and the most impactful single project you could do.</p>
-    <p style="margin-bottom: 16px;">The bath count (5 full + 1 half — every bedroom has its own bath) is unusual and a real selling point. The brick exterior, the deck, the walk-out — those are the things buyers will pay for. The kitchen and primary bath are where buyers will mentally subtract.</p>
-    <p>If you ever decide to make a move — whether selling, refinancing, or buying something else — you know I'm here. We'll figure out the right play together.</p>
-    <p style="margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold);">— Tommy</p>
+  <div class="note-panel">
+    <div class="note-portrait">
+      <img src="/assets/tommy-headshot.jpg" alt="Tommy Lower" />
+      <div class="name">Tommy Lower</div>
+      <div class="title-tag">Mortgage Strategist · NMLS #31194</div>
+      <div class="contact-line"><a href="tel:+15863154507">(586) 315-4507</a></div>
+      <div class="contact-line">tommythemortgageguy.com</div>
+    </div>
+    <div class="note-body">
+      <p>Neal, Silvia — this is a curiosity CMA, no pressure to do anything with it. But if you want my honest take after running the numbers:</p>
+      <p>Your home is worth around <strong style="color: var(--navy);">$735K</strong> right now, in current condition. The unfinished walk-out basement is your biggest hidden asset — finishing it well is probably a 1.5x–2x return at sale time and the most impactful single project you could do.</p>
+      <p>The bath count (5 full + 1 half — every bedroom has its own bath) is unusual and a real selling point. The brick exterior, the deck, the walk-out — those are the things buyers will pay for. The kitchen and primary bath are where buyers will mentally subtract.</p>
+      <p>If you ever decide to make a move — whether selling, refinancing, or buying something else — you know I'm here. We'll figure out the right play together.</p>
+      <div class="note-signature">— Tommy</div>
+    </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">REALTEAM</div>
-    <div class="footer-tag">Real Estate · Mortgage · Michigan</div>
-
-    <div class="footer-grid">
-      <div class="footer-col">
-        <div class="label">Prepared By</div>
-        <div class="value">Tommy Lower</div>
-      </div>
-      <div class="footer-col">
-        <div class="label">Phone</div>
-        <div class="value">Available on Request</div>
-      </div>
-      <div class="footer-col">
-        <div class="label">Web</div>
-        <div class="value"><a href="https://tommythemortgageguy.com" target="_blank" rel="noopener">tommythemortgageguy.com</a></div>
-      </div>
-      <div class="footer-col">
-        <div class="label">Date Prepared</div>
-        <div class="value">April 27, 2026</div>
-      </div>
+<!-- MORE FROM TOMMY -->
+<section class="more-from-tommy">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">08 · More from Tommy</div>
+      <div class="section-title serif">Recent insights for Michigan homeowners</div>
+      <p style="margin-top: 12px; color: var(--ink-soft); font-size: 15px; max-width: 720px;">A few pieces I've written recently. If anything here sparks a question, you know how to find me.</p>
     </div>
 
-    <div class="disclaimer">
-      This Comparative Market Analysis is not an appraisal. It has been prepared for discussion purposes only as a market opinion based on closed sales, MLS data, and public records as of the date prepared. Market values may shift with changes in inventory, interest rates, buyer demand, and seasonality. Adjustment values reflect typical Macomb County / Washington Twp ranges and are subject to interpretation by the analyst. Property data sourced from REALCOMP II MLS, Macomb County records, and CoreLogic. © 2026 REALTEAM. All rights reserved.
+    <div class="articles-grid">
+      <a class="article-card" href="https://tommythemortgageguy.com/mortgage-rates-2026">
+        <div class="tag">Market Outlook</div>
+        <h3>Will Mortgage Rates Go Down in 2026?</h3>
+        <p>What the data actually says — and what Michigan homeowners and buyers should be doing right now instead of waiting for the perfect number.</p>
+        <div class="read-more">Read the take</div>
+      </a>
+      <a class="article-card" href="https://tommythemortgageguy.com/deals-falling-apart">
+        <div class="tag">Deal Strategy</div>
+        <h3>Why Deals Are Falling Apart Right Now</h3>
+        <p>Three things killing contracts in Oakland and Macomb County right now — and the pre-approval moves that protect you before they happen.</p>
+        <div class="read-more">Read the take</div>
+      </a>
+      <a class="article-card" href="https://tommythemortgageguy.com/winning-multiple-offers">
+        <div class="tag">Buying Strategy</div>
+        <h3>How We're Winning Multiple-Offer Situations</h3>
+        <p>Financing structure is a competitive weapon most buyers aren't using. Here's exactly what I'm doing to win offers in this market.</p>
+        <div class="read-more">Read the take</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TTMG FOOTER -->
+<footer class="ttmg-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">Tommy<span>.</span></div>
+      <div class="footer-nav">
+        <div class="footer-nav-col">
+          <h4>Work With Me</h4>
+          <ul>
+            <li><a href="https://tommythemortgageguy.com/#buyers">For Buyers</a></li>
+            <li><a href="https://tommythemortgageguy.com/#agents">For Agents</a></li>
+            <li><a href="tel:+15863154507">(586) 315-4507</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://tommythemortgageguy.com/#insights">Market Insights</a></li>
+            <li><a href="https://tommythemortgageguy.com/tools">Tools &amp; Calculators</a></li>
+            <li><a href="https://tommythemortgageguy.com">tommythemortgageguy.com</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <p>Tommy Lower | NMLS #31194 | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.</p>
+      <p>This Comparative Market Analysis is not an appraisal. It is prepared for discussion purposes only as a market opinion based on closed sales, MLS data, and public records as of the date prepared (April 27, 2026). Market values may shift with changes in inventory, interest rates, buyer demand, and seasonality. Property data sourced from REALCOMP II MLS, Macomb County records, and CoreLogic. © 2026 Tommy Lower. All rights reserved.</p>
     </div>
   </div>
 </footer>
