@@ -328,6 +328,10 @@ footer {
     /* CLS reservation: keep dynamic result containers from causing layout shift when toggled */
     #resultsWrap, #lookupResult, #loadingWrap { min-height: 1px; } /* prevents 0->N px layout shift */
     .results-wrap[style*="display: block"], .results-wrap.show { min-height: 200px; }
+
+    /* CLS guard: stable hero height across font load */
+    .hero { min-height: 280px; }
+    @media(min-width:768px) { .hero { min-height: 360px; } }
 </style>
 <script type="application/ld+json">
 {
