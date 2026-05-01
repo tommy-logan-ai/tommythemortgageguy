@@ -17,7 +17,9 @@
   <meta name="twitter:description" content="Run real Michigan mortgage payment numbers including taxes, insurance, and PMI for Oakland, Macomb, and Wayne County homes." />
   <meta name="twitter:image" content="https://tommythemortgageguy.com/assets/site-og.jpg" />
 <title>Pre-Offer Payment Calculator | Tommy | Michigan Mortgage</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -322,6 +324,10 @@ footer {
   .cta-bar { flex-direction: column; }
   footer { padding: 28px 24px; }
 }
+
+    /* CLS reservation: keep dynamic result containers from causing layout shift when toggled */
+    #resultsWrap, #lookupResult, #loadingWrap { min-height: 1px; } /* prevents 0->N px layout shift */
+    .results-wrap[style*="display: block"], .results-wrap.show { min-height: 200px; }
 </style>
 <script type="application/ld+json">
 {
