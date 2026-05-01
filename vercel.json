@@ -34,6 +34,10 @@
       "dest": "/mortgage-rates-2026.html"
     },
     {
+      "src": "/fed-decision-april-2026",
+      "dest": "/fed-decision-april-2026.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
