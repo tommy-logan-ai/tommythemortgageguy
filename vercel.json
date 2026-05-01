@@ -38,6 +38,18 @@
       "dest": "/fed-decision-april-2026.html"
     },
     {
+      "src": "/agents",
+      "dest": "/agents.html"
+    },
+    {
+      "src": "/calculator",
+      "dest": "/calculator.html"
+    },
+    {
+      "src": "/compare",
+      "dest": "/compare.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
