@@ -59,7 +59,7 @@
     },
     {
       "src": "/go/(.*)",
-      "dest": "/api/go/$1"
+      "dest": "/api/go.js?slug=$1"
     },
     {
       "handle": "filesystem"
