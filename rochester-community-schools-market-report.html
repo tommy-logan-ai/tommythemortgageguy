@@ -32,7 +32,7 @@
     .nav-links a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:0.9rem;}
     .nav-links a:hover{color:var(--gold);}
     .nav-cta{background:var(--gold)!important;color:var(--navy)!important;padding:0.5rem 1.2rem;border-radius:4px;font-weight:600;}
-    .hero-blog{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:5rem 2rem 3rem;text-align:center;}
+    .hero-blog{background:linear-gradient(135deg,rgba(10,22,40,0.86) 0%,rgba(21,34,56,0.78) 100%),url('https://commons.wikimedia.org/wiki/Special:FilePath/DowntownRochesterMI.jpg?width=1800') center/cover no-repeat;padding:5rem 2rem 3rem;text-align:center;}.credit-ribbon{color:rgba(255,255,255,0.62);font-size:0.84rem;font-style:italic;margin-bottom:1.8rem;letter-spacing:0.02em;}.heat-map-wrap{margin:1.5rem 0 2.5rem;}.heat-map-wrap svg{width:100%;height:auto;display:block;border-radius:10px;background:#fff;}.heat-map-wrap .legend-text{font-size:0.8rem;color:var(--muted);text-align:center;margin-top:0.8rem;font-style:italic;}.community-strip{margin:3rem 0;}.community-strip h2{margin-top:0;}.community-strip .lead-line{font-size:1rem;color:#444;margin-bottom:1.4rem;}.strip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.2rem 0 0.8rem;}.strip-grid figure{margin:0;border-radius:10px;overflow:hidden;background:var(--cream);border:1px solid #e6e2d8;}.strip-grid img{width:100%;height:220px;object-fit:cover;display:block;}.strip-grid figcaption{padding:0.9rem 1rem;font-size:0.86rem;color:#444;line-height:1.55;}.photo-credits{font-size:0.76rem;color:var(--muted);text-align:right;font-style:italic;margin-top:0.4rem;}@media(max-width:600px){.strip-grid{grid-template-columns:1fr;}.strip-grid img{height:200px;}}
     .tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.4rem 1rem;border-radius:3px;margin-bottom:1.5rem;}
     .hero-blog h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4.5vw,2.8rem);color:#fff;max-width:900px;margin:0 auto 1rem;line-height:1.2;}
     .hero-blog .byline{color:rgba(255,255,255,0.65);font-size:0.95rem;margin-bottom:2rem;}
@@ -229,6 +229,7 @@
   <span class="tag">Rochester Community Schools · Market Report</span>
   <h1>What's actually happening in the Rochester real estate market right now</h1>
   <p class="byline">Real MLS data on 950 closed sales, 179 active listings, and 122 pending deals from the 12 months ending May 18, 2026. Updated monthly.</p>
+  <p class="credit-ribbon">Coverage spans Rochester High, Adams High, and Stoney Creek High catchments</p>
   <div class="hero-stats">
     <div class="hero-stat"><span class="v">$515K</span><span class="l">Median sold</span></div>
     <div class="hero-stat"><span class="v">27</span><span class="l">Days on market</span></div>
@@ -272,6 +273,36 @@
 </div>
 
 <p>The price gap from 48307 to 48306 to 48363 is real and consistent: about a $200K step up per ZIP. That gap is mostly about lot size, build era, and luxury inventory, not school quality (it's all the same district). Days on market is essentially identical across all four ZIPs at 26-31 days, which means homes at every price tier are moving at roughly the same speed.</p>
+<div class="heat-map-wrap">
+  <p>Side by side, those four ZIPs paint a clear picture. Same school district, four different price personalities. Tiles are shaded by median sold price, palest at the entry tier, deepest at luxury.</p>
+  <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Heat map of median sold price across the four Rochester Community Schools ZIP codes">
+    <rect x="20" y="20" width="270" height="170" fill="#5d7398" rx="10"/>
+    <text x="155" y="62" fill="#fff" text-anchor="middle" font-family="DM Serif Display, serif" font-size="26" font-weight="600">48306</text>
+    <text x="155" y="90" fill="rgba(255,255,255,0.9)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="13">Oakland Township</text>
+    <text x="155" y="138" fill="#e2c47a" text-anchor="middle" font-family="DM Serif Display, serif" font-size="32" font-weight="600">$615K</text>
+    <text x="155" y="165" fill="rgba(255,255,255,0.8)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12">287 sold</text>
+
+    <rect x="310" y="20" width="270" height="170" fill="#0a1628" rx="10"/>
+    <text x="445" y="62" fill="#fff" text-anchor="middle" font-family="DM Serif Display, serif" font-size="26" font-weight="600">48363</text>
+    <text x="445" y="90" fill="rgba(255,255,255,0.9)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="13">Oakland Twp Luxury</text>
+    <text x="445" y="138" fill="#e2c47a" text-anchor="middle" font-family="DM Serif Display, serif" font-size="32" font-weight="600">$1.0M</text>
+    <text x="445" y="165" fill="rgba(255,255,255,0.8)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12">49 sold</text>
+
+    <rect x="20" y="210" width="270" height="170" fill="#a8b3c9" rx="10"/>
+    <text x="155" y="252" fill="#0a1628" text-anchor="middle" font-family="DM Serif Display, serif" font-size="26" font-weight="600">48309</text>
+    <text x="155" y="280" fill="#0a1628" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="13">Rochester Hills</text>
+    <text x="155" y="328" fill="#9d7f2c" text-anchor="middle" font-family="DM Serif Display, serif" font-size="32" font-weight="600">$490K</text>
+    <text x="155" y="355" fill="rgba(10,22,40,0.75)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12">195 sold</text>
+
+    <rect x="310" y="210" width="270" height="170" fill="#d5dae6" rx="10"/>
+    <text x="445" y="252" fill="#0a1628" text-anchor="middle" font-family="DM Serif Display, serif" font-size="26" font-weight="600">48307</text>
+    <text x="445" y="280" fill="#0a1628" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="13">Rochester (city proper)</text>
+    <text x="445" y="328" fill="#9d7f2c" text-anchor="middle" font-family="DM Serif Display, serif" font-size="32" font-weight="600">$415K</text>
+    <text x="445" y="355" fill="rgba(10,22,40,0.75)" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12">396 sold</text>
+  </svg>
+  <p class="legend-text">Median sold price by ZIP, 12 months ending May 18, 2026. Source: Realcomp MLS.</p>
+</div>
+
 
 <h2>The three tiers of the Rochester market</h2>
 
@@ -325,6 +356,26 @@
     <h4>If you already own here</h4>
     <p>Rochester homes have appreciated meaningfully over the last 5 years. If you bought before 2022, you almost certainly have $100K+ in unrealized equity. That's worth knowing for HELOC, cash-out refinance, or simply tracking your net worth. Free monthly value tracking is available below, no obligation, no salesperson follow-up unless you want one.</p>
   </div>
+</div>
+
+<div class="community-strip">
+  <h2>Around the district</h2>
+  <p class="lead-line">What you're buying into when you buy a home inside Rochester Community Schools.</p>
+  <div class="strip-grid">
+    <figure>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rochester_Michigan_Royal_Park_Hotel.JPG?width=720" alt="Royal Park Hotel in downtown Rochester, Michigan" loading="lazy" width="600" height="220">
+      <figcaption>The Royal Park Hotel, a luxury anchor walking distance to Main Street. The kind of amenity that supports the premium pricing in 48306 and 48363.</figcaption>
+    </figure>
+    <figure>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rochester_Michigan_Paint_Creek_Trail.JPG?width=720" alt="The Paint Creek Trail through Rochester, Michigan" loading="lazy" width="600" height="220">
+      <figcaption>The Paint Creek Trail, 8.5 miles of rail-to-trail connecting Rochester to Lake Orion. Homes within a short walk of the trail consistently command a premium.</figcaption>
+    </figure>
+    <figure>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Yates_Cider_Mill_main_building.jpg?width=720" alt="Yates Cider Mill in Rochester Hills, Michigan" loading="lazy" width="600" height="220">
+      <figcaption>Yates Cider Mill on the Clinton River, a Rochester Hills family destination since 1863. The kind of weekend rhythm Rochester families build their lives around.</figcaption>
+    </figure>
+  </div>
+  <p class="photo-credits">Photos via <a href="https://commons.wikimedia.org/wiki/Category:Rochester,_Michigan" target="_blank" rel="noopener">Wikimedia Commons</a> (CC BY-SA).</p>
 </div>
 
 <h2>The homes that sold fastest in the last 30 days</h2>
