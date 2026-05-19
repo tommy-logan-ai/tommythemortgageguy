@@ -58,6 +58,10 @@
       "dest": "/cma/$1/index.html"
     },
     {
+      "src": "/go/(.*)",
+      "dest": "/api/go/$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
