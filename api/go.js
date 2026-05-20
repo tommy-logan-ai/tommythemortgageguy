@@ -12,6 +12,8 @@ const DESTINATIONS = {
   "call-tommy":    "tel:+15863154507",
   "ruuster-list":  "https://seehome.ai/zRfWP5",
   "ruuster-map":   "https://seehome.ai/oS1UgE",
+  "ruuster-list-chippewa-valley": "https://seehome.ai/Mj1_7W",
+  "ruuster-map-chippewa-valley":  "https://seehome.ai/yLhs4a",
   "homebot":       "https://tommythemortgageguy.com/rochester-community-schools-market-report#homebot_homeowner",
 };
 
