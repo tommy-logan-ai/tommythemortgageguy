@@ -55,6 +55,16 @@
     footer{background:var(--navy);color:rgba(255,255,255,0.5);text-align:center;padding:2rem;font-size:0.8rem;}
     footer a{color:var(--gold);text-decoration:none;}
     @media(max-width:600px){nav{flex-wrap:wrap;gap:0.5rem;padding:1rem 1rem;}.nav-logo{font-size:1.2rem;}.nav-links{gap:0.4rem 0.8rem;font-size:0.78rem;flex-wrap:wrap;justify-content:center;width:100%;margin-top:0.4rem;padding:0;}.nav-links a{padding:0.25rem 0.4rem;}.nav-cta{padding:0.4rem 0.8rem;}.article{padding:2rem 1.2rem;}}
+  .nav-dropdown{position:relative;}
+.nav-dropdown-trigger{background:none;border:0;color:rgba(255,255,255,0.8);font:inherit;font-size:0.9rem;cursor:pointer;padding:0;}
+.nav-dropdown-trigger:hover{color:var(--gold);}
+.nav-arrow{font-size:0.7rem;margin-left:0.2rem;}
+.nav-dropdown-menu{position:absolute;top:calc(100% + 0.6rem);left:0;background:#fff;min-width:280px;list-style:none;padding:0.5rem 0;border-radius:6px;box-shadow:0 12px 30px rgba(10,22,40,0.18);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s;z-index:50;}
+.nav-dropdown:hover>.nav-dropdown-menu,.nav-dropdown-trigger[aria-expanded="true"]+.nav-dropdown-menu{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .12s ease,transform .12s ease,visibility 0s linear 0s;}
+.nav-dropdown-menu li{margin:0;padding:0;}
+.nav-dropdown-menu a{display:block;padding:0.6rem 1.1rem;color:var(--navy);text-decoration:none;font-size:0.9rem;line-height:1.3;border-left:3px solid transparent;}
+.nav-dropdown-menu a:hover{background:var(--cream);border-left-color:var(--gold);color:var(--navy);}
+@media(max-width:600px){.nav-dropdown-menu{position:static;min-width:0;box-shadow:none;background:rgba(0,0,0,0.15);border-radius:4px;margin-top:0.3rem;display:none;}.nav-dropdown-trigger[aria-expanded="true"]+.nav-dropdown-menu{display:block;opacity:1;visibility:visible;}.nav-dropdown-menu a{color:#fff;}.nav-dropdown-menu a:hover{background:rgba(255,255,255,0.1);}}
   </style>
 <script type="application/ld+json">
 {
@@ -212,6 +222,13 @@
     <li><a href="/#buyers">For Buyers</a></li>
     <li><a href="/#agents">For Agents</a></li>
     <li><a href="/#insights">Insights</a></li>
+    <li class="nav-dropdown">
+      <button type="button" class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">School Districts <span class="nav-arrow" aria-hidden="true">&#9662;</span></button>
+      <ul class="nav-dropdown-menu" role="menu">
+      <li><a href="/rochester-community-schools-market-report">Rochester Community Schools</a></li>
+      <li><a href="/chippewa-valley-schools-market-report">Chippewa Valley Schools</a></li>
+      </ul>
+    </li>
     <li><a href="/#about">About</a></li>
     <li><a href="/tools">Calculators</a></li>
     <li><a href="tel:+15863154507" class="nav-cta">Call Tommy</a></li>
@@ -296,5 +313,6 @@
   <p>Tommy Lower | NMLS #31194 | Equal Housing Lender | Licensed to originate mortgage loans in Michigan.<br>
   <a href="/">Back to home</a></p>
 </footer>
+<script>document.addEventListener("click",function(e){var t=e.target.closest(".nav-dropdown-trigger");document.querySelectorAll(".nav-dropdown-trigger").forEach(function(b){if(b!==t)b.setAttribute("aria-expanded","false")});if(t){var c=t.getAttribute("aria-expanded")==="true";t.setAttribute("aria-expanded",c?"false":"true");e.stopPropagation();}});</script>
 </body>
 </html>
