@@ -42,6 +42,10 @@
       "dest": "/rochester-community-schools-market-report.html"
     },
     {
+      "src": "/chippewa-valley-schools-market-report",
+      "dest": "/chippewa-valley-schools-market-report.html"
+    },
+    {
       "src": "/agents",
       "dest": "/agents.html"
     },
