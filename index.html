@@ -766,7 +766,22 @@
 .nav-dropdown-menu a{display:block;padding:0.6rem 1.1rem;color:var(--navy);text-decoration:none;font-size:0.9rem;line-height:1.3;border-left:3px solid transparent;}
 .nav-dropdown-menu a:hover{background:var(--cream);border-left-color:var(--gold);color:var(--navy);}
 @media(max-width:600px){.nav-dropdown-menu{position:static;min-width:0;box-shadow:none;background:rgba(0,0,0,0.15);border-radius:4px;margin-top:0.3rem;display:none;}.nav-dropdown-trigger[aria-expanded="true"]+.nav-dropdown-menu{display:block;opacity:1;visibility:visible;}.nav-dropdown-menu a{color:#fff;}.nav-dropdown-menu a:hover{background:rgba(255,255,255,0.1);}}
-  </style>
+  .school-districts{padding:5rem 2rem;max-width:1200px;margin:0 auto;}
+.school-districts .section-header{margin-bottom:0.6rem;}
+.school-districts .section-sub{font-size:1.05rem;color:#555;max-width:780px;margin-top:0.8rem;line-height:1.6;}
+.districts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.5rem;}
+.district-card{display:flex;flex-direction:column;gap:0.55rem;text-decoration:none;color:inherit;background:#fff;border:1px solid #e6e2d8;border-radius:12px;padding:1.6rem 1.4rem;transition:transform 0.12s ease,box-shadow 0.12s ease;}
+.district-card:not(.placeholder):hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(10,22,40,0.10);border-color:var(--gold-light);}
+.district-county{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);font-weight:600;}
+.district-card h3{font-family:'DM Serif Display',serif;color:var(--navy);font-size:1.3rem;line-height:1.25;margin:0;}
+.district-stats{display:flex;flex-wrap:wrap;gap:0.4rem 1.2rem;color:#555;font-size:0.9rem;margin-top:0.3rem;}
+.district-stats strong{color:var(--navy);font-weight:700;}
+.district-cta{margin-top:auto;color:var(--navy);font-weight:600;font-size:0.92rem;}
+.district-card.placeholder{background:linear-gradient(165deg,var(--cream) 0%,#fff 100%);}
+.district-card.placeholder h3{color:#444;font-size:1.15rem;}
+.district-comingsoon{font-size:0.88rem;color:var(--muted);line-height:1.55;margin:0;}
+@media(max-width:900px){.districts-grid{grid-template-columns:1fr;}.school-districts{padding:3rem 1.2rem;}}
+</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1008,6 +1023,47 @@
     </a>
   </div>
 </section>
+
+
+<!-- SCHOOL DISTRICTS -->
+<section class="school-districts" id="school-districts">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Market Reports</div>
+      <h2>Hyper-local school district market reports</h2>
+      <p class="section-sub">Real MLS data, every closing the last 12 months, filtered by school district. Live MLS feed of active listings. Free equity tracker for current homeowners. Updated monthly.</p>
+    </div>
+  </div>
+  <div class="districts-grid">
+    <a class="district-card" href="/rochester-community-schools-market-report">
+      <div class="district-county">Oakland County</div>
+      <h3>Rochester Community Schools</h3>
+      <div class="district-stats">
+        <span><strong>950</strong> closings</span>
+        <span><strong>$515K</strong> median</span>
+        <span><strong>27 day</strong> DOM</span>
+      </div>
+      <span class="district-cta">View market report &rarr;</span>
+    </a>
+    <a class="district-card" href="/chippewa-valley-schools-market-report">
+      <div class="district-county">Macomb County</div>
+      <h3>Chippewa Valley Schools</h3>
+      <div class="district-stats">
+        <span><strong>1,172</strong> closings</span>
+        <span><strong>$349K</strong> median</span>
+        <span><strong>15 day</strong> DOM</span>
+      </div>
+      <span class="district-cta">View market report &rarr;</span>
+    </a>
+    <div class="district-card placeholder">
+      <div class="district-county">Coming next</div>
+      <h3>Utica, Troy, Birmingham, and more</h3>
+      <p class="district-comingsoon">Eight more districts in the master plan, one per month. Each page covers MLS data, school intelligence, live listings, and home value tools.</p>
+    </div>
+  </div>
+</section>
+
+
 
 <!-- ABOUT -->
 <section class="about-strip" id="about">
