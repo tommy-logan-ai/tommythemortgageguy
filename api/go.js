@@ -14,6 +14,8 @@ const DESTINATIONS = {
   "ruuster-map":   "https://seehome.ai/oS1UgE",
   "ruuster-list-chippewa-valley": "https://seehome.ai/Mj1_7W",
   "ruuster-map-chippewa-valley":  "https://seehome.ai/yLhs4a",
+  "kevin-dv-royal-oak-search":  "https://kevin.macombandoaklandcountyhomes.com/search",
+  "kevin-dv-royal-oak-homeval": "https://kevin.macombandoaklandcountyhomes.com/seller/homeestimate/value",
   "homebot":       "https://tommythemortgageguy.com/rochester-community-schools-market-report#homebot_homeowner",
 };
 
