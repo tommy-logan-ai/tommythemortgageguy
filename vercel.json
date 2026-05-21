@@ -46,6 +46,10 @@
       "dest": "/chippewa-valley-schools-market-report.html"
     },
     {
+      "src": "/royal-oak-schools-market-report",
+      "dest": "/royal-oak-schools-market-report.html"
+    },
+    {
       "src": "/agents",
       "dest": "/agents.html"
     },
