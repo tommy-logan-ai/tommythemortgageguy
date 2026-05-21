@@ -14,7 +14,7 @@ const DESTINATIONS = {
   "ruuster-map":   "https://seehome.ai/oS1UgE",
   "ruuster-list-chippewa-valley": "https://seehome.ai/Mj1_7W",
   "ruuster-map-chippewa-valley":  "https://seehome.ai/yLhs4a",
-  "kevin-dv-royal-oak-search":  "https://kevin.macombandoaklandcountyhomes.com/search?sortby=latest&acl_city=Royal+Oak%2C+MI%2C+Royal+Oak+Charter+Township%2C+MI&minbeds=0&minbaths=0&maxprice=%24500%2C000&minprice=%24100%2C000&haslat=1&haslong=1&page=1&type=grid&mlsstatus=Active",
+  "kevin-dv-royal-oak-search":  "https://kevin.macombandoaklandcountyhomes.com/search?sortby=latest&acl_city=Royal+Oak%2C+MI%2C+Royal+Oak+Charter+Township%2C+MI&minbeds=0&minbaths=0&maxprice=%2425%2C000%2C000&minprice=%24100%2C000&haslat=1&haslong=1&page=1&type=grid&mlsstatus=Active",
   "kevin-dv-royal-oak-homeval": "https://kevin.macombandoaklandcountyhomes.com/seller/homeestimate/value",
   "homebot":       "https://tommythemortgageguy.com/rochester-community-schools-market-report#homebot_homeowner",
 };
