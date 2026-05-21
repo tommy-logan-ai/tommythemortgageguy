@@ -730,8 +730,51 @@
 
     /* ── MOBILE ── */
     @media (max-width: 900px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
+      nav {
+        padding: 1rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .nav-logo { font-size: 1.1rem; }
+      .nav-links {
+        gap: 0.3rem 0.7rem;
+        font-size: 0.72rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .nav-links a { padding: 0.2rem 0.3rem; }
+      .nav-links li { margin: 0; }
+      .nav-cta {
+        padding: 0.45rem 0.9rem !important;
+        font-size: 0.78rem;
+      }
+      .nav-dropdown-trigger { font-size: 0.72rem; }
+      .nav-dropdown-menu {
+        position: static;
+        min-width: 0;
+        box-shadow: none;
+        background: rgba(0,0,0,0.18);
+        border-radius: 4px;
+        margin-top: 0.3rem;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+      }
+      .nav-dropdown-trigger[aria-expanded="true"] + .nav-dropdown-menu {
+        display: block;
+      }
+      .nav-dropdown-menu a {
+        color: #fff;
+        padding: 0.5rem 0.9rem;
+      }
+      .nav-dropdown-menu a:hover {
+        background: rgba(255,255,255,0.1);
+        color: var(--gold-light);
+      }
 
       .hero { grid-template-columns: 1fr; }
       .hero-text { padding: 8rem 2rem 3rem; }
