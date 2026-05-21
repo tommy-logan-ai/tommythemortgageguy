@@ -196,6 +196,13 @@
   .cc-lender { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
   .cc-rate { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--navy); line-height: 1; }
   .cc-payment { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
+
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;}
+  .table-wrap .compare-table{margin-bottom:0;min-width:480px;}
+  @media(max-width:600px){
+    .table-wrap{margin-left:-12px;margin-right:-12px;padding:0 12px;}
+    .compare-table th, .compare-table td{padding:8px 10px;font-size:0.85rem;}
+  }
   .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
   .compare-table th { text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); padding: 8px 12px; border-bottom: 2px solid var(--warm-gray); }
   .compare-table th:not(:first-child) { text-align: right; }
@@ -585,12 +592,12 @@
             <div class="cc-payment" id="cmp-our-payment">—/mo P&I*</div>
           </div>
         </div>
-        <table class="compare-table">
+        <div class="table-wrap"><table class="compare-table">
           <thead>
             <tr><th>Item</th><th>Their Quote</th><th>Tommy's Est.</th><th>Difference</th></tr>
           </thead>
           <tbody id="cmp-table-body"></tbody>
-        </table>
+        </table></div>
         <div class="cash-to-close" id="cmp-savings-box">
           <div>
             <div class="ctc-label" id="cmp-savings-label">💰 Potential Savings</div>
