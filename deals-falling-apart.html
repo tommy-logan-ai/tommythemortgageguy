@@ -66,7 +66,12 @@
 .nav-dropdown-menu a{display:block;padding:0.6rem 1.1rem;color:var(--navy);text-decoration:none;font-size:0.9rem;line-height:1.3;border-left:3px solid transparent;}
 .nav-dropdown-menu a:hover{background:var(--cream);border-left-color:var(--gold);color:var(--navy);}
 @media(max-width:600px){.nav-dropdown-menu{position:static;min-width:0;box-shadow:none;background:rgba(0,0,0,0.15);border-radius:4px;margin-top:0.3rem;display:none;}.nav-dropdown-trigger[aria-expanded="true"]+.nav-dropdown-menu{display:block;opacity:1;visibility:visible;}.nav-dropdown-menu a{color:#fff;}.nav-dropdown-menu a:hover{background:rgba(255,255,255,0.1);}}
-  </style>
+  
+@media(max-width:600px){
+  .nav-links a{padding:0.55rem 0.8rem;min-height:32px;display:inline-flex;align-items:center;}
+  .nav-dropdown-trigger{padding:0.55rem 0.3rem;min-height:32px;}
+}
+</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
