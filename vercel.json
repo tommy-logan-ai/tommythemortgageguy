@@ -62,6 +62,10 @@
       "dest": "/compare.html"
     },
     {
+      "src": "/tcpa-enforcement-2026-michigan-broker",
+      "dest": "/tcpa-enforcement-2026-michigan-broker.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
