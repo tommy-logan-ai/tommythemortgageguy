@@ -78,6 +78,10 @@
       "dest": "/api/go.js?slug=$1"
     },
     {
+      "src": "/api/pv",
+      "dest": "/api/pv.js"
+    },
+    {
       "handle": "filesystem"
     },
     {
