@@ -66,6 +66,10 @@
       "dest": "/tcpa-enforcement-2026-michigan-broker.html"
     },
     {
+      "src": "/lender-paid-buydown-saved-the-deal",
+      "dest": "/lender-paid-buydown-saved-the-deal.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
