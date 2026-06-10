@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- build psv1-20260610 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>REALTEAM Property Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--navy2:#152238;--gold:#c9a84c;--gold2:#e2c47a;--cream:#faf8f4;--ink:#2c2c2c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:40px 20px}
+h1{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--gold2);margin-bottom:6px}
+.sub{color:#9fb0c8;margin-bottom:28px;font-size:.95rem}
+.card{background:var(--navy2);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:22px;margin-bottom:16px}
+input[type=text],input[type=tel]{width:100%;padding:14px 16px;font-size:1.05rem;border-radius:8px;border:1px solid rgba(201,168,76,.4);background:var(--navy);color:var(--cream);outline:none}
+input:focus{border-color:var(--gold)}
+button{background:var(--gold);color:var(--navy);font-weight:700;border:none;border-radius:8px;padding:13px 22px;font-size:1rem;cursor:pointer;margin-top:12px}
+button:hover{background:var(--gold2)}
+button.ghost{background:transparent;color:var(--gold2);border:1px solid var(--gold);padding:9px 16px;font-size:.9rem}
+.badge{display:inline-block;padding:5px 14px;border-radius:999px;font-weight:700;font-size:.85rem;letter-spacing:.05em;margin-bottom:12px}
+.b-active{background:#1d7a4a;color:#fff}.b-pending{background:var(--gold);color:var(--navy)}
+.b-coming{background:#3a6ea5;color:#fff}.b-closed{background:#6b4f8a;color:#fff}.b-other{background:#444;color:#fff}
+.addr{font-family:'DM Serif Display',serif;font-size:1.35rem;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+td{padding:5px 8px 5px 0;font-size:.95rem;vertical-align:top}
+td.k{color:#9fb0c8;white-space:nowrap;width:42%}
+.agent{margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,168,76,.2);font-size:.95rem}
+.links a{color:var(--gold2);margin-right:18px;font-size:.95rem}
+.note{color:#9fb0c8;font-size:.85rem;margin-top:8px}
+.err{color:#ff9d9d;margin-top:10px}
+.ok{color:#7fd49a;margin-top:10px}
+#status{margin:14px 2px;color:#9fb0c8}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>REALTEAM Property Search</h1>
+  <div class="sub">Active &middot; Pending &middot; Coming Soon &middot; Sold — every source, one box.</div>
+
+  <div id="gate" class="card">
+    <div style="margin-bottom:10px;font-weight:500">Enter your cell number to access the search</div>
+    <input type="tel" id="cell" placeholder="(586) 555-1234" autocomplete="tel">
+    <button onclick="saveCell()">Unlock Search</button>
+    <div id="gateMsg" class="err hidden"></div>
+    <div class="note">Must match your cell on file with the office.</div>
+  </div>
+
+  <div id="searchBox" class="card hidden">
+    <input type="text" id="q" placeholder="Any part of an address — '3448 Timberline', 'timberline clyde', '925 E 2nd'"
+           onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">Search</button>
+    <button class="ghost" style="float:right" onclick="logout()">Change number</button>
+  </div>
+
+  <div id="status"></div>
+  <div id="results"></div>
+</div>
+
+<script>
+const API = "https://thomass-mac-mini.taildbd54d.ts.net/prop";
+const TTL = 24*3600*1000;
+let lastQuery = "";
+
+function getCell(){
+  try{
+    const s = JSON.parse(localStorage.getItem("rt_cell")||"null");
+    if(s && Date.now()-s.t < TTL) return s.c;
+  }catch(e){}
+  return null;
+}
+function saveCell(){
+  const c = document.getElementById("cell").value.replace(/\D/g,"");
+  if(c.length<10){show("gateMsg","Enter a 10-digit cell number");return;}
+  localStorage.setItem("rt_cell", JSON.stringify({c:c,t:Date.now()}));
+  init();
+}
+function logout(){localStorage.removeItem("rt_cell");location.reload();}
+function show(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.remove("hidden");}
+function init(){
+  const has = !!getCell();
+  document.getElementById("gate").classList.toggle("hidden",has);
+  document.getElementById("searchBox").classList.toggle("hidden",!has);
+}
+function badgeClass(s){
+  if(s.includes("ACTIVE"))return"b-active";
+  if(s.includes("PENDING"))return"b-pending";
+  if(s.includes("COMING"))return"b-coming";
+  if(s.includes("SOLD")||s.includes("CLOSED"))return"b-closed";
+  return"b-other";
+}
+async function doSearch(){
+  const q = document.getElementById("q").value.trim();
+  if(q.length<3)return;
+  lastQuery = q;
+  document.getElementById("status").textContent = "Searching every source…";
+  document.getElementById("results").innerHTML = "";
+  try{
+    const r = await fetch(API+"/search?q="+encodeURIComponent(q),{headers:{"X-Prop-Key":getCell()}});
+    if(r.status===401){logout();return;}
+    if(r.status===429){document.getElementById("status").textContent="Slow down a moment and try again.";return;}
+    const d = await r.json();
+    render(d);
+  }catch(e){
+    document.getElementById("status").textContent = "Search service unreachable — tell Tommy.";
+  }
+}
+function esc(s){const d=document.createElement("div");d.textContent=String(s);return d.innerHTML;}
+function render(d){
+  const st = document.getElementById("status"), res = document.getElementById("results");
+  if(d.no_match){
+    let m = "No REALTEAM record found for “"+esc(d.query)+"”.";
+    if(d.did_you_mean && d.did_you_mean.length) m += " Did you mean: "+d.did_you_mean.map(esc).join(", ")+"?";
+    if(d.internal_only_matches) m += " ("+d.internal_only_matches+" internal-only record(s) exist — ask the office.)";
+    st.textContent = m; return;
+  }
+  st.textContent = d.results.length+" result(s)";
+  const skip = new Set(["status_label","links","_status","_tab","_table","_row"]);
+  d.results.forEach((h,i)=>{
+    const rows = Object.keys(h).filter(k=>!skip.has(k))
+      .map(k=>"<tr><td class='k'>"+esc(k)+"</td><td>"+esc(h[k])+"</td></tr>").join("");
+    const la = h["Lead Agent"]||h["lead_agent"]||"";
+    const ag = (d.lead_agents||{})[la];
+    const agentHtml = ag ? "<div class='agent'><b>"+esc(ag.agent)+"</b> &middot; "+esc(ag.store||"")+" &middot; <a style='color:var(--gold2)' href='tel:"+esc(ag.cell)+"'>"+esc(ag.cell)+"</a></div>" : "";
+    const L = h.links||{};
+    const mlink = (L.mirealteam||{}).link||"";
+    const probe = (L.mirealteam||{}).probe||"";
+    const links = "<div class='links' style='margin-top:10px'>"+
+      (mlink?"<a target='_blank' href='"+esc(mlink)+"'>View on mirealteam.com"+(probe==="found"?" ✓":"")+"</a>":"")+
+      (L.zillow?"<a target='_blank' href='"+esc(L.zillow)+"'>Check Zillow</a>":"")+"</div>";
+    res.innerHTML += "<div class='card'>"+
+      "<span class='badge "+badgeClass(h.status_label)+"'>"+esc(h.status_label)+"</span>"+
+      "<table>"+rows+"</table>"+agentHtml+links+
+      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button>"+
+      "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+".</div>"+
+      "<div id='tm"+i+"'></div></div>";
+  });
+}
+async function textMe(i,btn){
+  btn.disabled = true; btn.textContent = "Sending…";
+  try{
+    const r = await fetch(API+"/textme",{method:"POST",
+      headers:{"X-Prop-Key":getCell(),"Content-Type":"application/json"},
+      body:JSON.stringify({query:lastQuery,index:i})});
+    const d = await r.json();
+    document.getElementById("tm"+i).innerHTML = d.ok?"<div class='ok'>Sent to your phone ✓</div>":"<div class='err'>"+esc(d.detail||d.error||"failed")+"</div>";
+  }catch(e){
+    document.getElementById("tm"+i).innerHTML = "<div class='err'>Send failed — service unreachable.</div>";
+  }
+  btn.disabled=false; btn.textContent="📲 Text me this property";
+}
+init();
+</script>
+</body>
+</html>
