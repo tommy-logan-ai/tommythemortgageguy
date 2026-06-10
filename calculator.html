@@ -888,19 +888,51 @@ function resetCalc() {
 </script>
 
 <script>
-/* property-search integration (2026-06-10): /calculator?price=485000 pre-fills
-   the purchase price and runs the numbers — used by the agent search page. */
+/* property-search integration v2 (2026-06-10):
+   /calculator?price=485000&address=3448%20Timberline%20Clyde
+   pre-fills address + price, assumes 20% down, runs the numbers, then shows
+   Tommy's lender-paid 1/0 buydown payment + first-year savings. */
 (function(){
   try{
-    var p = new URLSearchParams(location.search).get("price");
-    if(p && /^\d{4,9}$/.test(p)){
-      var el = document.getElementById("purchasePrice");
-      if(el){
-        el.value = Number(p).toLocaleString("en-US");
-        if (typeof syncDownAmt === "function") syncDownAmt();
-        if (typeof calculate === "function") calculate();
-      }
+    var qs = new URLSearchParams(location.search);
+    var p = qs.get("price");
+    if(!p || !/^\d{4,9}$/.test(p)) return;
+    var price = Number(p);
+    var addr = (qs.get("address")||"").slice(0,90);
+    document.getElementById("purchasePrice").value = price;       // type=number: raw digits only
+    if(addr) document.getElementById("address").value = addr;
+    document.getElementById("downPct").value = 20;
+    if (typeof syncDownAmt === "function") syncDownAmt();         // 20% -> $ amount
+    if (typeof calculate === "function") calculate();
+
+    function pi(loan, ratePct){
+      var r = ratePct/100/12, n = 360;
+      return loan * (r*Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
     }
+    function money(x){ return "$" + Math.round(x).toLocaleString("en-US"); }
+    var tries = 0;
+    var t = setInterval(function(){
+      var rw = document.getElementById("resultsWrap");
+      if(!rw || !rw.classList.contains("on")){ if(++tries>20) clearInterval(t); return; }
+      clearInterval(t);
+      if(document.getElementById("buydownBlock")) return;
+      var rate = parseFloat(document.getElementById("rate").value) || 6.875;
+      var loan = price * 0.8;
+      var full = pi(loan, rate), buy = pi(loan, rate-1);
+      var save = full - buy;
+      var div = document.createElement("div");
+      div.id = "buydownBlock";
+      div.style.cssText = "margin-top:18px;padding:18px 20px;border-radius:12px;background:#0a1628;color:#faf8f4;border:1px solid #c9a84c";
+      div.innerHTML =
+        "<div style='font-weight:700;color:#e2c47a;font-size:1.05rem;margin-bottom:8px'>Tommy's Lender-Paid 1/0 Buydown</div>"+
+        "<div style='display:flex;gap:12px;text-align:center;margin-bottom:10px'>"+
+        "<div style='flex:1;background:#152238;border-radius:8px;padding:10px'><div style='font-size:.75rem;color:#9fb0c8'>STANDARD P&I ("+rate.toFixed(3)+"%)</div><div style='font-size:1.3rem;font-weight:700'>"+money(full)+"/mo</div></div>"+
+        "<div style='flex:1;background:#152238;border:1px solid #c9a84c;border-radius:8px;padding:10px'><div style='font-size:.75rem;color:#e2c47a'>YEAR ONE W/ 1/0 BUYDOWN ("+(rate-1).toFixed(3)+"%)</div><div style='font-size:1.3rem;font-weight:700;color:#e2c47a'>"+money(buy)+"/mo</div><div style='font-size:.78rem;color:#7fd49a'>save "+money(save)+"/mo · "+money(save*12)+" first year</div></div></div>"+
+        "<div style='font-size:.85rem;color:#9fb0c8'>First year covered by the lender — your buyer pays as if the rate were a full point lower. "+
+        "<a href='/lender-paid-buydown-saved-the-deal' target='_blank' style='color:#e2c47a'>How it saved a deal &rarr;</a></div>"+
+        "<div style='margin-top:8px;font-size:.95rem'><a href='tel:586-315-4507' style='color:#e2c47a;font-weight:700;text-decoration:none'>&#128222; Tommy Lower (586) 315-4507</a> <span style='font-size:.7rem;color:#7a8aa3'>NMLS #31194 · principal &amp; interest only, estimates — eligibility and terms apply</span></div>";
+      rw.appendChild(div);
+    }, 250);
   }catch(e){}
 })();
 </script>
