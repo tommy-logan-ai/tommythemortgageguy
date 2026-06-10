@@ -886,5 +886,23 @@ function resetCalc() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
+
+<script>
+/* property-search integration (2026-06-10): /calculator?price=485000 pre-fills
+   the purchase price and runs the numbers — used by the agent search page. */
+(function(){
+  try{
+    var p = new URLSearchParams(location.search).get("price");
+    if(p && /^\d{4,9}$/.test(p)){
+      var el = document.getElementById("purchasePrice");
+      if(el){
+        el.value = Number(p).toLocaleString("en-US");
+        if (typeof syncDownAmt === "function") syncDownAmt();
+        if (typeof calculate === "function") calculate();
+      }
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
