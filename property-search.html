@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv3-20260610-buydown -->
+<!-- build psv4-20260610-calcv2 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -116,10 +116,14 @@ function saveCell(){
   localStorage.setItem("rt_cell", JSON.stringify({c:c,t:Date.now()}));
   init();
 }
-function openCalc(price){
+function openCalc(price, addrEnc){
   const w = document.getElementById("calcWrap");
   const f = document.getElementById("calcFrame");
-  const src = "/calculator" + (price && price.length>=4 ? "?price="+price : "");
+  let src = "/calculator";
+  if(price && price.length>=4){
+    src += "?price="+price;
+    if(addrEnc) src += "&address="+addrEnc;
+  }
   if(f.getAttribute("src") !== src) f.setAttribute("src", src);
   w.classList.remove("hidden");
   w.scrollIntoView({behavior:"smooth"});
@@ -168,6 +172,7 @@ function render(d){
   d.results.forEach((h,i)=>{
     const priceRaw = h["Current List Price"]||h["Original List Price"]||h["Price"]||h["Sales Price"]||h["sales_price"]||"";
     const price = String(priceRaw).replace(/[^0-9]/g,"").replace(/00$/,"") || "";
+    const calcAddr = h["Listing Full Address"]||[h["Address"],h["Street Name"],h["City"]].filter(Boolean).join(" ")||[h["street_number"],h["street_name"],h["city"]].filter(Boolean).join(" ")||"";
     const rows = Object.keys(h).filter(k=>!skip.has(k))
       .map(k=>"<tr><td class='k'>"+esc(k)+"</td><td>"+esc(h[k])+"</td></tr>").join("");
     const la = h["Lead Agent"]||h["lead_agent"]||"";
@@ -183,7 +188,7 @@ function render(d){
       "<span class='badge "+badgeClass(h.status_label)+"'>"+esc(h.status_label)+"</span>"+
       "<table>"+rows+"</table>"+agentHtml+links+
       "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button> "+
-      (price?"<button class='ghost' onclick='openCalc(\""+price+"\")'>💰 Payment estimate</button>":"")+
+      (price?"<button class='ghost' onclick='openCalc(\""+price+"\",\""+encodeURIComponent(calcAddr)+"\")'>💰 Payment estimate</button>":"")+
       "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+".</div>"+
       "<div id='tm"+i+"'></div></div>";
   });
