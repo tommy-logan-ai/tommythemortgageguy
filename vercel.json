@@ -70,6 +70,10 @@
       "dest": "/lender-paid-buydown-saved-the-deal.html"
     },
     {
+      "src": "/property-search",
+      "dest": "/property-search.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
