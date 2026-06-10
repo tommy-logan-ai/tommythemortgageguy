@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv5-20260610-livebuydown -->
+<!-- build psv6-20260610-liverate -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -116,7 +116,16 @@ function saveCell(){
   localStorage.setItem("rt_cell", JSON.stringify({c:c,t:Date.now()}));
   init();
 }
-const BD_RATE = 6.875;                       // matches the calculator's default
+let BD_RATE = 6.875;                          // fallback; replaced by the live average below
+let BD_RATE_LABEL = "30-yr P&I at "+BD_RATE+"%";
+let lastBd = null;                            // re-render the block when the live rate lands
+fetch(API+"/rate").then(r=>r.json()).then(d=>{
+  if(d && d.rate_30yr_avg){
+    BD_RATE = d.rate_30yr_avg;
+    BD_RATE_LABEL = "30-yr P&I at the national average "+BD_RATE.toFixed(2)+"% (Freddie Mac, "+(d.as_of||"this week")+")";
+    if(lastBd) updateBuydownBlock(lastBd.p, lastBd.a);
+  }
+}).catch(()=>{});
 function pi30(loan, ratePct){
   const r = ratePct/100/12, n = 360;
   return loan * (r*Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
@@ -125,6 +134,7 @@ function money(x){ return "$" + Math.round(x).toLocaleString("en-US"); }
 function updateBuydownBlock(price, addr){
   const p = Number(price);
   if(!p || p < 10000) return;
+  lastBd = {p: price, a: addr};
   const loan = p * 0.8;                      // 20% down assumption
   const full = pi30(loan, BD_RATE), buy = pi30(loan, BD_RATE-1), save = full-buy;
   document.getElementById("bdTitle").textContent = addr || "This house. Two very different payments.";
@@ -132,7 +142,7 @@ function updateBuydownBlock(price, addr){
   document.getElementById("bdTommy").innerHTML = money(buy)+"<span style='font-size:.8rem;font-weight:400'>/mo</span>";
   document.getElementById("bdSave").textContent = "save "+money(save)+"/mo · "+money(save*12)+" first year";
   document.getElementById("bdFine").textContent =
-    "List price "+money(p)+", 20% down, 30-yr P&I at "+BD_RATE+"% — estimates only, eligibility and terms apply. Tommy Lower, NMLS #31194.";
+    "List price "+money(p)+", 20% down, "+BD_RATE_LABEL+" — estimates only, eligibility and terms apply. Tommy Lower, NMLS #31194.";
 }
 function openCalc(price, addrEnc){
   updateBuydownBlock(price, decodeURIComponent(addrEnc||""));
