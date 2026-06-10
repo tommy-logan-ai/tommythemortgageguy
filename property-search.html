@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv7-20260610-linktree -->
+<!-- build psv8-20260610-nocalc -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -67,7 +67,7 @@ td.k{color:#9fb0c8;white-space:nowrap;width:42%}
     </div>
     <div style="font-size:.85rem;color:#9fb0c8;margin-top:10px">The first year is <b style="color:var(--cream)">covered by the lender</b> — your buyer pays as if the rate were a full point lower.
       <a href="/lender-paid-buydown-saved-the-deal" target="_blank" style="color:var(--gold2)">Read the story →</a></div>
-    <div id="bdFine" style="font-size:.7rem;color:#7a8aa3;margin-top:6px">Example from a published $420,000 purchase. Estimates only — eligibility and terms apply. Tommy Lower, NMLS #31194.</div>
+    <div id="bdFine" style="font-size:.7rem;color:#7a8aa3;margin-top:6px">Example from a published $420,000 purchase. Principal &amp; interest only — taxes and insurance not included. Estimates — eligibility and terms apply. Tommy Lower, NMLS #31194.</div>
   </div>
 
   <div id="gate" class="card">
@@ -88,14 +88,6 @@ td.k{color:#9fb0c8;white-space:nowrap;width:42%}
   <div id="status"></div>
   <div id="results"></div>
 
-  <div id="calcWrap" class="card hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--gold2)">Mortgage Calculator</div>
-      <button class="ghost" onclick="document.getElementById('calcWrap').classList.add('hidden')">Close</button>
-    </div>
-    <iframe id="calcFrame" src="" style="width:100%;height:920px;border:0;border-radius:8px;background:#fff" loading="lazy"></iframe>
-    <div class="note">Estimates only. Lock in real numbers with Tommy: <a href="tel:586-315-4507" style="color:var(--gold2)">(586) 315-4507</a></div>
-  </div>
 </div>
 
 <script>
@@ -138,24 +130,11 @@ function updateBuydownBlock(price, addr){
   const loan = p * 0.8;                      // 20% down assumption
   const full = pi30(loan, BD_RATE), buy = pi30(loan, BD_RATE-1), save = full-buy;
   document.getElementById("bdTitle").textContent = addr || "This house. Two very different payments.";
-  document.getElementById("bdOther").innerHTML = money(full)+"<span style='font-size:.8rem;font-weight:400'>/mo</span>";
-  document.getElementById("bdTommy").innerHTML = money(buy)+"<span style='font-size:.8rem;font-weight:400'>/mo</span>";
+  document.getElementById("bdOther").innerHTML = money(full)+"<span style='font-size:.8rem;font-weight:400'>/mo P&I</span>";
+  document.getElementById("bdTommy").innerHTML = money(buy)+"<span style='font-size:.8rem;font-weight:400'>/mo P&I</span>";
   document.getElementById("bdSave").textContent = "save "+money(save)+"/mo · "+money(save*12)+" first year";
   document.getElementById("bdFine").textContent =
-    "List price "+money(p)+", 20% down, "+BD_RATE_LABEL+" — estimates only, eligibility and terms apply. Tommy Lower, NMLS #31194.";
-}
-function openCalc(price, addrEnc){
-  updateBuydownBlock(price, decodeURIComponent(addrEnc||""));
-  const w = document.getElementById("calcWrap");
-  const f = document.getElementById("calcFrame");
-  let src = "/calculator";
-  if(price && price.length>=4){
-    src += "?price="+price;
-    if(addrEnc) src += "&address="+addrEnc;
-  }
-  if(f.getAttribute("src") !== src) f.setAttribute("src", src);
-  w.classList.remove("hidden");
-  w.scrollIntoView({behavior:"smooth"});
+    "List price "+money(p)+", 20% down, "+BD_RATE_LABEL+" — PRINCIPAL & INTEREST ONLY (taxes and insurance not included). Estimates — eligibility and terms apply. Tommy Lower, NMLS #31194.";
 }
 function logout(){localStorage.removeItem("rt_cell");location.reload();}
 function show(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.remove("hidden");}
@@ -208,9 +187,6 @@ function render(d){
   }
   const skip = new Set(["status_label","links","_status","_tab","_table","_row"]);
   d.results.forEach((h,i)=>{
-    const priceRaw = h["Current List Price"]||h["Original List Price"]||h["Price"]||h["Sales Price"]||h["sales_price"]||"";
-    const price = String(priceRaw).replace(/[^0-9]/g,"").replace(/00$/,"") || "";
-    const calcAddr = h["Listing Full Address"]||[h["Address"],h["Street Name"],h["City"]].filter(Boolean).join(" ")||[h["street_number"],h["street_name"],h["city"]].filter(Boolean).join(" ")||"";
     const rows = Object.keys(h).filter(k=>!skip.has(k))
       .map(k=>"<tr><td class='k'>"+esc(k)+"</td><td>"+esc(h[k])+"</td></tr>").join("");
     const la = h["Lead Agent"]||h["lead_agent"]||"";
@@ -225,8 +201,7 @@ function render(d){
     res.innerHTML += "<div class='card'>"+
       "<span class='badge "+badgeClass(h.status_label)+"'>"+esc(h.status_label)+"</span>"+
       "<table>"+rows+"</table>"+agentHtml+links+
-      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button> "+
-      (price?"<button class='ghost' onclick='openCalc(\""+price+"\",\""+encodeURIComponent(calcAddr)+"\")'>💰 Payment estimate</button>":"")+
+      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button>"+
       "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+
       " + Tommy's links: <a target='_blank' href='https://linktr.ee/tommythemortgageguy' style='color:var(--gold2)'>linktr.ee/tommythemortgageguy</a></div>"+
       "<div id='tm"+i+"'></div></div>";
