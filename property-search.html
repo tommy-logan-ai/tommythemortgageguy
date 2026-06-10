@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv4-20260610-calcv2 -->
+<!-- build psv5-20260610-livebuydown -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -53,21 +53,21 @@ td.k{color:#9fb0c8;white-space:nowrap;width:42%}
   </div>
 
   <div class="card" style="padding:16px 20px;border-color:rgba(201,168,76,.55)">
-    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:10px">Same house. Two very different payments.</div>
+    <div id="bdTitle" style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:10px">Same house. Two very different payments.</div>
     <div style="display:flex;gap:12px;text-align:center">
       <div style="flex:1;background:var(--navy);border-radius:8px;padding:12px 8px">
         <div style="font-size:.78rem;color:#9fb0c8;letter-spacing:.04em">OTHER LENDERS</div>
-        <div style="font-size:1.45rem;font-weight:700;margin-top:2px">$2,616<span style="font-size:.8rem;font-weight:400">/mo</span></div>
+        <div id="bdOther" style="font-size:1.45rem;font-weight:700;margin-top:2px">$2,616<span style="font-size:.8rem;font-weight:400">/mo</span></div>
       </div>
       <div style="flex:1;background:var(--navy);border:1px solid var(--gold);border-radius:8px;padding:12px 8px">
-        <div style="font-size:.78rem;color:var(--gold2);letter-spacing:.04em">TOMMY'S 1/0 BUYDOWN</div>
-        <div style="font-size:1.45rem;font-weight:700;color:var(--gold2);margin-top:2px">$2,337<span style="font-size:.8rem;font-weight:400">/mo</span></div>
-        <div style="font-size:.75rem;color:#7fd49a">$279/mo lower, year one</div>
+        <div style="font-size:.78rem;color:var(--gold2);letter-spacing:.04em">TOMMY — YEAR ONE W/ 1/0 BUYDOWN</div>
+        <div id="bdTommy" style="font-size:1.45rem;font-weight:700;color:var(--gold2);margin-top:2px">$2,337<span style="font-size:.8rem;font-weight:400">/mo</span></div>
+        <div id="bdSave" style="font-size:.75rem;color:#7fd49a">$279/mo lower, year one</div>
       </div>
     </div>
-    <div style="font-size:.85rem;color:#9fb0c8;margin-top:10px">The first year is <b style="color:var(--cream)">covered by the lender</b> — your buyer pays as if the rate were a full point lower. It just turned a lost deal into a closed one.
+    <div style="font-size:.85rem;color:#9fb0c8;margin-top:10px">The first year is <b style="color:var(--cream)">covered by the lender</b> — your buyer pays as if the rate were a full point lower.
       <a href="/lender-paid-buydown-saved-the-deal" target="_blank" style="color:var(--gold2)">Read the story →</a></div>
-    <div style="font-size:.7rem;color:#7a8aa3;margin-top:6px">Example from a published $420,000 purchase. Estimates only — eligibility and terms apply. Tommy Lower, NMLS #31194.</div>
+    <div id="bdFine" style="font-size:.7rem;color:#7a8aa3;margin-top:6px">Example from a published $420,000 purchase. Estimates only — eligibility and terms apply. Tommy Lower, NMLS #31194.</div>
   </div>
 
   <div id="gate" class="card">
@@ -116,7 +116,26 @@ function saveCell(){
   localStorage.setItem("rt_cell", JSON.stringify({c:c,t:Date.now()}));
   init();
 }
+const BD_RATE = 6.875;                       // matches the calculator's default
+function pi30(loan, ratePct){
+  const r = ratePct/100/12, n = 360;
+  return loan * (r*Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+}
+function money(x){ return "$" + Math.round(x).toLocaleString("en-US"); }
+function updateBuydownBlock(price, addr){
+  const p = Number(price);
+  if(!p || p < 10000) return;
+  const loan = p * 0.8;                      // 20% down assumption
+  const full = pi30(loan, BD_RATE), buy = pi30(loan, BD_RATE-1), save = full-buy;
+  document.getElementById("bdTitle").textContent = addr || "This house. Two very different payments.";
+  document.getElementById("bdOther").innerHTML = money(full)+"<span style='font-size:.8rem;font-weight:400'>/mo</span>";
+  document.getElementById("bdTommy").innerHTML = money(buy)+"<span style='font-size:.8rem;font-weight:400'>/mo</span>";
+  document.getElementById("bdSave").textContent = "save "+money(save)+"/mo · "+money(save*12)+" first year";
+  document.getElementById("bdFine").textContent =
+    "List price "+money(p)+", 20% down, 30-yr P&I at "+BD_RATE+"% — estimates only, eligibility and terms apply. Tommy Lower, NMLS #31194.";
+}
 function openCalc(price, addrEnc){
+  updateBuydownBlock(price, decodeURIComponent(addrEnc||""));
   const w = document.getElementById("calcWrap");
   const f = document.getElementById("calcFrame");
   let src = "/calculator";
@@ -168,6 +187,15 @@ function render(d){
     st.textContent = m; return;
   }
   st.textContent = d.results.length+" result(s)";
+  // live buydown block: auto-fill from the top priced result — no typing needed
+  for(const h of d.results){
+    const pr = String(h["Current List Price"]||h["Original List Price"]||h["Price"]||h["Sales Price"]||h["sales_price"]||"").replace(/[^0-9]/g,"").replace(/00$/,"");
+    if(pr && pr.length>=5){
+      const a = h["Listing Full Address"]||[h["Address"],h["Street Name"],h["City"]].filter(Boolean).join(" ")||[h["street_number"],h["street_name"],h["city"]].filter(Boolean).join(" ");
+      updateBuydownBlock(pr, a);
+      break;
+    }
+  }
   const skip = new Set(["status_label","links","_status","_tab","_table","_row"]);
   d.results.forEach((h,i)=>{
     const priceRaw = h["Current List Price"]||h["Original List Price"]||h["Price"]||h["Sales Price"]||h["sales_price"]||"";
