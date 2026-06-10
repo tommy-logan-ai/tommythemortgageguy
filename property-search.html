@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv6-20260610-liverate -->
+<!-- build psv7-20260610-linktree -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -227,7 +227,8 @@ function render(d){
       "<table>"+rows+"</table>"+agentHtml+links+
       "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button> "+
       (price?"<button class='ghost' onclick='openCalc(\""+price+"\",\""+encodeURIComponent(calcAddr)+"\")'>💰 Payment estimate</button>":"")+
-      "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+".</div>"+
+      "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+
+      " + Tommy's links: <a target='_blank' href='https://linktr.ee/tommythemortgageguy' style='color:var(--gold2)'>linktr.ee/tommythemortgageguy</a></div>"+
       "<div id='tm"+i+"'></div></div>";
   });
 }
