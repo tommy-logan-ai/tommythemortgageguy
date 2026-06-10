@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build psv1-20260610 -->
+<!-- build psv2-20260610-calc -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -42,6 +42,16 @@ td.k{color:#9fb0c8;white-space:nowrap;width:42%}
   <h1>REALTEAM Property Search</h1>
   <div class="sub">Active &middot; Pending &middot; Coming Soon &middot; Sold — every source, one box.</div>
 
+  <div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+    <img src="/assets/tommy-headshot.jpg" alt="Tommy Lower" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)">
+    <div style="flex:1">
+      <div style="font-weight:700;font-size:1.05rem">Tommy Lower — <span style="color:var(--gold2)">Tommy The Mortgage Guy</span></div>
+      <div style="font-size:.9rem;color:#9fb0c8">Payment &amp; closing-cost estimates for your sign calls — while they're still on the phone.</div>
+      <div style="margin-top:4px"><a href="tel:586-315-4507" style="color:var(--gold2);font-weight:700;text-decoration:none">📞 (586) 315-4507</a>
+      <span style="font-size:.72rem;color:#9fb0c8;margin-left:10px">NMLS #31194 · Equal Housing Lender</span></div>
+    </div>
+  </div>
+
   <div id="gate" class="card">
     <div style="margin-bottom:10px;font-weight:500">Enter your cell number to access the search</div>
     <input type="tel" id="cell" placeholder="(586) 555-1234" autocomplete="tel">
@@ -59,6 +69,15 @@ td.k{color:#9fb0c8;white-space:nowrap;width:42%}
 
   <div id="status"></div>
   <div id="results"></div>
+
+  <div id="calcWrap" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--gold2)">Mortgage Calculator</div>
+      <button class="ghost" onclick="document.getElementById('calcWrap').classList.add('hidden')">Close</button>
+    </div>
+    <iframe id="calcFrame" src="" style="width:100%;height:920px;border:0;border-radius:8px;background:#fff" loading="lazy"></iframe>
+    <div class="note">Estimates only. Lock in real numbers with Tommy: <a href="tel:586-315-4507" style="color:var(--gold2)">(586) 315-4507</a></div>
+  </div>
 </div>
 
 <script>
@@ -78,6 +97,14 @@ function saveCell(){
   if(c.length<10){show("gateMsg","Enter a 10-digit cell number");return;}
   localStorage.setItem("rt_cell", JSON.stringify({c:c,t:Date.now()}));
   init();
+}
+function openCalc(price){
+  const w = document.getElementById("calcWrap");
+  const f = document.getElementById("calcFrame");
+  const src = "/calculator" + (price && price.length>=4 ? "?price="+price : "");
+  if(f.getAttribute("src") !== src) f.setAttribute("src", src);
+  w.classList.remove("hidden");
+  w.scrollIntoView({behavior:"smooth"});
 }
 function logout(){localStorage.removeItem("rt_cell");location.reload();}
 function show(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.remove("hidden");}
@@ -121,6 +148,8 @@ function render(d){
   st.textContent = d.results.length+" result(s)";
   const skip = new Set(["status_label","links","_status","_tab","_table","_row"]);
   d.results.forEach((h,i)=>{
+    const priceRaw = h["Current List Price"]||h["Original List Price"]||h["Price"]||h["Sales Price"]||h["sales_price"]||"";
+    const price = String(priceRaw).replace(/[^0-9]/g,"").replace(/00$/,"") || "";
     const rows = Object.keys(h).filter(k=>!skip.has(k))
       .map(k=>"<tr><td class='k'>"+esc(k)+"</td><td>"+esc(h[k])+"</td></tr>").join("");
     const la = h["Lead Agent"]||h["lead_agent"]||"";
@@ -135,7 +164,8 @@ function render(d){
     res.innerHTML += "<div class='card'>"+
       "<span class='badge "+badgeClass(h.status_label)+"'>"+esc(h.status_label)+"</span>"+
       "<table>"+rows+"</table>"+agentHtml+links+
-      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button>"+
+      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button> "+
+      (price?"<button class='ghost' onclick='openCalc(\""+price+"\")'>💰 Payment estimate</button>":"")+
       "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+".</div>"+
       "<div id='tm"+i+"'></div></div>";
   });
