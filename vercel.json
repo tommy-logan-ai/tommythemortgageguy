@@ -74,6 +74,10 @@
       "dest": "/property-search.html"
     },
     {
+      "src": "/coming-soon/royal-oak-mi-u-352529",
+      "dest": "/coming-soon/royal-oak-mi-u-352529.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
