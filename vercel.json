@@ -78,6 +78,10 @@
       "dest": "/coming-soon/$1.html"
     },
     {
+      "src": "/income-to-buy-300k-house-michigan",
+      "dest": "/income-to-buy-300k-house-michigan.html"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
