@@ -180,7 +180,7 @@ async function doSearch(){
 }
 function esc(s){const d=document.createElement("div");d.textContent=String(s);return d.innerHTML;}
 function render(d){
-  const st = document.getElementById("status"), res = document.getElementById("results");
+  const st = document.getElementById("status"), res = document.getElementById("results"); window.__res = d.results||[];
   if(d.no_match){
     let m = "No REALTEAM record found for “"+esc(d.query)+"”.";
     if(d.did_you_mean && d.did_you_mean.length) m += " Did you mean: "+d.did_you_mean.map(esc).join(", ")+"?";
@@ -213,12 +213,27 @@ function render(d){
     res.innerHTML += "<div class='card'>"+
       "<span class='badge "+badgeClass(h.status_label)+"'>"+esc(h.status_label)+"</span>"+
       "<table>"+rows+"</table>"+agentHtml+links+
-      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button>"+
+      "<button class='ghost' onclick='textMe("+i+",this)'>📲 Text me this property</button>"+"<button class='ghost' onclick='nbhd("+i+",this)'>🏘 Know the Neighborhood</button>"+"<div class='nbhd-slot' id='nbhd-"+i+"'></div>"+
       "<div class='note'>Text includes public info only"+(h.status_label.includes("PENDING")?" (list price, never contract terms)":"")+
       " + Tommy's links: <a target='_blank' href='https://linktr.ee/tommythemortgageguy' style='color:var(--gold2)'>linktr.ee/tommythemortgageguy</a></div>"+
       "<div id='tm"+i+"'></div></div>";
   });
 }
+
+function nbhd(i,btn){
+  var slot=document.getElementById('nbhd-'+i); if(!slot) return;
+  if(slot.innerHTML){slot.innerHTML='';btn.textContent='🏘 Know the Neighborhood';return;}
+  var h=(window.__res||[])[i]||{};
+  var addr=h["Listing Full Address"]||[h.Address,h["Street Name"],h.City].filter(Boolean).join(' ')||h.address||'';
+  var city=h.City||h.city||'';
+  if(!addr){slot.innerHTML="<div style='color:#888;font-size:.9rem'>No address for this one.</div>";return;}
+  btn.textContent='Loading…';
+  fetch(API+"/neighborhood?address="+encodeURIComponent(addr)+"&city="+encodeURIComponent(city),{headers:{"X-Prop-Key":getCell()}})
+    .then(function(r){return r.text();})
+    .then(function(t){slot.innerHTML=t;btn.textContent='🏘 Hide neighborhood';})
+    .catch(function(){slot.innerHTML="<div style='color:#888;font-size:.9rem'>Neighborhood data temporarily unavailable.</div>";btn.textContent='🏘 Know the Neighborhood';});
+}
+
 async function textMe(i,btn){
   btn.disabled = true; btn.textContent = "Sending…";
   try{
