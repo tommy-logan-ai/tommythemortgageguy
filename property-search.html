@@ -203,7 +203,7 @@ function render(d){
       .map(k=>"<tr><td class='k'>"+esc(k)+"</td><td>"+esc(h[k])+"</td></tr>").join("");
     const la = h["Lead Agent"]||h["lead_agent"]||"";
     const ag = (d.lead_agents||{})[la];
-    const agentHtml = ag ? "<div class='agent'><b>"+esc(ag.agent)+"</b> &middot; "+esc(ag.store||"")+" &middot; <a style='color:var(--gold2)' href='tel:"+esc(ag.cell)+"'>"+esc(ag.cell)+"</a></div>" : "";
+    const agentHtml = ag ? "<div class='agent' style='display:flex;align-items:center;gap:8px;margin-top:6px'>"+(ag.headshot?"<img src='"+esc(ag.headshot)+"' alt='' style='width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #ddd'>":"")+"<span><b>"+esc(ag.agent)+"</b> &middot; "+esc(ag.store||"")+" &middot; <a style='color:var(--gold2)' href='tel:"+esc(ag.cell)+"'>"+esc(ag.cell)+"</a></span></div>" : "";
     const L = h.links||{};
     const mlink = (L.mirealteam||{}).link||"";
     const probe = (L.mirealteam||{}).probe||"";
