@@ -90,6 +90,22 @@
       "dest": "/red-run-og.jpg"
     },
     {
+      "src": "/redrun-crest.png",
+      "dest": "/redrun-crest.png"
+    },
+    {
+      "src": "/redrun-hero.jpg",
+      "dest": "/redrun-hero.jpg"
+    },
+    {
+      "src": "/redrun-kevin.png",
+      "dest": "/redrun-kevin.png"
+    },
+    {
+      "src": "/redrun-tommy.jpg",
+      "dest": "/redrun-tommy.jpg"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
