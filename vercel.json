@@ -82,6 +82,14 @@
       "dest": "/income-to-buy-300k-house-michigan.html"
     },
     {
+      "src": "/red-run-insider-x7k2m",
+      "dest": "/red-run-insider-x7k2m.html"
+    },
+    {
+      "src": "/red-run-og.jpg",
+      "dest": "/red-run-og.jpg"
+    },
+    {
       "src": "/cma/(.*)",
       "dest": "/cma/$1/index.html"
     },
