@@ -139,12 +139,17 @@ function cardHTML(h,i){var cover=h.photos[0]||'';
  var crs=h.oncourse?'<span class=oncrs>⛳ On the course</span>':(h.nearcourse?'<span style=color:#6b5a2e>Near the course</span>':'');
  var meta=(h.bd||'?')+'bd · '+(h.ba||'?')+'ba · '+(h.sqft?h.sqft.toLocaleString():'?')+' sqft';
  return '<div class=card onclick="openDetail('+i+')" id="card'+i+'">'+
-  (cover?'<img class=thumb loading=lazy src="'+cover+'?w=320">':'<div class=thumb></div>')+
+  (cover?'<img class=thumb data-src="'+cover+'?w=320">':'<div class=thumb></div>')+
   '<div class=info><div class=pr>'+money(h.price)+' <span class=pill style="background:'+COL[h.status]+'">'+LBL[h.status]+'</span></div>'+
   '<div class=ad>'+h.a1+'</div><div class=mt>'+meta+'</div><div class=gf>🏌️ '+h.golf+'</div>'+(crs?'<div class=mt>'+crs+'</div>':'')+'</div></div>';}
 function drawCards(){var v=visible();
  document.getElementById('cards').innerHTML=v.length?v.map(function(h){return cardHTML(h,D.homes.indexOf(h));}).join(''):'<p style="text-align:center;color:#999;padding:30px">No homes in this filter.</p>';
- document.getElementById('sheetTitle').textContent=v.length+' homes'+(filter=="all"?' near Red Run':' · '+LBL[filter]);}
+ document.getElementById('sheetTitle').textContent=v.length+' homes'+(filter=="all"?' near Red Run':' · '+LBL[filter]);observeThumbs();}
+var _io;
+function observeThumbs(){
+ if(_io)_io.disconnect();
+ _io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var im=e.target;im.src=im.dataset.src;im.removeAttribute('data-src');_io.unobserve(im);}});},{root:document.getElementById('cards'),rootMargin:'250px'});
+ document.querySelectorAll('#cards img.thumb[data-src]').forEach(function(im){_io.observe(im);});}
 function counts(){var c={all:D.homes.length,"Coming Soon":0,"Active":0,"Pending":0,"Sold":0};
  D.homes.forEach(function(h){c[h.status]++;});
  document.getElementById('c_all').textContent=c.all;document.getElementById('c_cs').textContent=c["Coming Soon"];
@@ -169,8 +174,11 @@ document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){
  ['homes','alertsView','teamView'].forEach(function(v){document.getElementById(v).hidden=(v!=t.dataset.v);});
  if(t.dataset.v=='homes')setTimeout(function(){map.invalidateSize();},60);};});
 function openDetail(i){var h=D.homes[i];
- var gal=document.getElementById('dgallery');
- gal.innerHTML=(h.photos.length?h.photos:['']).map(function(u,j){return u?'<img '+(j===0?'fetchpriority=high':'loading=lazy')+' src="'+u+'?w=1200">':'';}).join('');
+ var gal=document.getElementById('dgallery');var ph=h.photos.length?h.photos:[''];
+ gal.innerHTML=ph[0]?'<img fetchpriority=high src="'+ph[0]+'?w=900">':'';
+ var injected=false;function injectRest(){if(injected)return;injected=true;for(var k=1;k<ph.length;k++){var im=new Image();im.loading='lazy';im.src=ph[k]+'?w=900';gal.appendChild(im);}}
+ var first=gal.querySelector('img');
+ if(ph.length>1){if(first){first.onload=injectRest;first.onerror=injectRest;setTimeout(injectRest,2500);}else injectRest();}
  var nph=h.photos.length,dc=document.getElementById('dcount');
  dc.style.display=nph>1?'block':'none';dc.textContent='1/'+nph;gal.scrollLeft=0;
  gal.onscroll=function(){if(nph<2)return;dc.textContent=(Math.round(gal.scrollLeft/gal.clientWidth)+1)+'/'+nph;};
