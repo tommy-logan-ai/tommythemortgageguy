@@ -2,8 +2,8 @@
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <title>The Red Run Real Estate Report — Members Only</title>
 <meta name="robots" content="noindex,nofollow,noarchive">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Red Run Insider"><meta property="og:title" content="The Red Run Real Estate Report"><meta property="og:description" content="What's selling on and around Red Run — sold, active, pending, and coming soon. A private market report, for members."><meta property="og:image" content="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/redrun_og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="https://tommythemortgageguy.com/red-run-insider-x7k2m"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="The Red Run Real Estate Report"><meta name="twitter:description" content="A private Red Run market report, for members."><meta name="twitter:image" content="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/redrun_og.jpg">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0c3b2e"><meta name="format-detection" content="telephone=yes"><link rel="apple-touch-icon" href="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/crest.png">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Red Run Insider"><meta property="og:title" content="The Red Run Real Estate Report"><meta property="og:description" content="What's selling on and around Red Run — sold, active, pending, and coming soon. A private market report, for members."><meta property="og:image" content="https://tommythemortgageguy.com/red-run-og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="https://tommythemortgageguy.com/red-run-insider-x7k2m"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="The Red Run Real Estate Report"><meta name="twitter:description" content="A private Red Run market report, for members."><meta name="twitter:image" content="https://tommythemortgageguy.com/red-run-og.jpg">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0c3b2e"><meta name="format-detection" content="telephone=yes"><link rel="apple-touch-icon" href="https://tommythemortgageguy.com/redrun-crest.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel=stylesheet>
 <link rel=preconnect href="https://unpkg.com"><link rel=preconnect href="https://fonts.gstatic.com" crossorigin>
 <link rel=stylesheet href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -74,7 +74,7 @@ h1,h2,h3{font-family:'Playfair Display',serif;margin:0}
 .dcta{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eee;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:6}
 </style></head><body>
 <div id=app>
-<header class=top><div class=brand><img class=crest src="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/crest.png" alt="Red Run"><span>RED RUN INSIDER</span></div><div class=membersonly>Members</div></header>
+<header class=top><div class=brand><img class=crest src="https://tommythemortgageguy.com/redrun-crest.png" alt="Red Run"><span>RED RUN INSIDER</span></div><div class=membersonly>Members</div></header>
 <div class=chips id=chips>
 <button class="chip on" data-f="all">All <i id="c_all"></i></button>
 <button class=chip data-f="Coming Soon" style="--c:#7c3aed">Coming Soon <i id="c_cs"></i></button>
@@ -106,9 +106,9 @@ h1,h2,h3{font-family:'Playfair Display',serif;margin:0}
 <div class=unity>"We don't just sell Red Run — we play it. Kevin and I are members, same as you."</div>
 <div class=card2><h2>What's your home worth?</h2>
 <p>Red Run is its own market. Get a real number — discreetly, off-market until you're ready. No sign in the yard until you say so.</p>
-<div class=person style="margin-top:16px"><img src="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/kevin.png" alt="Kevin"><div><div class=ro>Your Red Run Agent</div><h3>Kevin DeVergilio</h3></div></div>
+<div class=person style="margin-top:16px"><img src="https://tommythemortgageguy.com/redrun-kevin.png" alt="Kevin"><div><div class=ro>Your Red Run Agent</div><h3>Kevin DeVergilio</h3></div></div>
 <div class=acts><a class=btn href="tel:248-396-4246">Call Kevin</a><a class="btn gh" href="sms:248-396-4246">Text</a></div>
-<div class=person style="margin-top:18px"><img src="https://thomass-mac-mini.taildbd54d.ts.net/dash/redrun/asset/tommy.jpg" alt="Tommy"><div><div class=ro>Your Red Run Lender</div><h3>Tommy Lower</h3></div></div>
+<div class=person style="margin-top:18px"><img src="https://tommythemortgageguy.com/redrun-tommy.jpg" alt="Tommy"><div><div class=ro>Your Red Run Lender</div><h3>Tommy Lower</h3></div></div>
 <div class=acts><a class=btn href="tel:586-315-4507">Call Tommy</a><a class="btn gh" href="sms:586-315-4507">Text</a></div></div>
 <p style="text-align:center;color:var(--mut);font-size:12px">Live MiRealSource MLS data · updated June 23, 2026 · members only.</p>
 </div>
@@ -161,15 +161,18 @@ document.querySelectorAll('.chip').forEach(function(ch){ch.onclick=function(){
  filter=ch.dataset.f;drawCards();drawMarkers();snap('half');};});
 function selectHome(i){snap('half');setTimeout(function(){var el=document.getElementById('card'+i);if(el){el.scrollIntoView({block:'center'});el.style.outline='2px solid #c4a35a';el.style.borderRadius='14px';setTimeout(function(){el.style.outline='';},1500);}},150);}
 var sheet=document.getElementById('sheet'),grip=document.getElementById('grip');
-var SNAP={full:7,half:48,peek:76};
-function snap(s){sheet.style.setProperty('--y',SNAP[s]+'%');sheet.dataset.s=s;}
+function snapY(s){var vh=(sheet.parentElement&&sheet.parentElement.clientHeight)||600;
+ return s=='full'?7:(s=='half'?48:Math.max(38,Math.min(80,Math.round((1-210/vh)*100))));} // peek always shows ~210px of cards
+function snap(s){sheet.style.setProperty('--y',snapY(s)+'%');sheet.dataset.s=s;}
 snap('peek');
 (function(){var startY,startT,dragging=false;
- function pct(){return parseFloat(getComputedStyle(sheet).getPropertyValue('--y'))||SNAP.peek;}
+ function pct(){return parseFloat(getComputedStyle(sheet).getPropertyValue('--y'))||snapY('peek');}
  grip.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startT=pct();sheet.classList.add('drag');},{passive:true});
- grip.addEventListener('touchmove',function(e){if(!dragging)return;var dy=e.touches[0].clientY-startY;var vh=sheet.parentElement.clientHeight||600;var ny=Math.max(SNAP.full,Math.min(SNAP.peek,startT+dy/vh*100));sheet.style.setProperty('--y',ny+'%');},{passive:true});
- grip.addEventListener('touchend',function(){dragging=false;sheet.classList.remove('drag');var y=pct();var n=['full','half','peek'].reduce(function(a,b){return Math.abs(SNAP[b]-y)<Math.abs(SNAP[a]-y)?b:a;});snap(n);});
+ grip.addEventListener('touchmove',function(e){if(!dragging)return;var dy=e.touches[0].clientY-startY;var vh=sheet.parentElement.clientHeight||600;var ny=Math.max(snapY('full'),Math.min(snapY('peek'),startT+dy/vh*100));sheet.style.setProperty('--y',ny+'%');},{passive:true});
+ grip.addEventListener('touchend',function(){dragging=false;sheet.classList.remove('drag');var y=pct();var n=['full','half','peek'].reduce(function(a,b){return Math.abs(snapY(b)-y)<Math.abs(snapY(a)-y)?b:a;});snap(n);});
  grip.addEventListener('click',function(){snap(sheet.dataset.s=='peek'?'half':(sheet.dataset.s=='half'?'full':'peek'));});})();
+window.addEventListener('orientationchange',function(){setTimeout(function(){snap(sheet.dataset.s||'peek');if(window._map)window._map.invalidateSize();},300);});
+window.addEventListener('resize',function(){snap(sheet.dataset.s||'peek');});
 document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){
  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});t.classList.add('on');
  ['homes','alertsView','teamView'].forEach(function(v){document.getElementById(v).hidden=(v!=t.dataset.v);});
