@@ -187,7 +187,7 @@ function openDetail(i){var h=D.homes[i];
  if(h.status=='Sold')g.splice(6,0,['Sold',h.sold||'—']);
  document.getElementById('dinfo').innerHTML='<div class=pr>'+money(h.price)+(h.status=='Sold'?' · Sold':'')+'</div><div class=ad>'+h.addr+'</div><div class=dgolf>🏌️ '+h.golf+'</div>'+
   '<div class=dgrid>'+g.map(function(x){return '<div><b>'+x[0]+':</b> '+x[1]+'</div>';}).join('')+'</div>'+(h.rem?'<div class=drem>'+h.rem+'</div>':'');
- document.getElementById('dcta').innerHTML='<a class=btn href="tel:248-396-4246">Text Kevin</a><a class="btn gh" href="tel:586-315-4507">Ask Tommy</a>';
+ document.getElementById('dcta').innerHTML='<a class=btn href="sms:248-396-4246">Text Kevin</a><a class="btn gh" href="sms:586-315-4507">Text Tommy</a>';
  document.getElementById('detail').classList.add('open');document.body.style.overflow='hidden';document.getElementById('detail').scrollTop=0;}
 function closeDetail(){document.getElementById('detail').classList.remove('open');document.body.style.overflow='';}
 function signup(e){e.preventDefault();var f=e.target;var n=f.nm.value;var btn=f.querySelector('button');var ok=document.getElementById('afok');
