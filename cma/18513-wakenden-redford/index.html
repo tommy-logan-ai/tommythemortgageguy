@@ -558,5 +558,32 @@
   </div>
 </footer>
 
+<!-- TTMG page-view beacon (codified 2026-06-09, ISA ttmg-blog-pageview-beacon).
+     Fires once per tab-session on load; posts to the /api/pv edge function which
+     inserts a page_view row server-side. No key in the browser, non-blocking. -->
+<script>
+  window.addEventListener('load', function () {
+    try {
+      var k = 'ttmg_pv_' + location.pathname;
+      if (sessionStorage.getItem(k)) return;
+      sessionStorage.setItem(k, '1');
+      var u = new URL(location.href);
+      fetch('/api/pv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          page_path: location.pathname,
+          referrer: document.referrer || null,
+          utm_source: u.searchParams.get('utm_source'),
+          utm_medium: u.searchParams.get('utm_medium'),
+          utm_campaign: u.searchParams.get('utm_campaign'),
+          utm_term: u.searchParams.get('utm_term'),
+          utm_content: u.searchParams.get('utm_content')
+        })
+      });
+    } catch (e) { /* swallow — never error the page */ }
+  });
+</script>
 </body>
 </html>
