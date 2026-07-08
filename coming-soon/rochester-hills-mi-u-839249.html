@@ -34,7 +34,7 @@
   <div class="body">
     
     <div class="specs">3 bed · 2 bath · 1,600 sqft</div>
-    <p style="color:#333;line-height:1.7;font-size:1.05rem;margin:0.75rem 0 1rem">This 3-bedroom, 2-bathroom ranch home offers 1,600 square feet in a Rochester Hills cul-de-sac and features a roof, siding, windows, furnace, and air conditioning all updated since 2014, plus a newly paved driveway. Priced at $450,000 with low HOA fees of $150/month covering private road maintenance and trash removal, this property becomes available tomorrow.</p>
+    <p style="color:#333;line-height:1.7;font-size:1.05rem;margin:0.75rem 0 1rem">This 3-bedroom, 2-bathroom ranch in Rochester Hills spans 1,600 square feet and is listed at $450,000, featuring a cul-de-sac location with a low HOA of $150 for private road maintenance and trash service. Major systems including the roof, siding, windows, furnace, and air conditioning have been replaced since 2014, and the driveway has been updated. Coming soon tomorrow.</p>
     <div class="timing">📅 tomorrow</div>
     <p><a href="https://www.google.com/maps/search/?api=1&query=Rochester%20Hills%2C%20MI" target="_blank" style="color:#1a355e;font-weight:600;">📍 View on Map →</a></p><p><a href="https://lakestatemedia.hd.pics/d/EAB8A686F8924D09800AC62016594E94" target="_blank" style="color:#1a355e;font-weight:600;">📸 View all photos →</a></p>
     
@@ -116,32 +116,5 @@ function ttmgLead(cta){
 <div class="footer">
   Shared via REALTEAM internal network · <a href="https://mirealteam.com" style="color:#aaa">mirealteam.com</a>
 </div>
-<!-- TTMG page-view beacon (codified 2026-06-09, ISA ttmg-blog-pageview-beacon).
-     Fires once per tab-session on load; posts to the /api/pv edge function which
-     inserts a page_view row server-side. No key in the browser, non-blocking. -->
-<script>
-  window.addEventListener('load', function () {
-    try {
-      var k = 'ttmg_pv_' + location.pathname;
-      if (sessionStorage.getItem(k)) return;
-      sessionStorage.setItem(k, '1');
-      var u = new URL(location.href);
-      fetch('/api/pv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          page_path: location.pathname,
-          referrer: document.referrer || null,
-          utm_source: u.searchParams.get('utm_source'),
-          utm_medium: u.searchParams.get('utm_medium'),
-          utm_campaign: u.searchParams.get('utm_campaign'),
-          utm_term: u.searchParams.get('utm_term'),
-          utm_content: u.searchParams.get('utm_content')
-        })
-      });
-    } catch (e) { /* swallow — never error the page */ }
-  });
-</script>
 </body>
 </html>
