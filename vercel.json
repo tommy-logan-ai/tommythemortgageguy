@@ -122,6 +122,10 @@
       "dest": "/api/pv.js"
     },
     {
+      "src": "/boosters",
+      "dest": "/api/boosters.js"
+    },
+    {
       "handle": "filesystem"
     },
     {
