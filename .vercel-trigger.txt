@@ -1,2 +1,2 @@
-vercel rebuild trigger: 2026-05-19T18:03:37.832927+00:00
-reason: env vars added for /api/go/[slug] analytics function
+vercel rebuild trigger: 2026-10-26T14:26:54.045092+00:00
+reason: /boosters route + api/boosters.js must deploy together
