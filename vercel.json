@@ -130,6 +130,10 @@
       "dest": "/boosters-report.html"
     },
     {
+      "src": "/o/(.*)",
+      "dest": "/api/o.js?t=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
