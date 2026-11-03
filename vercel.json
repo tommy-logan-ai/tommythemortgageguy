@@ -126,6 +126,10 @@
       "dest": "/api/boosters.js"
     },
     {
+      "src": "/boosters/report",
+      "dest": "/boosters-report.html"
+    },
+    {
       "handle": "filesystem"
     },
     {
